@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import logoImg from '../assets/images/header-logo.png';
+import logoImg from '../assets/images/cleaning-services-header-logo.png';
 import { Sparkles } from 'lucide-react';
 
 interface BrandLogoProps {

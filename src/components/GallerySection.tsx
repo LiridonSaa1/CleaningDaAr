@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Maximize2, X, Eye } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { Language } from '../types';
 
 interface GallerySectionProps {
@@ -8,205 +8,215 @@ interface GallerySectionProps {
 }
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'office' | 'glass' | 'construction' | 'residential'>('all');
-  const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string; category: string } | null>(null);
+  const [activeModalProject, setActiveModalProject] = useState<{
+    id: string;
+    title: string;
+    titleDe: string;
+    titleEn: string;
+    badgeDe: string;
+    badgeEn: string;
+    descDe: string;
+    descEn: string;
+    image: string;
+  } | null>(null);
 
-  const galleryItems = [
+  const featuredProject = {
+    id: 'project-home',
+    title: lang === 'de' ? 'Glänzendes Einfamilienhaus' : 'Sparkling Family Residence',
+    titleDe: 'Glänzendes Einfamilienhaus',
+    titleEn: 'Sparkling Family Residence',
+    badgeDe: 'Unterhaltsreinigung',
+    badgeEn: 'Home Cleaning',
+    descDe: 'Vollständige Unterhaltsreinigung für Wohnräume, Bäder, Schlafbereiche und Küchen für dauerhafte Frische und hygienischen Komfort.',
+    descEn: 'Complete home cleaning focused on living areas, bedrooms, bathrooms, and kitchen spaces for a fresher environment.',
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1000&q=80',
+  };
+
+  const projectCards = [
     {
-      id: 1,
-      title: 'Modernes Großraumbüro nach Feinreinigung',
-      category: 'office',
-      categoryLabel: lang === 'de' ? 'Büroreinigung' : 'Office',
-      src: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+      id: 'project-office',
+      title: lang === 'de' ? 'Professionelle Büroflächen' : 'Corporate Workspace Care',
+      titleDe: 'Professionelle Büroflächen',
+      titleEn: 'Corporate Workspace Care',
+      badgeDe: 'Büroreinigung',
+      badgeEn: 'Office Cleaning',
+      descDe: 'Repräsentative Büroreinigung für saubere Arbeitsplätze, hygienische Oberflächen und ein produktives Geschäftsumfeld.',
+      descEn: 'Professional office cleaning maintaining organized workspaces, sanitized surfaces, and a productive business environment.',
+      image: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80',
     },
     {
-      id: 2,
-      title: 'Streifenfreie Glasfassade Gewerbezentrum',
-      category: 'glass',
-      categoryLabel: lang === 'de' ? 'Glasreinigung' : 'Glass',
-      src: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 3,
-      title: 'Schlüsselfertige Bauabschlussreinigung Penthouse',
-      category: 'construction',
-      categoryLabel: lang === 'de' ? 'Baureinigung' : 'Construction',
-      src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 4,
-      title: 'Gepflegtes Treppenhaus mit Naturstein-Pflege',
-      category: 'residential',
-      categoryLabel: lang === 'de' ? 'Treppenhaus' : 'Staircase',
-      src: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 5,
-      title: 'Praxisreinigung mit lückenlosem Hygieneplan',
-      category: 'office',
-      categoryLabel: lang === 'de' ? 'Praxis & Hygiene' : 'Clinic',
-      src: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 6,
-      title: 'Industrieboden-Tiefenreinigung & Versiegelung',
-      category: 'construction',
-      categoryLabel: lang === 'de' ? 'Sonderreinigung' : 'Special Clean',
-      src: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+      id: 'project-apartment',
+      title: lang === 'de' ? 'Moderne Wohnungsreinigung' : 'Modern Apartment Refresh',
+      titleDe: 'Moderne Wohnungsreinigung',
+      titleEn: 'Modern Apartment Refresh',
+      badgeDe: 'Wohnungsreinigung',
+      badgeEn: 'Apartment Cleaning',
+      descDe: 'Umfassende Wohnungsreinigung für perfekten Wohnkomfort, Hygiene und ein makelloses Wohlfühlklima für die Bewohner.',
+      descEn: 'Comprehensive apartment cleaning to improve cleanliness, comfort, and everyday living experiences for residents.',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
     },
   ];
 
-  const filtered = activeFilter === 'all'
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === activeFilter);
-
   return (
-    <section className="py-20 md:py-28 relative">
+    <section id="projekte" className="py-20 md:py-28 relative scroll-mt-20 bg-[#F4F8FF]">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-12"
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-100/80 text-cyan-800 text-xs font-semibold uppercase tracking-wider mb-3">
-            <Eye className="w-3.5 h-3.5" />
-            <span>{lang === 'de' ? 'Einblicke & Qualität' : 'Insights & Quality'}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+          <span className="text-xs sm:text-[13px] font-semibold tracking-[0.2em] text-[#6B7280] uppercase mb-2 block font-sans">
+            {lang === 'de' ? 'UNSERE ARBEITEN IN BILDERN' : 'OUR PROJECTS'}
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#111827] tracking-tight leading-tight font-display">
             {lang === 'de' ? (
               <>
-                Unsere Arbeiten in{' '}
-                <span className="bg-gradient-to-r from-cyan-600 to-sky-700 bg-clip-text text-transparent">
-                  Bildern
-                </span>
+                Reinigungsergebnisse, die <span className="text-[#1855EA]">überzeugen.</span>
               </>
             ) : (
               <>
-                Our Completed Work in{' '}
-                <span className="bg-gradient-to-r from-cyan-600 to-sky-700 bg-clip-text text-transparent">
-                  Pictures
-                </span>
+                Cleaning Results That <span className="text-[#1855EA]">Speak Volumes.</span>
               </>
             )}
           </h2>
-          <p className="text-slate-600 text-base sm:text-lg">
-            {lang === 'de'
-              ? 'Ein Auszug unserer erfolgreich gereinigten Objekte in Ingolstadt und der umliegenden Region.'
-              : 'A glimpse of our successfully serviced premises in Ingolstadt and surrounding area.'}
-          </p>
         </motion.div>
 
-        {/* Filters */}
+        {/* Featured Wide Project Card (Row 1) */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex items-center justify-center gap-2 flex-wrap mb-10"
+          transition={{ duration: 0.55 }}
+          className="bg-white rounded-[24px] p-6 sm:p-8 lg:p-9 shadow-xs hover:shadow-md transition-shadow border border-slate-100/90 mb-6 sm:mb-8"
         >
-          {[
-            { id: 'all', label: lang === 'de' ? 'Alle' : 'All' },
-            { id: 'office', label: lang === 'de' ? 'Büro & Praxis' : 'Office & Clinic' },
-            { id: 'glass', label: lang === 'de' ? 'Glas & Fenster' : 'Glass & Windows' },
-            { id: 'construction', label: lang === 'de' ? 'Bau & Sanierung' : 'Construction' },
-            { id: 'residential', label: lang === 'de' ? 'Treppen & Wohnen' : 'Stairs & Living' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveFilter(tab.id as any)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeFilter === tab.id
-                  ? 'btn-apple-primary shadow-sm'
-                  : 'btn-apple-glass text-slate-700'
-              }`}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left Photo */}
+            <div 
+              onClick={() => setActiveModalProject(featuredProject)}
+              className="relative w-full h-[280px] sm:h-[340px] lg:h-[360px] overflow-hidden rounded-2xl group cursor-pointer"
             >
-              {tab.label}
-            </button>
-          ))}
+              <img
+                src={featuredProject.image}
+                alt={featuredProject.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            </div>
+
+            {/* Right Details */}
+            <div className="flex flex-col items-start justify-center">
+              <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-3">
+                {lang === 'de' ? featuredProject.badgeDe : featuredProject.badgeEn}
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] mb-3 font-display leading-snug">
+                {featuredProject.title}
+              </h3>
+              <p className="text-[#4B5563] text-sm sm:text-base leading-relaxed font-normal mb-6">
+                {lang === 'de' ? featuredProject.descDe : featuredProject.descEn}
+              </p>
+              <button
+                onClick={() => setActiveModalProject(featuredProject)}
+                className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-2"
+              >
+                <span>{lang === 'de' ? 'Mehr erfahren' : 'Read More'}</span>
+              </button>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Gallery Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filtered.map((item, idx) => (
+        {/* Bottom 2 Equal Column Project Cards (Row 2) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {projectCards.map((card, idx) => (
             <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.08 }}
-              onClick={() => setLightboxImage(item)}
-              className="glass-card rounded-3xl overflow-hidden p-2 group cursor-pointer border-white/90 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              key={card.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: 0.1 * (idx + 1) }}
+              className="bg-white rounded-[24px] p-6 sm:p-8 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-slate-100/90 flex flex-col justify-between h-full"
             >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                <img
-                  src={item.src}
-                  alt={item.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+              <div>
+                {/* Photo */}
+                <div 
+                  onClick={() => setActiveModalProject(card)}
+                  className="relative w-full h-[240px] sm:h-[270px] overflow-hidden rounded-2xl mb-6 group cursor-pointer"
+                >
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
 
-                <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full glass-card-dark text-cyan-300 border border-white/20">
-                  {item.categoryLabel}
+                {/* Badge & Title */}
+                <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-3">
+                  {lang === 'de' ? card.badgeDe : card.badgeEn}
                 </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#111827] mb-2 font-display leading-snug">
+                  {card.title}
+                </h3>
+                <p className="text-[#4B5563] text-sm sm:text-[15px] leading-relaxed font-normal mb-6">
+                  {lang === 'de' ? card.descDe : card.descEn}
+                </p>
+              </div>
 
-                <div className="absolute bottom-3 left-3 right-3 text-white">
-                  <h4 className="text-xs sm:text-sm font-bold line-clamp-1">{item.title}</h4>
-                </div>
-
-                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Maximize2 className="w-4 h-4" />
-                </div>
+              {/* Button */}
+              <div>
+                <button
+                  onClick={() => setActiveModalProject(card)}
+                  className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-2"
+                >
+                  <span>{lang === 'de' ? 'Mehr erfahren' : 'Read More'}</span>
+                </button>
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
+
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Project Lightbox Modal */}
       <AnimatePresence>
-        {lightboxImage && (
-          <div
-            onClick={() => setLightboxImage(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
-          >
+        {activeModalProject && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              onClick={(e) => e.stopPropagation()}
-              className="glass-card max-w-4xl w-full rounded-3xl overflow-hidden p-3 relative border-white/20 shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white max-w-3xl w-full rounded-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative shadow-2xl border border-slate-100"
             >
               <button
-                onClick={() => setLightboxImage(null)}
-                className="absolute top-5 right-5 z-10 p-2.5 rounded-full bg-slate-950/60 text-white hover:bg-slate-950/80 transition-colors"
+                onClick={() => setActiveModalProject(null)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="rounded-2xl overflow-hidden aspect-[16/10] sm:aspect-[16/9]">
+              <div className="rounded-xl overflow-hidden h-[300px] sm:h-[380px] mb-6">
                 <img
-                  src={lightboxImage.src}
-                  alt={lightboxImage.title}
-                  referrerPolicy="no-referrer"
+                  src={activeModalProject.image}
+                  alt={activeModalProject.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-4 flex items-center justify-between text-slate-900">
-                <span className="font-bold text-sm sm:text-base">{lightboxImage.title}</span>
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200">
-                  {lightboxImage.category}
-                </span>
-              </div>
+
+              <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-2">
+                {lang === 'de' ? activeModalProject.badgeDe : activeModalProject.badgeEn}
+              </span>
+
+              <h3 className="text-2xl font-bold text-[#111827] mb-3 font-display">
+                {activeModalProject.title}
+              </h3>
+
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                {lang === 'de' ? activeModalProject.descDe : activeModalProject.descEn}
+              </p>
             </motion.div>
           </div>
         )}

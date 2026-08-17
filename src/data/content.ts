@@ -27,39 +27,46 @@ export const COMPANY_INFO: CompanyInfo = {
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: "unterhaltsreinigung",
-    title: "Unterhaltsreinigung",
-    category: "commercial",
-    badge: "Bestseller",
+    title: "Routine cleaning",
+    titleDe: "Unterhaltsreinigung",
+    titleEn: "Routine cleaning",
+    category: "residential",
+    badge: "Empfohlen",
     popular: true,
     priceFrom: "ab 28,00 € / Std.",
-    frequencyRecommendation: "Täglich bis wöchentlich",
-    shortDescription: "Regelmäßige, werterhaltende Sauberkeit für Bürogebäude, Geschäftsräume und Praxen.",
-    fullDescription: "Unsere Unterhaltsreinigung sichert dauerhafte Frische, absolute Hygiene und einen makellosen ersten Eindruck bei Kunden und Mitarbeitern. Nach einem maßgeschneiderten Reinigungsplan säubern wir Böden, Arbeitsplätze, Sanitäranlagen und Küchenbereiche.",
+    frequencyRecommendation: "Regelmäßig nach Wunsch",
+    shortDescription: "A clean home or a well-maintained office is the foundation for well-being. We take care of the regular cleaning of your premises according to your desired schedule.",
+    shortDescriptionDe: "Ein sauberes Zuhause oder ein gepflegtes Büro ist das Fundament für Wohlbefinden. Wir kümmern uns um die regelmäßige Reinigung Ihrer Räumlichkeiten nach Ihrem Wunschplan.",
+    shortDescriptionEn: "A clean home or a well-maintained office is the foundation for well-being. We take care of the regular cleaning of your premises according to your desired schedule.",
+    fullDescription: "Unsere Routinereinigung & Unterhaltsreinigung sichert dauerhafte Frische, absolute Hygiene und ein rundum angenehmes Ambiente. Nach einem maßgeschneiderten Reinigungsplan säubern wir Böden, Arbeitsflächen, Sanitäranlagen und Küchenbereiche.",
     iconName: "Sparkles",
     image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1000&q=80",
     checklist: [
-      "Staub- und Feuchtreinigung aller freien Arbeitsflächen & Tische",
-      "Saugen und Wischen aller Bodenbeläge (Parkett, Fliesen, Teppich)",
+      "Staub- und Feuchtreinigung aller freien Oberflächen & Tische",
+      "Saugen und Wischen aller Bodenbeläge",
       "Hygienische Desinfektion und Reinigung der Sanitäranlagen",
-      "Auffüllen von Verbrauchsmaterialien (Seife, Papier, Handtücher)",
-      "Müllentleerung und fachgerechte Mülltrennung",
+      "Müllentleerung und Mülltrennung",
       "Feuchtreinigung von Griffen, Schaltern und Türen"
     ],
     benefits: [
       "Feste Reinigungsteams für höchste Diskretion",
-      "Flexible Einsatzzeiten außerhalb Ihrer Bürozeiten (früh/spät)",
+      "Flexible Einsatzzeiten nach Ihren Wünschen",
       "Ökologisch unbedenkliche, materialschonende Pflegemittel"
     ]
   },
   {
     id: "buero-gewerbereinigung",
-    title: "Büro- & Gewerbereinigung",
+    title: "Office and commercial cleaning",
+    titleDe: "Büro- & Gewerbereinigung",
+    titleEn: "Office and commercial cleaning",
     category: "commercial",
     badge: "Für Unternehmen",
     popular: true,
     priceFrom: "Individuelles Festpreisangebot",
     frequencyRecommendation: "1x bis 5x wöchentlich",
-    shortDescription: "Repräsentative Sauberkeit und Wohlfühlatmosphäre für moderne Arbeitsumgebungen.",
+    shortDescription: "A clean workplace is the calling card of your company. We ensure hygienic cleanliness in your offices, practices, or retail spaces.",
+    shortDescriptionDe: "Ein sauberer Arbeitsplatz ist die Visitenkarte Ihres Unternehmens. Wir sorgen für hygienische Sauberkeit in Büros, Praxen oder Verkaufsflächen.",
+    shortDescriptionEn: "A clean workplace is the calling card of your company. We ensure hygienic cleanliness in your offices, practices, or retail spaces.",
     fullDescription: "Ein sauberes Büro fördert Konzentration, senkt Krankheitsausfälle und vermittelt Professionalität. Wir reinigen Kanzleien, Agenturen, Co-Working Spaces und Firmenzentralen zuverlässig nach höchsten Standards.",
     iconName: "Building2",
     image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80",
@@ -68,58 +75,63 @@ export const SERVICES_DATA: ServiceItem[] = [
       "Meetingräume und Konferenztechnik einsatzbereit herrichten",
       "Kaffeeküchen, Mikrowellen und Geschirrspülerservice",
       "Glaswände & Raumteiler streifenfrei polieren",
-      "Teppichböden tiefensaugen & Fleckentfernung",
-      "Empfangsbereich hochglanzpolieren"
+      "Teppichböden tiefensaugen & Fleckentfernung"
     ],
     benefits: [
-      "Erprobtes 4-Farb-Hygienesystem gegen Keimverschleppung",
+      "Erprobtes Hygienekonzept gegen Keimverschleppung",
       "Volle Haftpflichtversicherung für jedes Objekt",
       "Transparente monatliche Sammelrechnung"
     ]
   },
   {
     id: "glas-fensterreinigung",
-    title: "Glas- & Fensterreinigung",
+    title: "Glass and window cleaning",
+    titleDe: "Glas- & Fensterreinigung",
+    titleEn: "Glass and window cleaning",
     category: "special",
-    badge: "Streifenfreier Glanz",
-    priceFrom: "ab 4,50 € / m² Glasfläche",
+    badge: "Streifenfrei",
+    priceFrom: "ab 4,50 € / m²",
     frequencyRecommendation: "Monatlich oder vierteljährlich",
-    shortDescription: "Kristallklare Sicht für Schaufenster, Glasfassaden, Wintergärten und Bürofenster.",
+    shortDescription: "We ensure a perfect view. Whether shop windows, conservatories or classic window surfaces - streak-free, including frames and window sills.",
+    shortDescriptionDe: "Wir sorgen für perfekten Durchblick. Ob Schaufenster, Wintergärten oder klassische Fensterflächen – streifenfrei, inklusive Rahmen und Fensterbänken.",
+    shortDescriptionEn: "We ensure a perfect view. Whether shop windows, conservatories or classic window surfaces - streak-free, including frames and window sills.",
     fullDescription: "Streifenfreie Fenster ohne Schlieren, auch an schwer erreichbaren Stellen. Wir reinigen Scheiben inklusive Fensterrahmen, Fensterfalzen, Fensterbänken und Sonnenschutzlamellen mit Profi-Ausrüstung und Osmose-Technologie.",
     iconName: "Maximize2",
     image: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1000&q=80",
     checklist: [
       "Innen- und Außenreinigung von Fenstern aller Art",
-      "Rahmenreinigung & Falzreinigung (Entfernung von Moos & Ruß)",
-      "Schaufenster- und Schaukästenreinigung für den Einzelhandel",
-      "Wintergärten & Glasüberdachungen inkl. Moosentfernung",
-      "Lamellen- und Jalousien-Reinigung",
-      "Einsatz von Reinwasser/Osmose-Technik ohne Chemie"
+      "Rahmenreinigung & Falzreinigung",
+      "Schaufensterreinigung für den Einzelhandel",
+      "Wintergärten & Glasüberdachungen",
+      "Reinwasser/Osmose-Technik ohne Chemie"
     ],
     benefits: [
       "Rückstandsfreies Trocknen ohne Kalkflecken",
-      "Sicherheitsgeschultes Personal für Höhenarbeiten",
+      "Sicherheitsgeschultes Personal",
       "Schnelle Ausführung auch bei kurzfristigem Bedarf"
     ]
   },
   {
     id: "baureinigung",
-    title: "Baureinigung & Bauendreinigung",
+    title: "Construction cleaning",
+    titleDe: "Baureinigung",
+    titleEn: "Construction cleaning",
     category: "construction",
     badge: "Bezugsfertig",
     priceFrom: "ab 3,80 € / m²",
     frequencyRecommendation: "Nach Bau- / Sanierungsphase",
-    shortDescription: "Grob-, Zwischen- und Feinreinigung für schlüsselfertige Übergaben von Neubauten und Sanierungen.",
+    shortDescription: "We handle the rough and fine cleaning of your construction site after new construction or renovation. Construction dust and paint residue are removed - ready for occupancy.",
+    shortDescriptionDe: "Wir übernehmen die Grob- und Feinreinigung Ihrer Baustelle nach Neubau oder Renovierung. Baustaub und Farbreste werden entfernt – bezugsfertig.",
+    shortDescriptionEn: "We handle the rough and fine cleaning of your construction site after new construction or renovation. Construction dust and paint residue are removed - ready for occupancy.",
     fullDescription: "Nach Bauarbeiten oder Renovierungen befreien wir Ihre Immobilie von Bauschutt, Zementschleiern, Farb- und Lackspritzern, Feinstaub und Kleberesten, damit die Räume pünktlich und makellos bezogen werden können.",
     iconName: "Hammer",
     image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80",
     checklist: [
       "Bau-Grobreinigung: Entfernung von Mörtelresten & Bauschutt",
       "Bau-Zwischenreinigung für nachfolgende Gewerke",
-      "Bau-Feinreinigung / Bauabschlussreinigung bezugsfertig",
-      "Beseitigung von Zementschleiern, Silikon- & Farbspritzern",
-      "Tiefenentstaubung von Lüftungsrohren, Decken & Nischen",
-      "Schutzfolienentfernung von Fenstern, Sanitär und Türen"
+      "Bau-Feinreinigung bezugsfertig",
+      "Beseitigung von Zementschleiern & Farbspritzern",
+      "Schutzfolienentfernung von Fenstern und Sanitär"
     ],
     benefits: [
       "Pünktliche Einhaltung straffer Bauzeitenpläne",
@@ -129,13 +141,17 @@ export const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: "treppenhausreinigung",
-    title: "Treppenhausreinigung",
+    title: "Stairwell cleaning",
+    titleDe: "Treppenhausreinigung",
+    titleEn: "Stairwell cleaning",
     category: "residential",
     badge: "Hausverwaltungen",
-    priceFrom: "ab 18,00 € pro Etage / Monat",
+    priceFrom: "ab 18,00 € pro Etage",
     frequencyRecommendation: "Wöchentlich oder 14-tägig",
-    shortDescription: "Zuverlässige Pflege für Hausverwaltungen, Eigentümergemeinschaften und Mehrfamilienhäuser.",
-    fullDescription: "Ein gepflegtes Treppenhaus ist die Visitenkarte jedes Wohngebäudes. Wir übernehmen die turnusmäßige Reinigung von Eingangsbereichen, Treppenstufen, Handläufen, Aufzügen und Kellergängen zur Entlastung aller Bewohner.",
+    shortDescription: "First impressions of a building count. We clean steps, railings, mailboxes and entrance doors regularly and thoroughly.",
+    shortDescriptionDe: "Der erste Eindruck eines Gebäudes zählt. Wir reinigen Stufen, Geländer, Briefkästen und Eingangstüren regelmäßig und gründlich.",
+    shortDescriptionEn: "First impressions of a building count. We clean steps, railings, mailboxes and entrance doors regularly and thoroughly.",
+    fullDescription: "Ein gepflegtes Treppenhaus ist die Visitenkarte jedes Wohngebäudes. Wir übernehmen die turnusmäßige Reinigung von Eingangsbereichen, Treppenstufen, Handläufen, Aufzügen und Kellergängen.",
     iconName: "Layers",
     image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80",
     checklist: [
@@ -143,33 +159,35 @@ export const SERVICES_DATA: ServiceItem[] = [
       "Abwischen von Geländern, Handläufen und Fensterbänken",
       "Reinigung von Hauseingangstüren, Briefkasten- & Klingelanlagen",
       "Spiegel-, Glas- und Aufzugkabinenreinigung",
-      "Kellergänge, Waschküchen und Fahrradräume nach Plan",
       "Spinnwebenbeseitigung im gesamten Hausflur"
     ],
     benefits: [
-      "Fester Tourenplan & digitaler digitaler Aushang / Nachweis",
+      "Fester Tourenplan & digitaler Nachweis",
       "Attraktive Staffelpreise für größere Liegenschaften",
       "Kein Ärger mehr mit der Kehrwoche unter Mietern"
     ]
   },
   {
     id: "grundreinigung",
-    title: "Grund- & Sonderreinigung",
+    title: "Basic cleaning",
+    titleDe: "Grundreinigung",
+    titleEn: "Basic cleaning",
     category: "special",
     badge: "Tiefenreinigung",
     priceFrom: "Individuelle Kalkulation",
     frequencyRecommendation: "1-2 Mal jährlich",
-    shortDescription: "Intensive Tiefenreinigung für beanspruchte Böden, Teppiche, Sanitär- und Küchenanlagen.",
+    shortDescription: "Intensive care for stubborn dirt. Ideal for spring cleaning or when tenants change, to bring floors and surfaces into top condition.",
+    shortDescriptionDe: "Intensive Pflege bei hartnäckigem Schmutz. Ideal für den Frühjahrsputz oder beim Mieterwechsel, um Böden und Flächen in Top-Zustand zu bringen.",
+    shortDescriptionEn: "Intensive care for stubborn dirt. Ideal for spring cleaning or when tenants change, to bring floors and surfaces into top condition.",
     fullDescription: "Wenn die normale Unterhaltsreinigung nicht mehr ausreicht: Wir lösen alte Pflegemittelfilme, entfernen hartnäckige Verschmutzungen maschinell und versiegeln Böden neu für langanhaltenden Schutz.",
     iconName: "ShieldCheck",
     image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1000&q=80",
     checklist: [
       "Maschinelle Einscheiben-Grundreinigung von PVC, Linoleum & Fliesen",
       "Neue Einpflege und Polymer-Versiegelung von Hartböden",
-      "Sprühextraktion & Shampoonierung von Teppichen & Polstern",
-      "Intensiv-Entkalkung und Fugen-Tiefenreinigung in Nassräumen",
-      "Reinigung von Heizkörpern, Lampen und Deckenkonstruktionen",
-      "Geruchsneutralisation und professionelle Desinfektion"
+      "Fugen-Tiefenreinigung und Entkalkung in Nassräumen",
+      "Reinigung von Heizkörpern und Deckenkonstruktionen",
+      "Geruchsneutralisation und Desinfektion"
     ],
     benefits: [
       "Wertsteigerung und Lebensdauer-Verlängerung Ihrer Böden",
@@ -178,53 +196,59 @@ export const SERVICES_DATA: ServiceItem[] = [
     ]
   },
   {
-    id: "praxisreinigung",
-    title: "Praxis- & Hygiene-Reinigung",
-    category: "commercial",
-    badge: "RKI-Konform",
-    priceFrom: "Nach Hygieneplan",
-    frequencyRecommendation: "Täglich",
-    shortDescription: "Zertifizierte Hygienestandards für Arztpraxen, Labore und therapeutische Einrichtungen.",
-    fullDescription: "Höchste Keimfreiheit und strikte Einhaltung der Hygienevorschriften nach Infektionsschutzgesetz und RKI-Richtlinien. Wir desinfizieren Behandlungsräume, Wartezimmer und Sanitärbereiche mit validierten Mitteln.",
-    iconName: "HeartPulse",
-    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80",
+    id: "sonderreinigung",
+    title: "Special cleaning",
+    titleDe: "Sonderreinigung",
+    titleEn: "Special cleaning",
+    category: "special",
+    badge: "Spezial",
+    priceFrom: "Nach Vereinbarung",
+    frequencyRecommendation: "Nach Bedarf / Event",
+    shortDescription: "Do you have specific requirements? Whether it's carpet cleaning, upholstery cleaning, or post-event cleaning - we offer tailor-made solutions for your specific needs.",
+    shortDescriptionDe: "Haben Sie spezielle Anforderungen? Ob Teppichreinigung, Polsterreinigung oder Event-Reinigung – wir bieten maßgeschneiderte Lösungen für Ihren spezifischen Bedarf.",
+    shortDescriptionEn: "Do you have specific requirements? Whether it's carpet cleaning, upholstery cleaning, or post-event cleaning - we offer tailor-made solutions for your specific needs.",
+    fullDescription: "Haben Sie spezifische Anforderungen? Ob Teppichreinigung, Polsterreinigung, Geruchsbeseitigung oder Event-Nachbereitung – wir bieten maßgeschneiderte Sonderreinigungs-Lösungen.",
+    iconName: "Sparkles",
+    image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1000&q=80",
     checklist: [
-      "Wischdesinfektion patientennaher Kontaktflächen & Liegen",
-      "Hygienische Reinigung von Empfang, Wartezimmer & Labor",
-      "Farblich kodierte Reinigungstücher je Raumtyp",
-      "Lückenlose Führung des Desinfektions- & Reinigungsplans",
-      "Entsorgung von Praxisabfällen nach Vorschrift",
-      "Geräteoberflächen-Schonreinigung"
+      "Sprühextraktion & Tiefenreinigung von Teppichen & Polstern",
+      "Geruchs- & Fleckenentfernung",
+      "Spezialdesinfektion nach Hygieneanforderung",
+      "Event- und Messereinigung vor/nach Veranstaltungen",
+      "Industrieflächen- & Sonderreinigung"
     ],
     benefits: [
-      "Geschultes Personal für medizinische Hygienekonzepte",
-      "Geprüfte VAH- und RKI-gelistete Desinfektionsmittel",
-      "Sicherheit für Patienten und Praxis-Audits"
+      "Moderne Spezialgeräte und Extraktionsverfahren",
+      "Erfahrene Spezialkräfte für anspruchsvolle Fälle",
+      "Schnelle Verfügbarkeit und maßgeschneiderte Angebote"
     ]
   },
   {
-    id: "umzugsreinigung",
-    title: "Umzugs- & Endreinigung",
-    category: "residential",
-    badge: "100% Abnahmegarantie",
-    priceFrom: "ab 290,00 € Pauschal",
-    frequencyRecommendation: "Einmalig bei Auszug / Einzug",
-    shortDescription: "Komplette Wohnungsübergabe ohne Stress mit garantierter Abnahme durch den Vermieter.",
-    fullDescription: "Verlassen Sie Ihre alte Wohnung blitzblank. Wir reinigen die gesamte Wohnung inklusive Küche (Backofen, Dunstabzugshaube, Kühlschrank), Bad, Fenstern, Türen und Böden und garantieren eine reibungslose Übergabe.",
-    iconName: "Truck",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
+    id: "winterdienst",
+    title: "Winter service ensures",
+    titleDe: "Winterdienst",
+    titleEn: "Winter service ensures",
+    category: "special",
+    badge: "24/7 Bereitschaft",
+    priceFrom: "Saisonale Pauschale",
+    frequencyRecommendation: "Täglich bei Schneefall",
+    shortDescription: "We take care of snow removal and gritting of sidewalks, parking lots and driveways for you - punctually, thoroughly and reliably.",
+    shortDescriptionDe: "Wir übernehmen die Schneeräumung und Streuung von Gehweg, Parkplatz und Zufahrt für Sie – pünktlich, gründlich und zuverlässig.",
+    shortDescriptionEn: "We take care of snow removal and gritting of sidewalks, parking lots and driveways for you - punctually, thoroughly and reliably.",
+    fullDescription: "Sicher durch den Winter nach den gesetzlichen Räum- und Streupflichten. Wir befreien Ihre Flächen von Schnee und Eis, inklusive Streugutgestellung und Notdienst rund um die Uhr.",
+    iconName: "Snowflake",
+    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
     checklist: [
-      "Küchenreinigung inkl. Herd, Backofen, Schränke innen/außen",
-      "Komplettes Badezimmer inkl. Armaturen, Fliesen & Entkalkung",
-      "Fensterputzen inkl. Fensterrahmen und Fensterbänken",
-      "Türen, Zargen, Steckdosen und Fußleisten feucht abwischen",
-      "Böden saugen und feucht wischen bzw. intensiv reinigen",
-      "Persönliche Anwesenheit bei der Vermieter-Abnahme auf Wunsch"
+      "Schneeräumung von Gehwegen, Parkplätzen & Zufahrten",
+      "Streudienst mit umweltgerechtem Streugut / Salz",
+      "Kontrollfahrten bei Glatteisgefahr",
+      "24/7 Rufbereitschaft bei Wintereinbruch",
+      "Beseitigung des Streuguts nach der Wintersaison"
     ],
     benefits: [
-      "Kostenlose Nachreinigung falls Vermieter beanstandet",
-      "Fester Pauschalpreis ohne versteckte Zusatzkosten",
-      "Zeit- und Nervenersparnis beim Umzug"
+      "Rechtssichere Übernahme der gesetzlichen Räumpflicht",
+      "Zuverlässige Ausführung früh am Morgen",
+      "Moderne Räumgeräte und Handmannschaften"
     ]
   }
 ];
@@ -328,45 +352,83 @@ export const BEFORE_AFTER_CASES: BeforeAfterCase[] = [
 export const FAQ_DATA: FAQItem[] = [
   {
     id: "faq-1",
-    category: "pricing",
-    question: "Wie schnell erhalte ich ein individuelles Angebot?",
-    answer: "In der Regel erhalten Sie innerhalb von 2 bis 4 Stunden nach Ihrer Anfrage über unseren Online-Rechner oder unser Kontaktformular ein detailliertes und transparentes Festpreis-Angebot. Bei komplexeren Objekten bieten wir vorab eine kostenfreie und unverbindliche Vor-Ort-Besichtigung an."
+    category: "general",
+    question: "Welche Reinigungsleistungen bieten Sie an?",
+    questionDe: "Welche Reinigungsleistungen bieten Sie an?",
+    questionEn: "What cleaning services do you offer?",
+    answer: "Wir bieten ein umfassendes Spektrum: Unterhaltsreinigung, Büro- & Gewerbereinigung, Glas- & Fensterreinigung, Baureinigung, Treppenhausreinigung, Grundreinigung, Sonderreinigung und Winterdienst.",
+    answerDe: "Wir bieten ein umfassendes Spektrum: Unterhaltsreinigung, Büro- & Gewerbereinigung, Glas- & Fensterreinigung, Baureinigung, Treppenhausreinigung, Grundreinigung, Sonderreinigung und Winterdienst.",
+    answerEn: "We offer a comprehensive range of services: routine cleaning, office & commercial cleaning, glass & window cleaning, construction cleaning, stairwell cleaning, basic cleaning, special cleaning, and winter service."
   },
   {
     id: "faq-2",
-    category: "security",
-    question: "Sind Ihre Mitarbeiter versichert und geschult?",
-    answer: "Ja, zu 100%. All unsere Mitarbeiter sind fest angestellt, geschult im professionellen Umgang mit modernsten Reinigungstechniken und Sicherheitsstandards sowie über unsere umfassende Betriebshaftpflichtversicherung (bis zu 5 Mio. € Personen- und Sachschäden) abgesichert."
+    category: "pricing",
+    question: "Wie viel kostet ein Reinigungsservice?",
+    questionDe: "Wie viel kostet ein Reinigungsservice?",
+    questionEn: "How much does a cleaning service cost?",
+    answer: "Unsere Preise richten sich transparent nach Objektgröße, Reinigungsart und Frequenz. Wir bieten faire Festpreise ohne versteckte Zusatzkosten oder stundenbasierte Abrechnungen ab 28 € / Std.",
+    answerDe: "Unsere Preise richten sich transparent nach Objektgröße, Reinigungsart und Frequenz. Wir bieten faire Festpreise ohne versteckte Zusatzkosten oder stundenbasierte Abrechnungen ab 28 € / Std.",
+    answerEn: "Our pricing is transparent and based on property size, cleaning type, and frequency. We offer fair fixed-price quotes with no hidden costs starting from €28/hr."
   },
   {
     id: "faq-3",
-    category: "general",
-    question: "Bringen Sie alle Reinigungsmittel und Geräte selbst mit?",
-    answer: "Selbstverständlich! Unser Team bringt sämtliche Profi-Reinigungsgeräte (Industriesauger, Einscheibenmaschinen, Osmoseanlagen) sowie umweltfreundliche, pH-neutrale und materialgerechte Reinigungsmittel mit. Sie müssen sich um nichts kümmern."
+    category: "process",
+    question: "Wie buche ich einen Reinigungsservice?",
+    questionDe: "Wie buche ich einen Reinigungsservice?",
+    questionEn: "How do I book a cleaning service?",
+    answer: "Ganz einfach über unseren Online-Angebotsrechner oder das Kontaktformular. Sie wählen den gewünschten Service und erhalten innerhalb von 2-4 Stunden ein unverbindliches Angebot.",
+    answerDe: "Ganz einfach über unseren Online-Angebotsrechner oder das Kontaktformular. Sie wählen den gewünschten Service und erhalten innerhalb von 2-4 Stunden ein unverbindliches Angebot.",
+    answerEn: "Simply use our online quote calculator or contact form. Select your desired service and receive a non-binding offer within 2-4 hours."
   },
   {
     id: "faq-4",
-    category: "process",
-    question: "Können die Reinigungen auch außerhalb der Geschäftszeiten stattfinden?",
-    answer: "Ja, maximale Flexibilität ist unsere Stärke. Wir reinigen gerne früh morgens vor Arbeitsbeginn, abends nach Feierabend oder am Wochenende, sodass Ihr Geschäftsbetrieb völlig ungestört bleibt."
+    category: "security",
+    question: "Muss ich während der Reinigung zu Hause sein?",
+    questionDe: "Muss ich während der Reinigung zu Hause sein?",
+    questionEn: "Do I need to be home during cleaning?",
+    answer: "Nein, das ist nicht erforderlich. Durch sichere Schlüsselprotokolle reinigen wir zuverlässig und diskret auch während Ihrer Abwesenheit oder außerhalb Ihrer Bürozeiten.",
+    answerDe: "Nein, das ist nicht erforderlich. Durch sichere Schlüsselprotokolle reinigen wir zuverlässig und diskret auch während Ihrer Abwesenheit oder außerhalb Ihrer Bürozeiten.",
+    answerEn: "No, that is not necessary. Thanks to our secure key management protocols, we clean reliably and discreetly while you are away or outside business hours."
   },
   {
     id: "faq-5",
-    category: "process",
-    question: "Gibt es feste Vertragslaufzeiten oder Kündigungsfristen?",
-    answer: "Für einmalige Einsätze (wie Bau- oder Umzugsreinigungen) gibt es keinerlei Vertragsbindung. Bei regelmäßigen Unterhaltsreinigungen bieten wir faire und flexible Vertragsmodelle mit kurzen Kündigungsfristen, da wir durch unsere Qualität und nicht durch starre Verträge überzeugen."
+    category: "general",
+    question: "Bringen Sie Ihre eigenen Reinigungsmittel mit?",
+    questionDe: "Bringen Sie Ihre eigenen Reinigungsmittel mit?",
+    questionEn: "Do you bring your own cleaning supplies?",
+    answer: "Selbstverständlich! Unser Team bringt sämtliche Profi-Reinigungsgeräte sowie umweltfreundliche, pH-neutrale und materialschonende Reinigungsmittel komplett mit.",
+    answerDe: "Selbstverständlich! Unser Team bringt sämtliche Profi-Reinigungsgeräte sowie umweltfreundliche, pH-neutrale und materialschonende Reinigungsmittel komplett mit.",
+    answerEn: "Absolutely! Our team brings all professional cleaning equipment as well as eco-friendly, pH-neutral, and surface-safe cleaning products."
   },
   {
     id: "faq-6",
-    category: "general",
-    question: "In welchem Umkreis ist DuaAri Clean & Service im Einsatz?",
-    answer: "Wir sind im gesamten Raum Ingolstadt sowie im Umkreis von ca. 60 km aktiv – einschließlich Manching, Pfaffenhofen an der Ilm, Neuburg an der Donau, Eichstätt, Kösching, Geisenfeld und dem Münchener Norden."
+    category: "process",
+    question: "Kann ich regelmäßige Reinigungen vereinbaren?",
+    questionDe: "Kann ich regelmäßige Reinigungen vereinbaren?",
+    questionEn: "Can I schedule recurring cleaning services?",
+    answer: "Ja, wir bieten hochflexible Intervalle (täglich, wöchentlich, 14-tägig oder monatlich) mit fairen Konditionen und ohne starre Langzeitverträge.",
+    answerDe: "Ja, wir bieten hochflexible Intervalle (täglich, wöchentlich, 14-tägig oder monatlich) mit fairen Konditionen und ohne starre Langzeitverträge.",
+    answerEn: "Yes, we offer highly flexible schedules (daily, weekly, bi-weekly, or monthly) with fair terms and no rigid long-term contracts."
   },
   {
     id: "faq-7",
     category: "security",
-    question: "Wie läuft die Schlüsselübergabe und Diskretion ab?",
-    answer: "Wir arbeiten mit sicheren Schlüsselprotokollen und strengen Datenschutz- und Diskretionsvereinbarungen. Viele unserer Kunden vertrauen uns seit Jahren die Reinigung ihrer Geschäfts- und Privaträume in ihrer Abwesenheit an."
+    question: "Sind Ihre Reinigungskräfte geschult und versichert?",
+    questionDe: "Sind Ihre Reinigungskräfte geschult und versichert?",
+    questionEn: "Are your cleaners trained and insured?",
+    answer: "Ja, zu 100%. Unsere Mitarbeiter sind fest angestellt, professionell in modernen Reinigungstechniken geschult und über unsere Betriebshaftpflichtversicherung voll abgesichert.",
+    answerDe: "Ja, zu 100%. Unsere Mitarbeiter sind fest angestellt, professionell in modernen Reinigungstechniken geschult und über unsere Betriebshaftpflichtversicherung voll abgesichert.",
+    answerEn: "Yes, 100%. Our employees are permanently employed, professionally trained in modern cleaning techniques, and fully covered by our comprehensive liability insurance."
+  },
+  {
+    id: "faq-8",
+    category: "general",
+    question: "In welchem Umkreis sind Sie im Einsatz?",
+    questionDe: "In welchem Umkreis sind Sie im Einsatz?",
+    questionEn: "What areas do you serve?",
+    answer: "Wir sind im gesamten Raum Ingolstadt sowie im Umkreis von bis zu 60 km im Einsatz (z.B. Manching, Pfaffenhofen, Neuburg, Eichstätt, Kösching, Geisenfeld).",
+    answerDe: "Wir sind im gesamten Raum Ingolstadt sowie im Umkreis von bis zu 60 km im Einsatz (z.B. Manching, Pfaffenhofen, Neuburg, Eichstätt, Kösching, Geisenfeld).",
+    answerEn: "We serve the entire Ingolstadt region and up to a 60 km radius (including Manching, Pfaffenhofen, Neuburg, Eichstätt, Kösching, Geisenfeld)."
   }
 ];
 

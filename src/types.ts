@@ -5,8 +5,12 @@ export type ServiceCategory = 'all' | 'commercial' | 'residential' | 'special' |
 export interface ServiceItem {
   id: string;
   title: string;
+  titleDe?: string;
+  titleEn?: string;
   category: 'commercial' | 'residential' | 'special' | 'construction';
   shortDescription: string;
+  shortDescriptionDe?: string;
+  shortDescriptionEn?: string;
   fullDescription: string;
   iconName: string;
   badge?: string;
@@ -45,7 +49,11 @@ export interface BeforeAfterCase {
 export interface FAQItem {
   id: string;
   question: string;
+  questionDe?: string;
+  questionEn?: string;
   answer: string;
+  answerDe?: string;
+  answerEn?: string;
   category: 'general' | 'pricing' | 'process' | 'security';
 }
 

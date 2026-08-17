@@ -3,12 +3,11 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
 import { ServicesSection } from './components/ServicesSection';
-import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { ProcessSection } from './components/ProcessSection';
 import { TestimonialsCarousel } from './components/TestimonialsCarousel';
 import { GallerySection } from './components/GallerySection';
-import { ServiceAreaMap } from './components/ServiceAreaMap';
 import { FAQSection } from './components/FAQSection';
+import { CtaBanner } from './components/CtaBanner';
 import { ContactQuoteSection } from './components/ContactQuoteSection';
 import { Footer } from './components/Footer';
 import { FloatingActions } from './components/FloatingActions';
@@ -93,11 +92,6 @@ export default function App() {
           onApplyCalculatedQuote={handleApplyCalculatedQuote}
         />
 
-        <BeforeAfterSlider
-          lang={lang}
-          onOpenQuote={handleOpenQuote}
-        />
-
         <TestimonialsCarousel
           lang={lang}
         />
@@ -106,9 +100,12 @@ export default function App() {
           lang={lang}
         />
 
-        <ServiceAreaMap
+        <ContactQuoteSection
           lang={lang}
-          onOpenQuote={handleOpenQuote}
+          prefilledService={prefilledService}
+          prefilledSummary={prefilledSummary}
+          prefilledSqm={prefilledSqm}
+          prefilledFrequency={prefilledFrequency}
         />
 
         <FAQSection
@@ -116,12 +113,9 @@ export default function App() {
           onOpenQuote={handleOpenQuote}
         />
 
-        <ContactQuoteSection
+        <CtaBanner
           lang={lang}
-          prefilledService={prefilledService}
-          prefilledSummary={prefilledSummary}
-          prefilledSqm={prefilledSqm}
-          prefilledFrequency={prefilledFrequency}
+          onOpenQuote={handleOpenQuote}
         />
       </main>
 

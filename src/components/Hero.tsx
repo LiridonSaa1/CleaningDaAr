@@ -4,6 +4,7 @@ import { Play, Star } from 'lucide-react';
 import { Language } from '../types';
 import heroCleanerImg from '../assets/images/Hero-New-UBZ2K5JP3S-1.png';
 import heroBubbleImg from '../assets/images/hero-main-bubble.png';
+import realisticSoapBubblesImg from '../assets/images/realistic-soap-bubbles.png';
 
 interface HeroProps {
   lang: Language;
@@ -25,7 +26,100 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
         {/* Soft Ambient Depth */}
         <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-white/20 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Floating Soap Bubbles in Hero Background */}
+        {/* Realistic Floating Soap Bubbles (User Asset 1 - Top Left) */}
+        <motion.div
+          animate={{
+            y: [-15, 15, -15],
+            x: [-8, 8, -8],
+            rotate: [-3, 3, -3],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="absolute left-4 sm:left-12 lg:left-20 top-20 sm:top-24 w-[140px] sm:w-[220px] lg:w-[280px] opacity-90 pointer-events-none z-10"
+        >
+          <img
+            src={realisticSoapBubblesImg}
+            alt=""
+            aria-hidden="true"
+            className="w-full h-auto object-contain filter drop-shadow-lg"
+          />
+        </motion.div>
+
+        {/* Realistic Floating Soap Bubbles (User Asset 2 - Top Right) */}
+        <motion.div
+          animate={{
+            y: [18, -18, 18],
+            x: [10, -10, 10],
+            rotate: [4, -4, 4],
+            scale: [1.02, 0.98, 1.02],
+          }}
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 1,
+          }}
+          className="absolute right-6 sm:right-20 lg:right-36 top-16 sm:top-28 w-[160px] sm:w-[240px] lg:w-[320px] opacity-85 pointer-events-none z-10 hidden sm:block"
+        >
+          <img
+            src={realisticSoapBubblesImg}
+            alt=""
+            aria-hidden="true"
+            className="w-full h-auto object-contain scale-x-[-1] filter drop-shadow-md"
+          />
+        </motion.div>
+
+        {/* Realistic Floating Soap Bubbles (User Asset 3 - Middle Left) */}
+        <motion.div
+          animate={{
+            y: [-22, 22, -22],
+            x: [12, -12, 12],
+            rotate: [-5, 5, -5],
+          }}
+          transition={{
+            duration: 8.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 2,
+          }}
+          className="absolute left-[3%] top-[48%] w-[120px] sm:w-[180px] opacity-80 pointer-events-none z-10"
+        >
+          <img
+            src={realisticSoapBubblesImg}
+            alt=""
+            aria-hidden="true"
+            className="w-full h-auto object-contain filter drop-shadow-md"
+          />
+        </motion.div>
+
+        {/* Realistic Floating Soap Bubbles (User Asset 4 - Center Right) */}
+        <motion.div
+          animate={{
+            y: [-25, 20, -25],
+            x: [-15, 10, -15],
+            rotate: [3, -3, 3],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 0.5,
+          }}
+          className="absolute right-[18%] top-[55%] w-[150px] sm:w-[210px] opacity-75 pointer-events-none z-10 hidden lg:block"
+        >
+          <img
+            src={realisticSoapBubblesImg}
+            alt=""
+            aria-hidden="true"
+            className="w-full h-auto object-contain filter drop-shadow-lg"
+          />
+        </motion.div>
+
+        {/* Original Main Bubble Backdrop */}
         <motion.div
           animate={{
             y: [-10, 10, -10],
@@ -37,7 +131,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
             repeat: Infinity,
             ease: 'easeInOut',
           }}
-          className="absolute left-2 sm:left-12 lg:left-24 top-20 sm:top-24 lg:top-28 w-[320px] sm:w-[440px] lg:w-[560px] max-w-none opacity-80 pointer-events-none select-none z-0"
+          className="absolute left-2 sm:left-12 lg:left-24 top-20 sm:top-24 lg:top-28 w-[320px] sm:w-[440px] lg:w-[560px] max-w-none opacity-60 pointer-events-none select-none z-0"
         >
           <img
             src={heroBubbleImg}
@@ -152,7 +246,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
               </motion.div>
             </div>
 
-            {/* Bottom 3 Numbers Stats Strip (Positioned at bottom) */}
+            {/* Bottom 3 Numbers Stats Strip (Hollow Text Effect) */}
             <motion.div
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
@@ -160,8 +254,8 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
               className="grid grid-cols-3 gap-6 sm:gap-10 lg:gap-12 pt-4 w-full max-w-xl mt-auto"
             >
               <div>
-                <div className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#111827] tracking-tight font-display flex items-baseline leading-none whitespace-nowrap">
-                  2.5K <span className="text-[#1855EA] ml-1 font-bold">+</span>
+                <div className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black tracking-tight font-display flex items-baseline leading-none whitespace-nowrap text-transparent [-webkit-text-stroke:1.8px_#111827]">
+                  2.5K <span className="text-transparent [-webkit-text-stroke:1.8px_#1855EA] ml-1 font-black">+</span>
                 </div>
                 <div className="text-xs sm:text-[13px] font-normal text-[#6B7280] mt-2.5 leading-snug">
                   {lang === 'de' ? 'Erfolgreiche Einsätze' : 'Projects Completed'}
@@ -169,8 +263,8 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#111827] tracking-tight font-display flex items-baseline leading-none whitespace-nowrap">
-                  98 <span className="text-[#1855EA] ml-1 font-bold">%</span>
+                <div className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black tracking-tight font-display flex items-baseline leading-none whitespace-nowrap text-transparent [-webkit-text-stroke:1.8px_#111827]">
+                  98 <span className="text-transparent [-webkit-text-stroke:1.8px_#1855EA] ml-1 font-black">%</span>
                 </div>
                 <div className="text-xs sm:text-[13px] font-normal text-[#6B7280] mt-2.5 leading-snug">
                   {lang === 'de' ? 'Kundenzufriedenheit' : 'Client Satisfaction'}
@@ -178,8 +272,8 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#111827] tracking-tight font-display flex items-baseline leading-none whitespace-nowrap">
-                  23 <span className="text-[#1855EA] ml-1 font-bold">+</span>
+                <div className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black tracking-tight font-display flex items-baseline leading-none whitespace-nowrap text-transparent [-webkit-text-stroke:1.8px_#111827]">
+                  23 <span className="text-transparent [-webkit-text-stroke:1.8px_#1855EA] ml-1 font-black">+</span>
                 </div>
                 <div className="text-xs sm:text-[13px] font-normal text-[#6B7280] mt-2.5 leading-snug">
                   {lang === 'de' ? 'Jahre Erfahrung' : 'Years Experience'}
@@ -212,8 +306,16 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
               {/* Overlaid Floating Google Reviews Badge Card on the Right of the Cleaner (Transparent/Glass style) */}
               <motion.div
                 initial={{ opacity: 0, x: 20, y: 10 }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                animate={{ 
+                  opacity: 1, 
+                  x: 0, 
+                  y: [0, -8, 0] 
+                }}
+                transition={{ 
+                  opacity: { duration: 0.6, delay: 0.4 },
+                  x: { duration: 0.6, delay: 0.4 },
+                  y: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }
+                }}
                 className="absolute top-1/2 -translate-y-6 sm:-translate-y-8 right-1 sm:-right-4 lg:-right-6 bg-white/70 backdrop-blur-md rounded-xl sm:rounded-2xl p-3.5 sm:p-4 lg:p-5 shadow-lg border border-white/80 z-30 min-w-[175px] sm:min-w-[210px]"
               >
                 <div className="flex items-center gap-1.5 mb-1">
