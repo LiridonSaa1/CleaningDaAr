@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <path d="M -50 800 L -50 520 C 80 420 220 380 380 410 C 560 445 720 540 880 500 C 1020 465 1120 360 1200 240 L 1200 800 Z" fill="url(#grad1)" />
+  <path d="M -40 500 C 120 360 300 350 480 420 C 660 490 820 510 980 440 C 1100 390 1180 300 1240 210" stroke="rgba(255, 255, 255, 0.65)" stroke-width="48" stroke-linecap="round" fill="none" filter="url(#softBlur)" />
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05" />
+    </linearGradient>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="4" />
+    </filter>
+  </defs>
+</svg>

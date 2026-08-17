@@ -1,0 +1,8 @@
+{
+  "name": "DuaAri Clean \u0026 Service",
+  "description": "Premium Gebäudereinigung \u0026 Reinigungsservice – Professionelle Unterhalts-, Büro-, Glas- und Baureinigung in Ingolstadt \u0026 Region mit modernem Apple-Glass-Design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
