@@ -12,6 +12,12 @@ export const supabase = createClient(
   supabaseAnonKey || 'placeholder-anon-key'
 );
 
+// In-memory Caches for Instant Loading (0ms response on duplicate queries)
+let siteSettingsCache: SiteSettingsData | null = null;
+let servicesCache: ServiceDbItem[] | null = null;
+let projectsCache: ProjectDbItem[] | null = null;
+let reviewsCache: ReviewItem[] | null = null;
+
 // Types
 export interface ContactMessageItem {
   id: string;
@@ -203,29 +209,28 @@ function setLocal<T>(key: string, val: T): void {
   }
 }
 
+// Fast Promise timeout helper (400ms max timeout)
+function withFastTimeout<T>(promise: PromiseLike<T>, timeoutMs = 400): Promise<T | { data: null; error: true }> {
+  const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+    setTimeout(() => resolve({ data: null, error: true }), timeoutMs)
+  );
+  return Promise.race([promise, timeoutPromise]) as Promise<T | { data: null; error: true }>;
+}
+
 // ====================================================================
 // CONTACT MESSAGES CRUD
 // ====================================================================
 export async function getContactMessages(): Promise<ContactMessageItem[]> {
   if (isSupabaseConfigured) {
     try {
-      const queryPromise = supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      const result: any = await withFastTimeout(
+        supabase.from('contact_messages').select('*').order('created_at', { ascending: false })
       );
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-
-      if (!error && data) {
-        // If Supabase returns data (even an array of user submissions), return it
+      if (result && !result.error && result.data) {
         const localList = getLocal<ContactMessageItem[]>('contact_messages', []);
-        // Merge local submissions that might not have reached Supabase yet
         const map = new Map<string, ContactMessageItem>();
-        (data as ContactMessageItem[]).forEach(item => map.set(item.id, item));
+        (result.data as ContactMessageItem[]).forEach(item => map.set(item.id, item));
         localList.forEach(item => {
           if (!map.has(item.id)) map.set(item.id, item);
         });
@@ -250,7 +255,6 @@ export async function addContactMessage(msg: Omit<ContactMessageItem, 'id' | 'cr
     created_at: new Date().toISOString()
   };
 
-  // Always save to local backup immediately
   const list = getLocal<ContactMessageItem[]>('contact_messages', INITIAL_MOCK_MESSAGES);
   const updated = [newItem, ...list];
   setLocal('contact_messages', updated);
@@ -323,18 +327,11 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
 export async function getQuoteRequests(): Promise<QuoteRequestItem[]> {
   if (isSupabaseConfigured) {
     try {
-      const queryPromise = supabase
-        .from('quote_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      const result: any = await withFastTimeout(
+        supabase.from('quote_requests').select('*').order('created_at', { ascending: false })
       );
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-
-      if (!error && data) return data as QuoteRequestItem[];
+      if (result && !result.error && result.data) return result.data as QuoteRequestItem[];
     } catch (err) {
       console.warn('Supabase quote requests fetch error:', err);
     }
@@ -351,68 +348,79 @@ export async function addQuoteRequest(quote: Omit<QuoteRequestItem, 'id' | 'crea
     created_at: new Date().toISOString()
   };
 
-  if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('quote_requests')
-      .insert([{
-        name: quote.name,
-        email: quote.email,
-        phone: quote.phone,
-        service: quote.service,
-        property_type: quote.property_type,
-        square_meters: quote.square_meters,
-        rooms_count: quote.rooms_count,
-        bathrooms_count: quote.bathrooms_count,
-        frequency: quote.frequency,
-        address: quote.address,
-        city: quote.city,
-        zip_code: quote.zip_code,
-        preferred_date: quote.preferred_date,
-        preferred_time: quote.preferred_time,
-        message: quote.message,
-        status: 'new'
-      }])
-      .select()
-      .single();
-
-    if (!error && data) return data as QuoteRequestItem;
-  }
-
   const list = getLocal<QuoteRequestItem[]>('quote_requests', INITIAL_MOCK_QUOTES);
   const updated = [newItem, ...list];
   setLocal('quote_requests', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('quote_requests')
+        .insert([{
+          name: quote.name,
+          email: quote.email,
+          phone: quote.phone,
+          service: quote.service,
+          property_type: quote.property_type,
+          square_meters: quote.square_meters,
+          rooms_count: quote.rooms_count,
+          bathrooms_count: quote.bathrooms_count,
+          frequency: quote.frequency,
+          address: quote.address,
+          city: quote.city,
+          zip_code: quote.zip_code,
+          preferred_date: quote.preferred_date,
+          preferred_time: quote.preferred_time,
+          message: quote.message,
+          status: 'new'
+        }])
+        .select()
+        .single();
+
+      if (!error && data) return data as QuoteRequestItem;
+    } catch (e) {
+      console.warn('Error adding quote request:', e);
+    }
+  }
+
   return newItem;
 }
 
 export async function updateQuoteRequestStatus(id: string, status: QuoteRequestItem['status']): Promise<boolean> {
-  if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('quote_requests')
-      .update({ status })
-      .eq('id', id);
-
-    if (!error) return true;
-  }
-
   const list = getLocal<QuoteRequestItem[]>('quote_requests', INITIAL_MOCK_QUOTES);
   const updated = list.map(item => item.id === id ? { ...item, status } : item);
   setLocal('quote_requests', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('quote_requests')
+        .update({ status })
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error updating quote status:', e);
+    }
+  }
+
   return true;
 }
 
 export async function deleteQuoteRequest(id: string): Promise<boolean> {
-  if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('quote_requests')
-      .delete()
-      .eq('id', id);
-
-    if (!error) return true;
-  }
-
   const list = getLocal<QuoteRequestItem[]>('quote_requests', INITIAL_MOCK_QUOTES);
   const updated = list.filter(item => item.id !== id);
   setLocal('quote_requests', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('quote_requests')
+        .delete()
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting quote request:', e);
+    }
+  }
+
   return true;
 }
 
@@ -420,6 +428,10 @@ export async function deleteQuoteRequest(id: string): Promise<boolean> {
 // REVIEWS & RATINGS CRUD
 // ====================================================================
 export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
+  if (reviewsCache && reviewsCache.length > 0) {
+    return onlyApproved ? reviewsCache.filter(r => r.status === 'approved') : reviewsCache;
+  }
+
   if (isSupabaseConfigured) {
     try {
       let query = supabase.from('reviews').select('*').order('created_at', { ascending: false });
@@ -427,19 +439,19 @@ export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
         query = query.eq('status', 'approved');
       }
 
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
-      );
+      const result: any = await withFastTimeout(query);
 
-      const { data, error } = await Promise.race([query, timeoutPromise]);
-
-      if (!error && data && data.length > 0) return data as ReviewItem[];
+      if (result && !result.error && result.data && result.data.length > 0) {
+        reviewsCache = result.data as ReviewItem[];
+        return reviewsCache;
+      }
     } catch (err) {
       console.warn('Supabase reviews fetch error:', err);
     }
   }
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
+  reviewsCache = list;
   return onlyApproved ? list.filter(r => r.status === 'approved') : list;
 }
 
@@ -450,21 +462,27 @@ export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): 
     created_at: new Date().toISOString()
   };
 
-  if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('reviews')
-      .insert([{
-        name: review.name,
-        email: review.email,
-        service: review.service,
-        rating: review.rating,
-        comment: review.comment,
-        status: review.status
-      }])
-      .select()
-      .single();
+  reviewsCache = null;
 
-    if (!error && data) return data as ReviewItem;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([{
+          name: review.name,
+          email: review.email,
+          service: review.service,
+          rating: review.rating,
+          comment: review.comment,
+          status: review.status
+        }])
+        .select()
+        .single();
+
+      if (!error && data) return data as ReviewItem;
+    } catch (e) {
+      console.warn('Error adding review:', e);
+    }
   }
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
@@ -474,13 +492,13 @@ export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): 
 }
 
 export async function updateReview(id: string, updates: Partial<ReviewItem>): Promise<boolean> {
+  reviewsCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('reviews')
-      .update(updates)
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('reviews').update(updates).eq('id', id);
+    } catch (e) {
+      console.warn('Error updating review:', e);
+    }
   }
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
@@ -490,13 +508,13 @@ export async function updateReview(id: string, updates: Partial<ReviewItem>): Pr
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
+  reviewsCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('reviews')
-      .delete()
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('reviews').delete().eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting review:', e);
+    }
   }
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
@@ -509,26 +527,25 @@ export async function deleteReview(id: string): Promise<boolean> {
 // SERVICES DYNAMIC CRUD
 // ====================================================================
 export async function getServices(): Promise<ServiceDbItem[]> {
+  if (servicesCache && servicesCache.length > 0) {
+    return servicesCache;
+  }
+
   if (isSupabaseConfigured) {
     try {
-      const queryPromise = supabase
-        .from('services')
-        .select('*')
-        .order('sort_order', { ascending: true });
-
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      const result: any = await withFastTimeout(
+        supabase.from('services').select('*').order('sort_order', { ascending: true })
       );
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-
-      if (!error && data && data.length > 0) return data as ServiceDbItem[];
+      if (result && !result.error && result.data && result.data.length > 0) {
+        servicesCache = result.data as ServiceDbItem[];
+        return servicesCache;
+      }
     } catch (err) {
       console.warn('Supabase services fetch error:', err);
     }
   }
 
-  // Fallback to static SERVICES_DATA mapped to DB format
   const fallbackServices: ServiceDbItem[] = SERVICES_DATA.map((s, idx) => ({
     id: s.id,
     title_de: s.titleDe || s.title,
@@ -546,23 +563,30 @@ export async function getServices(): Promise<ServiceDbItem[]> {
     sort_order: idx + 1
   }));
 
-  return getLocal<ServiceDbItem[]>('services', fallbackServices);
+  const localRes = getLocal<ServiceDbItem[]>('services', fallbackServices);
+  servicesCache = localRes;
+  return localRes;
 }
 
 export async function addService(service: Omit<ServiceDbItem, 'created_at'>): Promise<ServiceDbItem> {
+  servicesCache = null;
   const newItem: ServiceDbItem = {
     ...service,
     created_at: new Date().toISOString()
   };
 
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('services')
-      .insert([service])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('services')
+        .insert([service])
+        .select()
+        .single();
 
-    if (!error && data) return data as ServiceDbItem;
+      if (!error && data) return data as ServiceDbItem;
+    } catch (e) {
+      console.warn('Error adding service:', e);
+    }
   }
 
   const current = await getServices();
@@ -572,13 +596,13 @@ export async function addService(service: Omit<ServiceDbItem, 'created_at'>): Pr
 }
 
 export async function updateService(id: string, updates: Partial<ServiceDbItem>): Promise<boolean> {
+  servicesCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('services')
-      .update(updates)
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('services').update(updates).eq('id', id);
+    } catch (e) {
+      console.warn('Error updating service:', e);
+    }
   }
 
   const current = await getServices();
@@ -588,13 +612,13 @@ export async function updateService(id: string, updates: Partial<ServiceDbItem>)
 }
 
 export async function deleteService(id: string): Promise<boolean> {
+  servicesCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('services')
-      .delete()
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('services').delete().eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting service:', e);
+    }
   }
 
   const current = await getServices();
@@ -607,26 +631,25 @@ export async function deleteService(id: string): Promise<boolean> {
 // PROJECTS / GALLERY DYNAMIC CRUD
 // ====================================================================
 export async function getProjects(): Promise<ProjectDbItem[]> {
+  if (projectsCache && projectsCache.length > 0) {
+    return projectsCache;
+  }
+
   if (isSupabaseConfigured) {
     try {
-      const queryPromise = supabase
-        .from('projects')
-        .select('*')
-        .order('sort_order', { ascending: true });
-
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      const result: any = await withFastTimeout(
+        supabase.from('projects').select('*').order('sort_order', { ascending: true })
       );
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-
-      if (!error && data && data.length > 0) return data as ProjectDbItem[];
+      if (result && !result.error && result.data && result.data.length > 0) {
+        projectsCache = result.data as ProjectDbItem[];
+        return projectsCache;
+      }
     } catch (err) {
       console.warn('Supabase projects fetch error:', err);
     }
   }
 
-  // Fallback to static BEFORE_AFTER_CASES mapped to DB format
   const fallbackProjects: ProjectDbItem[] = BEFORE_AFTER_CASES.map((p, idx) => ({
     id: p.id,
     title: p.title,
@@ -640,23 +663,30 @@ export async function getProjects(): Promise<ProjectDbItem[]> {
     sort_order: idx + 1
   }));
 
-  return getLocal<ProjectDbItem[]>('projects', fallbackProjects);
+  const localRes = getLocal<ProjectDbItem[]>('projects', fallbackProjects);
+  projectsCache = localRes;
+  return localRes;
 }
 
 export async function addProject(project: Omit<ProjectDbItem, 'created_at'>): Promise<ProjectDbItem> {
+  projectsCache = null;
   const newItem: ProjectDbItem = {
     ...project,
     created_at: new Date().toISOString()
   };
 
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([project])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([project])
+        .select()
+        .single();
 
-    if (!error && data) return data as ProjectDbItem;
+      if (!error && data) return data as ProjectDbItem;
+    } catch (e) {
+      console.warn('Error adding project:', e);
+    }
   }
 
   const current = await getProjects();
@@ -666,13 +696,13 @@ export async function addProject(project: Omit<ProjectDbItem, 'created_at'>): Pr
 }
 
 export async function updateProject(id: string, updates: Partial<ProjectDbItem>): Promise<boolean> {
+  projectsCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('projects')
-      .update(updates)
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('projects').update(updates).eq('id', id);
+    } catch (e) {
+      console.warn('Error updating project:', e);
+    }
   }
 
   const current = await getProjects();
@@ -682,13 +712,13 @@ export async function updateProject(id: string, updates: Partial<ProjectDbItem>)
 }
 
 export async function deleteProject(id: string): Promise<boolean> {
+  projectsCache = null;
   if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id);
-
-    if (!error) return true;
+    try {
+      await supabase.from('projects').delete().eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting project:', e);
+    }
   }
 
   const current = await getProjects();
@@ -701,43 +731,53 @@ export async function deleteProject(id: string): Promise<boolean> {
 // SITE SETTINGS CRUD
 // ====================================================================
 export async function getSiteSettings(): Promise<SiteSettingsData> {
+  if (siteSettingsCache) {
+    return siteSettingsCache;
+  }
+
   if (isSupabaseConfigured) {
     try {
-      const queryPromise = supabase
-        .from('site_settings')
-        .select('*')
-        .eq('id', 1)
-        .single();
-
-      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
-        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      const result: any = await withFastTimeout(
+        supabase.from('site_settings').select('*').eq('id', 1).single()
       );
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-
-      if (!error && data) return data as SiteSettingsData;
+      if (result && !result.error && result.data) {
+        siteSettingsCache = result.data as SiteSettingsData;
+        return siteSettingsCache;
+      }
     } catch (err) {
       console.warn('Supabase site_settings fetch error:', err);
     }
   }
 
-  return getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
+  const localRes = getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
+  siteSettingsCache = localRes;
+  return localRes;
 }
 
 export async function updateSiteSettings(settings: Partial<SiteSettingsData>): Promise<SiteSettingsData> {
+  siteSettingsCache = null;
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('site_settings')
-      .update({ ...settings, updated_at: new Date().toISOString() })
-      .eq('id', 1)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .update({ ...settings, updated_at: new Date().toISOString() })
+        .eq('id', 1)
+        .select()
+        .single();
 
-    if (!error && data) return data as SiteSettingsData;
+      if (!error && data) {
+        siteSettingsCache = data as SiteSettingsData;
+        return siteSettingsCache;
+      }
+    } catch (e) {
+      console.warn('Error updating site_settings:', e);
+    }
   }
 
   const current = getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
   const updated = { ...current, ...settings };
   setLocal('site_settings', updated);
+  siteSettingsCache = updated;
   return updated;
 }
