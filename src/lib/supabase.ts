@@ -504,23 +504,11 @@ export async function getReviews(onlyApproved = false, forceRefresh = false): Pr
 
       if (result && !result.error && result.data) {
         const supabaseList = result.data as ReviewItem[];
-        const localList = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
-        
-        const map = new Map<string, ReviewItem>();
-        supabaseList.forEach(item => map.set(item.id, item));
-        localList.forEach(item => {
-          if (!map.has(item.id)) map.set(item.id, item);
-        });
-
-        const combined = Array.from(map.values()).sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-
-        reviewsCache = combined;
-        setLocal('reviews', combined);
-
-        const listToReturn = onlyApproved ? combined.filter(r => r.status === 'approved') : combined;
-        return listToReturn.length > 0 ? listToReturn : INITIAL_MOCK_REVIEWS;
+        if (supabaseList.length > 0) {
+          reviewsCache = supabaseList;
+          setLocal('reviews', supabaseList);
+          return onlyApproved ? supabaseList.filter(r => r.status === 'approved') : supabaseList;
+        }
       }
     } catch (err) {
       console.warn('Supabase reviews fetch error:', err);
