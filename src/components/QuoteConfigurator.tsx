@@ -172,7 +172,10 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     e.preventDefault();
     if (!formData.phone.trim() && !formData.email.trim()) return;
 
-    const serviceTitle = lang === 'de' ? currentServiceObj.labelDe : currentServiceObj.labelEn;
+    const serviceTitle = formData.serviceType === 'other' && formData.customServiceText.trim()
+      ? formData.customServiceText.trim()
+      : (lang === 'de' ? currentServiceObj.labelDe : currentServiceObj.labelEn);
+
     const propTypeTitle = formData.propertyType === 'apartment' ? (lang === 'de' ? 'Wohnung' : 'Apartment') :
                           formData.propertyType === 'house' ? (lang === 'de' ? 'Haus' : 'House') :
                           formData.propertyType === 'floor' ? (lang === 'de' ? 'Etage' : 'Floor') : (lang === 'de' ? 'Gewerbe' : 'Commercial');
@@ -201,7 +204,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
         zip_code: formData.zipCode,
         preferred_date: formData.preferredDate,
         preferred_time: formData.preferredTime,
-        message: formData.additionalNotes
+        message: formData.additionalNotes || formData.customServiceText || ''
       });
 
       // 2. Send Brevo Email Confirmation to Client if Email is provided
@@ -251,10 +254,10 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Ort &amp; Adresse:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.address || ''} ${formData.zipCode} ${formData.city}</td></tr>
                 <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Wunschtermin:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.preferredDate || 'Flexibel'} (${formData.preferredTime})</td></tr>
               </table>
-              ${formData.additionalNotes ? `
+              ${(formData.additionalNotes || formData.customServiceText) ? `
                 <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #1855EA; margin-bottom: 15px;">
-                  <strong>Anmerkungen:</strong>
-                  <p style="margin-top: 6px;">${formData.additionalNotes}</p>
+                  <strong>Anmerkungen / Wunsch:</strong>
+                  <p style="margin-top: 6px;">${formData.customServiceText ? `Wunsch-Reinigungsart: ${formData.customServiceText}<br/>` : ''}${formData.additionalNotes || ''}</p>
                 </div>
               ` : ''}
               <p style="font-size: 12px; color: #64748b;">Automatische Benachrichtigung an Ihre Website-Kontaktadresse: ${adminContactEmail}</p>
@@ -267,10 +270,18 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     }
 
     if (onApplyCalculatedQuote) {
-      const summary = `Offerte: ${serviceTitle} (${propTypeTitle}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, Intervall: ${freqTitle}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;
+      const customNote = formData.customServiceText ? ` (Wunsch: ${formData.customServiceText})` : '';
+      const summary = `Offerte: ${serviceTitle}${customNote} (${propTypeTitle}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, Intervall: ${freqTitle}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;
       onApplyCalculatedQuote(summary, serviceTitle, formData.squareMeters, freqTitle);
     }
     setIsSubmitted(true);
+
+    setTimeout(() => {
+      const contactSection = document.getElementById('kontakt');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 150);
   };
 
   const stepTitles = [
