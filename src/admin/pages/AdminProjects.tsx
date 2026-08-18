@@ -12,6 +12,7 @@ import {
   Layers
 } from 'lucide-react';
 import { ProjectDbItem, addProject, updateProject, deleteProject } from '../../lib/supabase';
+import { ImageUploader } from '../components/ImageUploader';
 
 interface AdminProjectsProps {
   projects: ProjectDbItem[];
@@ -305,32 +306,20 @@ export const AdminProjects: React.FC<AdminProjectsProps> = ({ projects, refreshD
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Vorher-Bild (Before Image URL) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.before_img}
-                    onChange={(e) => setFormData(prev => ({ ...prev, before_img: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1855EA]"
-                  />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <ImageUploader
+                  label="Vorher-Bild (Before)"
+                  value={formData.before_img}
+                  onChange={(newVal) => setFormData(prev => ({ ...prev, before_img: newVal }))}
+                  required
+                />
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Nachher-Bild (After Image URL) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.after_img}
-                    onChange={(e) => setFormData(prev => ({ ...prev, after_img: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1855EA]"
-                  />
-                </div>
+                <ImageUploader
+                  label="Nachher-Bild (After)"
+                  value={formData.after_img}
+                  onChange={(newVal) => setFormData(prev => ({ ...prev, after_img: newVal }))}
+                  required
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

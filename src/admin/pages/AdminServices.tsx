@@ -13,6 +13,7 @@ import {
   List
 } from 'lucide-react';
 import { ServiceDbItem, addService, updateService, deleteService } from '../../lib/supabase';
+import { ImageUploader } from '../components/ImageUploader';
 
 interface AdminServicesProps {
   services: ServiceDbItem[];
@@ -375,18 +376,12 @@ export const AdminServices: React.FC<AdminServicesProps> = ({ services, refreshD
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Bild URL (Unsplash oder Asset Path) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1855EA]"
-                />
-              </div>
+              <ImageUploader
+                label="Service Foto / Bild"
+                value={formData.image}
+                onChange={(newVal) => setFormData(prev => ({ ...prev, image: newVal }))}
+                required
+              />
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
