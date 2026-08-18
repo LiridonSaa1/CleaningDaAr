@@ -220,7 +220,20 @@ export async function getContactMessages(): Promise<ContactMessageItem[]> {
 
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
-      if (!error && data) return data as ContactMessageItem[];
+      if (!error && data) {
+        // If Supabase returns data (even an array of user submissions), return it
+        const localList = getLocal<ContactMessageItem[]>('contact_messages', []);
+        // Merge local submissions that might not have reached Supabase yet
+        const map = new Map<string, ContactMessageItem>();
+        (data as ContactMessageItem[]).forEach(item => map.set(item.id, item));
+        localList.forEach(item => {
+          if (!map.has(item.id)) map.set(item.id, item);
+        });
+        const combined = Array.from(map.values()).sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        return combined.length > 0 ? combined : INITIAL_MOCK_MESSAGES;
+      }
     } catch (err) {
       console.warn('Supabase contact messages fetch error:', err);
     }
@@ -237,58 +250,70 @@ export async function addContactMessage(msg: Omit<ContactMessageItem, 'id' | 'cr
     created_at: new Date().toISOString()
   };
 
-  if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .insert([{
-        name: msg.name,
-        email: msg.email,
-        phone: msg.phone,
-        subject: msg.subject,
-        message: msg.message,
-        status: 'new'
-      }])
-      .select()
-      .single();
-
-    if (!error && data) return data as ContactMessageItem;
-  }
-
+  // Always save to local backup immediately
   const list = getLocal<ContactMessageItem[]>('contact_messages', INITIAL_MOCK_MESSAGES);
   const updated = [newItem, ...list];
   setLocal('contact_messages', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .insert([{
+          name: msg.name,
+          email: msg.email,
+          phone: msg.phone,
+          subject: msg.subject,
+          message: msg.message,
+          status: 'new'
+        }])
+        .select()
+        .single();
+
+      if (!error && data) return data as ContactMessageItem;
+    } catch (err) {
+      console.warn('Error inserting contact message to Supabase:', err);
+    }
+  }
+
   return newItem;
 }
 
 export async function updateContactMessageStatus(id: string, status: ContactMessageItem['status']): Promise<boolean> {
-  if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('contact_messages')
-      .update({ status })
-      .eq('id', id);
-
-    if (!error) return true;
-  }
-
   const list = getLocal<ContactMessageItem[]>('contact_messages', INITIAL_MOCK_MESSAGES);
   const updated = list.map(item => item.id === id ? { ...item, status } : item);
   setLocal('contact_messages', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('contact_messages')
+        .update({ status })
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error updating status in Supabase:', e);
+    }
+  }
+
   return true;
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {
-  if (isSupabaseConfigured) {
-    const { error } = await supabase
-      .from('contact_messages')
-      .delete()
-      .eq('id', id);
-
-    if (!error) return true;
-  }
-
   const list = getLocal<ContactMessageItem[]>('contact_messages', INITIAL_MOCK_MESSAGES);
   const updated = list.filter(item => item.id !== id);
   setLocal('contact_messages', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('contact_messages')
+        .delete()
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting message from Supabase:', e);
+    }
+  }
+
   return true;
 }
 
