@@ -2,6 +2,9 @@
 -- SUPABASE DATABASE SCHEMA FOR CLEANZA / DUA & ARI GEBÄUDEREINIGUNG
 -- ====================================================================
 
+-- ENABLE pgcrypto FOR PASSWORD HASHING
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- 1. PROFILES & ROLES (Admin Authentication)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -95,10 +98,53 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ====================================================================
+-- SEED ADMIN USERS IN AUTH.USERS & PROFILES
+-- ====================================================================
+
+-- Admin 1: admin@duaari-gebaeudereinigung.de
+INSERT INTO auth.users (
+  instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+  recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data,
+  is_super_admin, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
+)
+VALUES (
+  '00000000-0000-0000-0000-000000000000', 'a0000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated',
+  'admin@duaari-gebaeudereinigung.de', crypt('Admin123!', gen_salt('bf')), NOW(),
+  NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"admin"}',
+  FALSE, NOW(), NOW(), '', '', '', ''
+)
+ON CONFLICT (id) DO UPDATE SET
+  encrypted_password = crypt('Admin123!', gen_salt('bf')),
+  email_confirmed_at = NOW();
+
+INSERT INTO public.profiles (id, email, role)
+VALUES ('a0000000-0000-0000-0000-000000000001', 'admin@duaari-gebaeudereinigung.de', 'admin')
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
+
+-- Admin 2: duariservice@gmail.com
+INSERT INTO auth.users (
+  instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+  recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data,
+  is_super_admin, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
+)
+VALUES (
+  '00000000-0000-0000-0000-000000000000', 'a0000000-0000-0000-0000-000000000002', 'authenticated', 'authenticated',
+  'duariservice@gmail.com', crypt('Admin123!', gen_salt('bf')), NOW(),
+  NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"admin"}',
+  FALSE, NOW(), NOW(), '', '', '', ''
+)
+ON CONFLICT (id) DO UPDATE SET
+  encrypted_password = crypt('Admin123!', gen_salt('bf')),
+  email_confirmed_at = NOW();
+
+INSERT INTO public.profiles (id, email, role)
+VALUES ('a0000000-0000-0000-0000-000000000002', 'duariservice@gmail.com', 'admin')
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
+
+-- ====================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ====================================================================
 
--- Helper function to check if current authenticated user is Admin
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -179,7 +225,7 @@ BEGIN
   VALUES (
     NEW.id, 
     NEW.email, 
-    COALESCE(NEW.raw_user_meta_data->>'role', 'admin') -- Defaults first user to admin or user
+    COALESCE(NEW.raw_user_meta_data->>'role', 'admin')
   )
   ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;
   RETURN NEW;
