@@ -17,14 +17,24 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    async function checkSession() {
-      setIsLoading(true);
+    let isMounted = true;
 
-      if (isSupabaseConfigured) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
+    // Safety fallback timer to prevent infinite loading screen
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) setIsLoading(false);
+    }, 1000);
+
+    async function checkSession() {
+      try {
+        if (isSupabaseConfigured) {
+          const sessionPromise = supabase.auth.getSession();
+          const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) => 
+            setTimeout(() => resolve({ data: { session: null } }), 1200)
+          );
+
+          const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+
           if (session?.user) {
-            // Fetch profile role
             const { data: profile } = await supabase
               .from('profiles')
               .select('role')
@@ -32,55 +42,60 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               .single();
 
             const role = profile?.role || 'admin';
-            if (role === 'admin') {
+            if (role === 'admin' && isMounted) {
               setUser({
                 id: session.user.id,
                 email: session.user.email || '',
                 role: 'admin'
               });
-            } else {
+            }
+          }
+        } else {
+          const storedAdmin = localStorage.getItem('cleanza_admin_auth');
+          if (storedAdmin && isMounted) {
+            try {
+              setUser(JSON.parse(storedAdmin));
+            } catch {
               setUser(null);
             }
-          } else {
-            setUser(null);
-          }
-        } catch (err) {
-          console.error('Supabase Auth Session error:', err);
-        }
-      } else {
-        // Fallback local session check for dev preview
-        const storedAdmin = localStorage.getItem('cleanza_admin_auth');
-        if (storedAdmin) {
-          try {
-            setUser(JSON.parse(storedAdmin));
-          } catch {
-            setUser(null);
           }
         }
+      } catch (err) {
+        console.error('Supabase Auth Session error:', err);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+        clearTimeout(safetyTimer);
       }
-
-      setIsLoading(false);
     }
 
     checkSession();
 
     if (isSupabaseConfigured) {
       const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        if (session?.user) {
+        if (session?.user && isMounted) {
           setUser({
             id: session.user.id,
             email: session.user.email || '',
             role: 'admin'
           });
-        } else {
+        } else if (isMounted) {
           setUser(null);
         }
       });
 
       return () => {
+        isMounted = false;
+        clearTimeout(safetyTimer);
         authListener.subscription.unsubscribe();
       };
     }
+
+    return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   const login = async (email: string, pass: string): Promise<{ success: boolean; error?: string }> => {

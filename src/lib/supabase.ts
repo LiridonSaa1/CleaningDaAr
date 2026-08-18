@@ -214,12 +214,22 @@ function setLocal<T>(key: string, data: T): void {
 // ====================================================================
 export async function getContactMessages(): Promise<ContactMessageItem[]> {
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const queryPromise = supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (!error && data) return data as ContactMessageItem[];
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      if (!error && data) return data as ContactMessageItem[];
+    } catch (err) {
+      console.warn('Supabase contact messages fetch error:', err);
+    }
   }
 
   return getLocal<ContactMessageItem[]>('contact_messages', INITIAL_MOCK_MESSAGES);
@@ -293,12 +303,22 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
 // ====================================================================
 export async function getQuoteRequests(): Promise<QuoteRequestItem[]> {
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('quote_requests')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const queryPromise = supabase
+        .from('quote_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (!error && data) return data as QuoteRequestItem[];
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      if (!error && data) return data as QuoteRequestItem[];
+    } catch (err) {
+      console.warn('Supabase quote requests fetch error:', err);
+    }
   }
 
   return getLocal<QuoteRequestItem[]>('quote_requests', INITIAL_MOCK_QUOTES);
@@ -382,13 +402,22 @@ export async function deleteQuoteRequest(id: string): Promise<boolean> {
 // ====================================================================
 export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
   if (isSupabaseConfigured) {
-    let query = supabase.from('reviews').select('*').order('created_at', { ascending: false });
-    if (onlyApproved) {
-      query = query.eq('status', 'approved');
-    }
+    try {
+      let query = supabase.from('reviews').select('*').order('created_at', { ascending: false });
+      if (onlyApproved) {
+        query = query.eq('status', 'approved');
+      }
 
-    const { data, error } = await query;
-    if (!error && data) return data as ReviewItem[];
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([query, timeoutPromise]);
+
+      if (!error && data) return data as ReviewItem[];
+    } catch (err) {
+      console.warn('Supabase reviews fetch error:', err);
+    }
   }
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
