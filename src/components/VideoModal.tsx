@@ -42,14 +42,14 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, lang })
   }, [isOpen, onClose]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <motion.div
-          key="video-modal-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          key="video-modal-overlay"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md font-sans"
         >
           {/* Backdrop click to close */}
@@ -59,15 +59,8 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, lang })
             aria-hidden="true"
           />
 
-          {/* Main Video Dialog Box with Spring Opening & Exit Animation */}
-          <motion.div
-            key="video-modal-card"
-            initial={{ opacity: 0, scale: 0.85, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.85, y: 30 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative max-w-4xl w-full bg-[#0B1838] text-white rounded-3xl shadow-2xl border border-white/20 overflow-hidden z-10"
-          >
+          {/* Main Video Dialog Box */}
+          <div className="relative max-w-4xl w-full bg-[#0B1838] text-white rounded-3xl shadow-2xl border border-white/20 overflow-hidden z-10">
             {/* Top Bar Header */}
             <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-[#08122B]/90">
               <div className="flex items-center gap-3">
@@ -137,7 +130,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, lang })
                 DuAri Hausmeister &amp; Gebäudereinigung • Ingolstadt
               </span>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
