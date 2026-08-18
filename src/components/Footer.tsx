@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { 
   Facebook, 
   Instagram, 
   Twitter, 
   Youtube, 
-  ArrowUp, 
-  Check 
+  ArrowUp 
 } from 'lucide-react';
 import { COMPANY_INFO, SERVICES_DATA } from '../data/content';
 import { LegalModalType } from './LegalModals';
@@ -26,20 +25,8 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectService,
   onOpenQuote,
 }) => {
-  const [emailInput, setEmailInput] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (emailInput.trim()) {
-      setSubscribed(true);
-      setTimeout(() => setSubscribed(false), 5000);
-      setEmailInput('');
-    }
   };
 
   return (
@@ -199,73 +186,6 @@ export const Footer: React.FC<FooterProps> = ({
                 <span className="font-semibold text-[#1855EA]">Notdienst 24/7</span>
               </div>
             </div>
-          </div>
-
-        </motion.div>
-
-        {/* Middle Section: OUR GALLERY & Newsletter Subscribe */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.55, delay: 0.1 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center py-8 my-6 border-t border-b border-blue-200/60"
-        >
-          
-          {/* Gallery Thumbnails (4 cols) */}
-          <div className="lg:col-span-4">
-            <h4 className="text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
-              {lang === 'de' ? 'GALERIE' : 'OUR GALLERY'}
-            </h4>
-            <div className="flex items-center gap-3">
-              <img 
-                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=400&q=80" 
-                alt="Cleaning Gallery 1" 
-                className="w-24 sm:w-28 h-16 sm:h-18 object-cover rounded-xl shadow-xs"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=400&q=80" 
-                alt="Cleaning Gallery 2" 
-                className="w-24 sm:w-28 h-16 sm:h-18 object-cover rounded-xl shadow-xs"
-              />
-            </div>
-          </div>
-
-          {/* Newsletter Box (8 cols) */}
-          <div className="lg:col-span-8 flex flex-col items-start justify-center gap-2">
-            <div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
-                {lang === 'de' ? (
-                  <>Abonnieren Sie unseren <span className="text-[#1855EA]">Newsletter</span></>
-                ) : (
-                  <>Subscribe Our <span className="text-[#1855EA]">Newsletter</span></>
-                )}
-              </h3>
-            </div>
-
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center gap-2.5 w-full mt-2">
-              <input
-                type="email"
-                required
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                placeholder={lang === 'de' ? 'Ihre E-Mail-Adresse eingeben...' : 'Enter your email...'}
-                className="w-full sm:w-[300px] lg:w-[360px] bg-white px-4 py-3 rounded-lg text-xs sm:text-sm text-[#111827] placeholder-slate-400 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#1855EA]/40"
-              />
-              <button
-                type="submit"
-                className="w-full sm:w-auto bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white font-semibold text-xs sm:text-sm px-6 py-3 rounded-lg shadow-xs transition-all duration-200 cursor-pointer whitespace-nowrap"
-              >
-                {subscribed ? (
-                  <span className="flex items-center gap-1.5">
-                    <Check className="w-4 h-4" />
-                    {lang === 'de' ? 'Abonniert!' : 'Subscribed!'}
-                  </span>
-                ) : (
-                  <span>{lang === 'de' ? 'Jetzt abonnieren' : 'Subscribe Now'}</span>
-                )}
-              </button>
-            </form>
           </div>
 
         </motion.div>
