@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { PhoneCall } from 'lucide-react';
-import { COMPANY_INFO } from '../data/content';
 import { Language } from '../types';
+import { getSiteSettings, SiteSettingsData } from '../lib/supabase';
 import ctaCleanerWomanImg from '../assets/images/cta-cleaner-woman.png';
 
 interface CtaBannerProps {
@@ -11,6 +11,32 @@ interface CtaBannerProps {
 }
 
 export const CtaBanner: React.FC<CtaBannerProps> = ({ lang, onOpenQuote }) => {
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsData>({
+    phone_primary: '+49 (0) 172 913 7116',
+    email_primary: 'DuaAricleanservice@gmail.com',
+    street: 'Holznerstraße 11',
+    city: '85053 Ingolstadt',
+    business_name: 'Dua & Ari Gebäudereinigung',
+    whatsapp_number: '+491729137116',
+    working_hours_mon_wed: '07:00 – 20:00 Uhr',
+    working_hours_thu_fri: '07:00 – 20:00 Uhr',
+    working_hours_weekend: 'Notdienst 24/7'
+  });
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const settings = await getSiteSettings();
+        if (settings) setSiteSettings(settings);
+      } catch (err) {
+        console.warn('Failed loading site settings in CtaBanner:', err);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  const cleanPhone = siteSettings.phone_primary.replace(/[^0-9+]/g, '');
+
   return (
     <section className="mt-20 sm:mt-28 lg:mt-32 bg-[#0B1838] text-white relative overflow-visible">
       
@@ -52,18 +78,18 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ lang, onOpenQuote }) => {
               )}
             </h2>
 
-            {/* Subtitle / Phone info matching reference image format: One Call, Resolve Your Problem ( +123... ) */}
+            {/* Subtitle / Phone info */}
             <p className="text-slate-300 text-xs sm:text-sm lg:text-base max-w-xl mx-auto mb-6 font-medium leading-relaxed">
               {lang === 'de'
-                ? `Ein Anruf – Perfekte Sauberkeit garantiert ( ${COMPANY_INFO.phonePrimary} )`
-                : `One Call, Resolve Your Problem ( ${COMPANY_INFO.phonePrimary} )`}
+                ? `Ein Anruf – Perfekte Sauberkeit garantiert ( ${siteSettings.phone_primary} )`
+                : `One Call, Resolve Your Problem ( ${siteSettings.phone_primary} )`}
             </p>
 
             {/* CTA Buttons Centered */}
             <div className="flex flex-wrap items-center justify-center gap-3.5">
               {/* Primary Call Us Now Button */}
               <a
-                href={`tel:${COMPANY_INFO.phonePrimary.replace(/\s+/g, '')}`}
+                href={`tel:${cleanPhone}`}
                 className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white font-bold text-xs sm:text-sm lg:text-base px-6 py-3 rounded-lg shadow-md transition-all duration-200 cursor-pointer inline-flex items-center gap-2.5"
               >
                 <PhoneCall className="w-4.5 h-4.5 fill-white/20" />
@@ -79,7 +105,6 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ lang, onOpenQuote }) => {
               </button>
             </div>
           </motion.div>
-
         </div>
       </div>
     </section>

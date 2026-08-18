@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Phone, MessageSquare, ArrowUp } from 'lucide-react';
-import { COMPANY_INFO } from '../data/content';
+import { getSiteSettings, SiteSettingsData } from '../lib/supabase';
 
 export const FloatingActions: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsData>({
+    phone_primary: '+49 (0) 172 913 7116',
+    email_primary: 'DuaAricleanservice@gmail.com',
+    street: 'Holznerstraße 11',
+    city: '85053 Ingolstadt',
+    business_name: 'Dua & Ari Gebäudereinigung',
+    whatsapp_number: '+491729137116',
+    working_hours_mon_wed: '07:00 – 20:00 Uhr',
+    working_hours_thu_fri: '07:00 – 20:00 Uhr',
+    working_hours_weekend: 'Notdienst 24/7'
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,9 +25,24 @@ export const FloatingActions: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const settings = await getSiteSettings();
+        if (settings) setSiteSettings(settings);
+      } catch (err) {
+        console.warn('Failed loading site settings in FloatingActions:', err);
+      }
+    }
+    loadSettings();
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const cleanPhone = siteSettings.phone_primary.replace(/[^0-9+]/g, '');
+  const cleanWhatsapp = siteSettings.whatsapp_number.replace(/[^0-9]/g, '') || cleanPhone.replace(/[^0-9]/g, '');
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 pointer-events-none">
@@ -41,18 +67,18 @@ export const FloatingActions: React.FC = () => {
       <div className="flex items-center gap-2 pointer-events-auto">
         {/* Direct Call Button */}
         <a
-          href={`tel:${COMPANY_INFO.phonePrimary.replace(/\s+/g, '')}`}
+          href={`tel:${cleanPhone}`}
           className="btn-apple-glass px-4 py-3 rounded-full flex items-center gap-2 text-xs font-bold text-slate-800 shadow-xl border-white/80 hover:bg-white transition-all cursor-pointer group"
-          title="Direkt anrufen"
+          title={`Anrufen: ${siteSettings.phone_primary}`}
         >
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           <Phone className="w-4 h-4 text-cyan-600 group-hover:scale-110 transition-transform" />
-          <span className="hidden sm:inline">Anrufen</span>
+          <span className="hidden sm:inline">Anrufen ({siteSettings.phone_primary})</span>
         </a>
 
         {/* WhatsApp Button */}
         <a
-          href={`https://wa.me/491729137116?text=${encodeURIComponent('Hallo DuaAri Clean & Service, ich interessiere mich für Ihre Reinigungsdienstleistungen.')}`}
+          href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(`Hallo ${siteSettings.business_name}, ich interessiere mich für Ihre Reinigungsdienstleistungen.`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="px-4 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 text-xs font-bold shadow-xl shadow-emerald-600/30 transition-all hover:scale-105 cursor-pointer"

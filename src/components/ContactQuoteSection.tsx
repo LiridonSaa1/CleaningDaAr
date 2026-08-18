@@ -48,13 +48,29 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
     agreedToPrivacy: true,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [submittedDetails, setSubmittedDetails] = useState<{ name: string; service: string }>({
-    name: '',
-    service: '',
+  const [siteSettings, setSiteSettings] = useState({
+    phone_primary: '+49 (0) 172 913 7116',
+    email_primary: 'DuaAricleanservice@gmail.com',
+    street: 'Holznerstraße 11',
+    city: '85053 Ingolstadt',
+    business_name: 'Dua & Ari Gebäudereinigung',
+    whatsapp_number: '+491729137116',
+    working_hours_mon_wed: '07:00 – 20:00 Uhr',
+    working_hours_thu_fri: '07:00 – 20:00 Uhr',
+    working_hours_weekend: 'Notdienst 24/7'
   });
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const settings = await getSiteSettings();
+        if (settings) setSiteSettings(settings);
+      } catch (err) {
+        console.warn('Failed to load site settings:', err);
+      }
+    }
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     if (prefilledService) {
@@ -369,7 +385,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mt-10 sm:mt-12">
           {/* Card 1: Call Us */}
           <motion.a
-            href={`tel:${COMPANY_INFO.phonePrimary.replace(/\s+/g, '')}`}
+            href={`tel:${siteSettings.phone_primary.replace(/[^0-9+]/g, '')}`}
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
@@ -381,7 +397,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
                 {lang === 'de' ? 'ANRUFEN' : 'CALL US'}
               </span>
               <span className="text-base sm:text-lg font-bold text-[#111827] group-hover:text-[#1855EA] transition-colors block mt-1">
-                {COMPANY_INFO.phonePrimary}
+                {siteSettings.phone_primary}
               </span>
             </div>
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
@@ -391,7 +407,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
 
           {/* Card 2: Mail Us */}
           <motion.a
-            href={`mailto:${COMPANY_INFO.email}`}
+            href={`mailto:${siteSettings.email_primary}`}
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
@@ -403,7 +419,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
                 {lang === 'de' ? 'E-MAIL' : 'MAIL US'}
               </span>
               <span className="text-sm sm:text-base font-bold text-[#111827] group-hover:text-[#1855EA] transition-colors block mt-1 truncate">
-                {COMPANY_INFO.email}
+                {siteSettings.email_primary}
               </span>
             </div>
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
@@ -424,7 +440,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
                 {lang === 'de' ? 'STANDORT' : 'FIND US'}
               </span>
               <span className="text-sm sm:text-base font-bold text-[#111827] group-hover:text-[#1855EA] transition-colors block mt-1">
-                {COMPANY_INFO.street}, {COMPANY_INFO.city}
+                {siteSettings.street}, {siteSettings.city}
               </span>
             </div>
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
