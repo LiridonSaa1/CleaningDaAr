@@ -269,19 +269,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
       console.error('Quote submission error:', err);
     }
 
-    if (onApplyCalculatedQuote) {
-      const customNote = formData.customServiceText ? ` (Wunsch: ${formData.customServiceText})` : '';
-      const summary = `Offerte: ${serviceTitle}${customNote} (${propTypeTitle}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, Intervall: ${freqTitle}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;
-      onApplyCalculatedQuote(summary, serviceTitle, formData.squareMeters, freqTitle);
-    }
     setIsSubmitted(true);
-
-    setTimeout(() => {
-      const contactSection = document.getElementById('kontakt');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 150);
   };
 
   const stepTitles = [
