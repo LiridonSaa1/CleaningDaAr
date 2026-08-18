@@ -1,40 +1,28 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
-  Home, 
-  Building, 
-  Sparkles, 
-  Car, 
-  Package, 
-  Layers, 
-  HelpCircle,
-  Plus,
-  Minus,
-  Check,
-  Calendar,
-  Clock,
-  MapPin,
-  Upload,
-  Image as ImageIcon,
-  Trash2,
-  Send,
-  ShieldCheck,
-  CheckCircle2,
-  ArrowRight,
-  ArrowLeft,
-  PhoneCall,
-  Utensils,
-  Bath,
-  Bed,
-  Tv,
-  Maximize,
-  Grid,
-  Sofa,
-  Box,
-  Flame,
-  Fence,
-  Warehouse,
-  Trees
+  Check, 
+  Minus, 
+  Plus, 
+  Upload, 
+  Send, 
+  ShieldCheck, 
+  CheckCircle2, 
+  ArrowRight, 
+  ArrowLeft, 
+  PhoneCall, 
+  Utensils, 
+  Bath, 
+  Bed, 
+  Tv, 
+  Maximize, 
+  Grid, 
+  Sofa, 
+  Box, 
+  Flame, 
+  Fence, 
+  Warehouse, 
+  Trees 
 } from 'lucide-react';
 import { Language } from '../types';
 
@@ -84,7 +72,6 @@ export interface QuoteFormData {
 
 export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
   lang,
-  onOpenFullModal,
   onApplyCalculatedQuote
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -115,36 +102,35 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     photos: []
   });
 
-  // Services List with Icons
+  // Services List with Icons (100% German & English translations)
   const serviceOptions = [
-    { id: 'house_cleaning', labelDe: 'House Cleaning', labelEn: 'House Cleaning', descDe: 'Hausreinigung', icon: '🏠', basePrice: 1.4 },
-    { id: 'office_cleaning', labelDe: 'Office Cleaning', labelEn: 'Office Cleaning', descDe: 'Büroreinigung', icon: '🏢', basePrice: 1.6 },
-    { id: 'window_cleaning', labelDe: 'Window Cleaning', labelEn: 'Window Cleaning', descDe: 'Fensterreinigung', icon: '🪟', basePrice: 1.2 },
-    { id: 'sofa_cleaning', labelDe: 'Sofa Cleaning', labelEn: 'Sofa Cleaning', descDe: 'Sofareinigung', icon: '🛋️', basePrice: 35 },
-    { id: 'carpet_cleaning', labelDe: 'Carpet Cleaning', labelEn: 'Carpet Cleaning', descDe: 'Teppichreinigung', icon: '🧼', basePrice: 1.8 },
-    { id: 'car_cleaning', labelDe: 'Car Cleaning', labelEn: 'Car Cleaning', descDe: 'Fahrzeugaufbereitung', icon: '🚗', basePrice: 90 },
-    { id: 'deep_cleaning', labelDe: 'Deep Cleaning', labelEn: 'Deep Cleaning', descDe: 'Grundreinigung / Baureinigung', icon: '🏗️', basePrice: 2.2 },
-    { id: 'move_cleaning', labelDe: 'Move In / Move Out', labelEn: 'Move In / Move Out', descDe: 'Umzugsreinigung mit Abnahmegarantie', icon: '📦', basePrice: 2.4 },
-    { id: 'other', labelDe: 'Other', labelEn: 'Other', descDe: 'Individuelle Reinigung', icon: '✨', basePrice: 1.5 },
+    { id: 'house_cleaning', labelDe: 'Hausreinigung', labelEn: 'House Cleaning', descDe: 'Privathaushalt & Wohnhäuser', descEn: 'Residential home cleaning', icon: '🏠' },
+    { id: 'office_cleaning', labelDe: 'Büroreinigung', labelEn: 'Office Cleaning', descDe: 'Gewerbe & Arbeitsplätze', descEn: 'Commercial & offices', icon: '🏢' },
+    { id: 'window_cleaning', labelDe: 'Fensterreinigung', labelEn: 'Window Cleaning', descDe: 'Glas- & Rahmenreinigung', descEn: 'Windows & glass frames', icon: '🪟' },
+    { id: 'sofa_cleaning', labelDe: 'Sofareinigung', labelEn: 'Sofa Cleaning', descDe: 'Polster & Sofas', descEn: 'Upholstery & sofas', icon: '🛋️' },
+    { id: 'carpet_cleaning', labelDe: 'Teppichreinigung', labelEn: 'Carpet Cleaning', descDe: 'Teppiche & Flecken', descEn: 'Carpet & stain removal', icon: '🧼' },
+    { id: 'car_cleaning', labelDe: 'Fahrzeugaufbereitung', labelEn: 'Car Cleaning', descDe: 'Innen- & Außenpflege', descEn: 'Interior & exterior detailing', icon: '🚗' },
+    { id: 'deep_cleaning', labelDe: 'Grundreinigung', labelEn: 'Deep Cleaning', descDe: 'Intensiv- & Baureinigung', descEn: 'Deep & post-construction', icon: '🏗️' },
+    { id: 'move_cleaning', labelDe: 'Umzugsreinigung', labelEn: 'Move In / Out', descDe: 'Mit Übergabegarantie', descEn: 'With handover guarantee', icon: '📦' },
+    { id: 'other', labelDe: 'Sonderreinigung', labelEn: 'Custom Cleaning', descDe: 'Individueller Wunsch', descEn: 'Tailored cleaning request', icon: '✨' },
   ];
 
-  // Areas included checkbox options
+  // Areas included checkbox options (100% German & English)
   const areasOptions = [
-    { id: 'kitchen', labelDe: 'Kitchen (Küche)', labelEn: 'Kitchen', icon: Utensils },
-    { id: 'bathroom', labelDe: 'Bathroom (Badezimmer)', labelEn: 'Bathroom', icon: Bath },
-    { id: 'bedrooms', labelDe: 'Bedrooms (Schlafzimmer)', labelEn: 'Bedrooms', icon: Bed },
-    { id: 'living_room', labelDe: 'Living Room (Wohnzimmer)', labelEn: 'Living Room', icon: Tv },
-    { id: 'windows', labelDe: 'Windows (Fenster)', labelEn: 'Windows', icon: Maximize },
-    { id: 'floors', labelDe: 'Floors (Böden)', labelEn: 'Floors', icon: Grid },
-    { id: 'furniture', labelDe: 'Furniture (Möbel)', labelEn: 'Furniture', icon: Sofa },
-    { id: 'appliances', labelDe: 'Appliances (Küchengeräte)', labelEn: 'Appliances', icon: Flame },
-    { id: 'walls', labelDe: 'Walls (Wände & Türen)', labelEn: 'Walls', icon: Box },
-    { id: 'balcony', labelDe: 'Balcony (Balkon)', labelEn: 'Balcony', icon: Fence },
-    { id: 'garage', labelDe: 'Garage (Garage / Keller)', labelEn: 'Garage', icon: Warehouse },
-    { id: 'garden', labelDe: 'Garden (Garten / Terrasse)', labelEn: 'Garden', icon: Trees },
+    { id: 'kitchen', labelDe: 'Küche', labelEn: 'Kitchen', icon: Utensils },
+    { id: 'bathroom', labelDe: 'Badezimmer / WC', labelEn: 'Bathroom', icon: Bath },
+    { id: 'bedrooms', labelDe: 'Schlafzimmer', labelEn: 'Bedrooms', icon: Bed },
+    { id: 'living_room', labelDe: 'Wohnzimmer', labelEn: 'Living Room', icon: Tv },
+    { id: 'windows', labelDe: 'Fenster & Rahmen', labelEn: 'Windows', icon: Maximize },
+    { id: 'floors', labelDe: 'Böden & Teppiche', labelEn: 'Floors', icon: Grid },
+    { id: 'furniture', labelDe: 'Möbel & Schränke', labelEn: 'Furniture', icon: Sofa },
+    { id: 'appliances', labelDe: 'Küchengeräte', labelEn: 'Appliances', icon: Flame },
+    { id: 'walls', labelDe: 'Wände & Türen', labelEn: 'Walls', icon: Box },
+    { id: 'balcony', labelDe: 'Balkon / Terrasse', labelEn: 'Balcony', icon: Fence },
+    { id: 'garage', labelDe: 'Garage / Keller', labelEn: 'Garage', icon: Warehouse },
+    { id: 'garden', labelDe: 'Außenbereich', labelEn: 'Garden', icon: Trees },
   ];
 
-  // Frequency options without price discounts
   const currentServiceObj = serviceOptions.find(s => s.id === formData.serviceType) || serviceOptions[6];
 
   const toggleArea = (areaId: string) => {
@@ -184,9 +170,17 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     e.preventDefault();
     if (!formData.phone.trim() && !formData.email.trim()) return;
 
+    const serviceTitle = lang === 'de' ? currentServiceObj.labelDe : currentServiceObj.labelEn;
+    const propTypeTitle = formData.propertyType === 'apartment' ? (lang === 'de' ? 'Wohnung' : 'Apartment') :
+                          formData.propertyType === 'house' ? (lang === 'de' ? 'Haus' : 'House') :
+                          formData.propertyType === 'floor' ? (lang === 'de' ? 'Etage' : 'Floor') : (lang === 'de' ? 'Gewerbe' : 'Commercial');
+    const freqTitle = formData.frequency === 'onetime' ? (lang === 'de' ? 'Einmalig' : 'One-time') :
+                        formData.frequency === 'weekly' ? (lang === 'de' ? 'Wöchentlich' : 'Weekly') :
+                        formData.frequency === 'biweekly' ? (lang === 'de' ? '14-Tägig' : 'Bi-weekly') : (lang === 'de' ? 'Monatlich' : 'Monthly');
+
     if (onApplyCalculatedQuote) {
-      const summary = `Offerte: ${currentServiceObj.labelEn} (${formData.propertyType}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, ${formData.frequency}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;
-      onApplyCalculatedQuote(summary, currentServiceObj.labelEn, formData.squareMeters, formData.frequency);
+      const summary = `Offerte: ${serviceTitle} (${propTypeTitle}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, Intervall: ${freqTitle}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;
+      onApplyCalculatedQuote(summary, serviceTitle, formData.squareMeters, freqTitle);
     }
     setIsSubmitted(true);
   };
@@ -194,13 +188,13 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
   const stepTitles = [
     { num: 1, labelDe: '1. Service', labelEn: '1. Service' },
     { num: 2, labelDe: '2. Objekt', labelEn: '2. Property' },
-    { num: 3, labelDe: '3. Umfang', labelEn: '3. Areas' },
-    { num: 4, labelDe: '4. Termin & Ort', labelEn: '4. Date & Place' },
-    { num: 5, labelDe: '5. Kontakt & Fotos', labelEn: '5. Contact' },
+    { num: 3, labelDe: '3. Umfang', labelEn: '3. Scope' },
+    { num: 4, labelDe: '4. Termin & Ort', labelEn: '4. Date & Location' },
+    { num: 5, labelDe: '5. Kontakt & Fotos', labelEn: '5. Contact & Photos' },
   ];
 
   return (
-    <div className="bg-white rounded-2xl sm:rounded-3xl border border-blue-100/80 shadow-xl overflow-hidden">
+    <div className="bg-white rounded-2xl sm:rounded-3xl border border-blue-100/80 shadow-xl overflow-hidden font-sans">
       
       {/* Top Step Progress Bar */}
       <div className="bg-[#F8FAFC] border-b border-slate-200/80 px-4 sm:px-8 py-4">
@@ -237,7 +231,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
         </div>
       </div>
 
-      {/* Main Grid: Form Steps on Left (col-span-8), Live Quote Summary on Right (col-span-4) */}
+      {/* Main Grid: Form Steps on Left (col-span-7), Live Quote Summary on Right (col-span-5) */}
       <div className="grid grid-cols-1 lg:grid-cols-12">
         
         {/* Left Interactive Wizard */}
@@ -245,7 +239,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
           
           {!isSubmitted ? (
             <div>
-              {/* STEP 1: What do you want to clean? */}
+              {/* STEP 1: Select Cleaning Service */}
               {currentStep === 1 && (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
@@ -254,7 +248,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 >
                   <div className="mb-6">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#1855EA] bg-[#EBF3FF] px-2.5 py-0.5 rounded-md mb-2 inline-block">
-                      {lang === 'de' ? 'Hapi 1 – Çfarë dëshiron të pastrosh?' : 'Step 1 – What would you like to clean?'}
+                      {lang === 'de' ? 'Schritt 1 – Reinigungsart wählen' : 'Step 1 – Select cleaning type'}
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
                       {lang === 'de' ? 'Wählen Sie die gewünschte Reinigungsart' : 'Select your cleaning service'}
@@ -280,10 +274,10 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                           </div>
                           <div>
                             <div className="text-xs sm:text-sm font-bold leading-tight">
-                              {service.labelEn}
+                              {lang === 'de' ? service.labelDe : service.labelEn}
                             </div>
                             <span className={`text-[10px] block mt-0.5 leading-tight ${isSelected ? 'text-blue-100' : 'text-slate-500'}`}>
-                              {service.descDe}
+                              {lang === 'de' ? service.descDe : service.descEn}
                             </span>
                           </div>
                         </button>
@@ -315,24 +309,24 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 >
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#1855EA] bg-[#EBF3FF] px-2.5 py-0.5 rounded-md mb-2 inline-block">
-                      {lang === 'de' ? 'Hapi 2 – Detajet e objektit' : 'Step 2 – Property Details'}
+                      {lang === 'de' ? 'Schritt 2 – Objektart & Details' : 'Step 2 – Property Details'}
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
                       {lang === 'de' ? 'Objektart & Raumdetails' : 'Property type & Room specs'}
                     </h3>
                   </div>
 
-                  {/* Property Type Pills: Floor / Apartment / House / Commercial */}
+                  {/* Property Type Pills: Apartment / House / Floor / Commercial */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      {lang === 'de' ? 'Objektart (Property Type)' : 'Property Type'}
+                      {lang === 'de' ? 'Objektart' : 'Property Type'}
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {[
-                        { id: 'apartment', label: 'Apartment' },
-                        { id: 'house', label: 'House' },
-                        { id: 'floor', label: 'Floor / Etage' },
-                        { id: 'commercial', label: 'Commercial' },
+                        { id: 'apartment', labelDe: 'Wohnung', labelEn: 'Apartment' },
+                        { id: 'house', labelDe: 'Haus', labelEn: 'House' },
+                        { id: 'floor', labelDe: 'Etage / Stockwerk', labelEn: 'Floor' },
+                        { id: 'commercial', labelDe: 'Gewerbe / Büro', labelEn: 'Commercial' },
                       ].map((item) => (
                         <button
                           key={item.id}
@@ -344,7 +338,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                               : 'bg-[#F0F5FF] text-slate-700 border-transparent hover:border-blue-200'
                           }`}
                         >
-                          {item.label}
+                          {lang === 'de' ? item.labelDe : item.labelEn}
                         </button>
                       ))}
                     </div>
@@ -353,7 +347,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                   {/* Area Slider */}
                   <div>
                     <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      <span>{lang === 'de' ? 'Sipërfaqja në m² (Size)' : 'Area Size (m²)'}</span>
+                      <span>{lang === 'de' ? 'Fläche in m²' : 'Area Size (m²)'}</span>
                       <span className="text-[#1855EA] text-base font-black lowercase">{formData.squareMeters} m²</span>
                     </div>
                     <input
@@ -373,13 +367,13 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     </div>
                   </div>
 
-                  {/* Stepper Counters Grid (Rooms, Bathrooms, Windows, Sofas, Carpets) */}
+                  {/* Stepper Counters Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                     {/* Bedrooms / Rooms */}
                     <div className="p-3 bg-[#F0F5FF] rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Dhomat' : 'Bedrooms'}</span>
-                        <span className="text-xs text-slate-500">{formData.roomsCount} Rooms</span>
+                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Zimmer' : 'Bedrooms'}</span>
+                        <span className="text-xs text-slate-500">{formData.roomsCount} {lang === 'de' ? 'Räume' : 'Rooms'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -403,8 +397,8 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     {/* Bathrooms */}
                     <div className="p-3 bg-[#F0F5FF] rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Banjot' : 'Bathrooms'}</span>
-                        <span className="text-xs text-slate-500">{formData.bathroomsCount} Baths</span>
+                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Bäder / WC' : 'Bathrooms'}</span>
+                        <span className="text-xs text-slate-500">{formData.bathroomsCount} {lang === 'de' ? 'Sanitär' : 'Baths'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -428,8 +422,8 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     {/* Windows */}
                     <div className="p-3 bg-[#F0F5FF] rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Dritaret' : 'Windows'}</span>
-                        <span className="text-xs text-slate-500">{formData.windowsCount} Pcs</span>
+                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Fenster' : 'Windows'}</span>
+                        <span className="text-xs text-slate-500">{formData.windowsCount} {lang === 'de' ? 'Stück' : 'Pcs'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -453,8 +447,8 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     {/* Sofas */}
                     <div className="p-3 bg-[#F0F5FF] rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Divanet' : 'Sofas'}</span>
-                        <span className="text-xs text-slate-500">{formData.sofasCount} Sofas</span>
+                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Sofas' : 'Sofas'}</span>
+                        <span className="text-xs text-slate-500">{formData.sofasCount} {lang === 'de' ? 'Polster' : 'Sofas'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -478,8 +472,8 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     {/* Carpets */}
                     <div className="p-3 bg-[#F0F5FF] rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Tepihet' : 'Carpets'}</span>
-                        <span className="text-xs text-slate-500">{formData.carpetsCount} Carpets</span>
+                        <span className="text-[11px] font-bold text-slate-700 block">{lang === 'de' ? 'Teppiche' : 'Carpets'}</span>
+                        <span className="text-xs text-slate-500">{formData.carpetsCount} {lang === 'de' ? 'Stück' : 'Carpets'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -502,7 +496,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
 
                     {/* Frequency selector */}
                     <div className="col-span-2 sm:col-span-1 p-3 bg-[#F0F5FF] rounded-xl flex flex-col justify-between">
-                      <span className="text-[11px] font-bold text-slate-700 mb-1">{lang === 'de' ? 'Sa shpesh' : 'Frequency'}</span>
+                      <span className="text-[11px] font-bold text-slate-700 mb-1">{lang === 'de' ? 'Reinigungsintervall' : 'Frequency'}</span>
                       <select
                         value={formData.frequency}
                         onChange={(e) => setFormData(prev => ({ ...prev, frequency: e.target.value as any }))}
@@ -510,7 +504,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                       >
                         <option value="onetime">{lang === 'de' ? 'Einmalig' : 'One-time'}</option>
                         <option value="weekly">{lang === 'de' ? 'Wöchentlich' : 'Weekly'}</option>
-                        <option value="biweekly">{lang === 'de' ? '2-wöchentlich' : 'Bi-weekly'}</option>
+                        <option value="biweekly">{lang === 'de' ? '14-Tägig' : 'Bi-weekly'}</option>
                         <option value="monthly">{lang === 'de' ? 'Monatlich' : 'Monthly'}</option>
                       </select>
                     </div>
@@ -518,7 +512,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 </motion.div>
               )}
 
-              {/* STEP 3: What's included in cleaning? */}
+              {/* STEP 3: Included Areas */}
               {currentStep === 3 && (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
@@ -528,10 +522,10 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 >
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#1855EA] bg-[#EBF3FF] px-2.5 py-0.5 rounded-md mb-2 inline-block">
-                      {lang === 'de' ? 'Hapi 3 – Çfarë përfshihet në pastrim?' : "Step 3 – What's included in cleaning?"}
+                      {lang === 'de' ? 'Schritt 3 – Umfang & Bereiche' : 'Step 3 – Cleaning Scope'}
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
-                      {lang === 'de' ? 'Wählen Sie alle gewünschten Bereiche' : 'Select all cleaning areas & scope'}
+                      {lang === 'de' ? 'Wählen Sie alle gewünschten Bereiche' : 'Select included cleaning areas'}
                     </h3>
                   </div>
 
@@ -553,7 +547,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                           <div className="flex items-center gap-2.5">
                             <IconComp className={`w-4 h-4 ${isChecked ? 'text-white' : 'text-[#1855EA]'}`} />
                             <span className="text-xs font-bold leading-tight">
-                              {area.labelEn}
+                              {lang === 'de' ? area.labelDe : area.labelEn}
                             </span>
                           </div>
                           <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
@@ -578,7 +572,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 >
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#1855EA] bg-[#EBF3FF] px-2.5 py-0.5 rounded-md mb-2 inline-block">
-                      {lang === 'de' ? 'Hapi 4 – Data dhe lokacioni' : 'Step 4 – Date & Location'}
+                      {lang === 'de' ? 'Schritt 4 – Wunschtermin & Ort' : 'Step 4 – Date & Location'}
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
                       {lang === 'de' ? 'Wunschtermin & Adresse' : 'Preferred Date & Location'}
@@ -588,7 +582,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        {lang === 'de' ? 'Wunschdatum (Preferred Date)' : 'Preferred Date'}
+                        {lang === 'de' ? 'Wunschdatum' : 'Preferred Date'}
                       </label>
                       <div className="relative">
                         <input
@@ -602,23 +596,23 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        {lang === 'de' ? 'Wunschzeit (Preferred Time)' : 'Preferred Time'}
+                        {lang === 'de' ? 'Wunschzeit' : 'Preferred Time'}
                       </label>
                       <select
                         value={formData.preferredTime}
                         onChange={(e) => setFormData(prev => ({ ...prev, preferredTime: e.target.value }))}
                         className="w-full bg-[#F0F5FF] border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1855EA]"
                       >
-                        <option value="morning">Morning (08:00 – 12:00 Uhr)</option>
-                        <option value="afternoon">Afternoon (12:00 – 17:00 Uhr)</option>
-                        <option value="flexible">Flexible / Anytime</option>
+                        <option value="morning">{lang === 'de' ? 'Morgens (08:00 – 12:00 Uhr)' : 'Morning (08:00 – 12:00)'}</option>
+                        <option value="afternoon">{lang === 'de' ? 'Nachmittags (12:00 – 17:00 Uhr)' : 'Afternoon (12:00 – 17:00)'}</option>
+                        <option value="flexible">{lang === 'de' ? 'Flexibel / Ganzägig' : 'Flexible / Anytime'}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      {lang === 'de' ? 'Straße & Hausnummer (Address)' : 'Street Address'}
+                      {lang === 'de' ? 'Straße & Hausnummer' : 'Street Address'}
                     </label>
                     <input
                       type="text"
@@ -632,7 +626,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        {lang === 'de' ? 'Stadt / Ort (City)' : 'City / Region'}
+                        {lang === 'de' ? 'Stadt / Ort' : 'City / Region'}
                       </label>
                       <input
                         type="text"
@@ -644,7 +638,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                        {lang === 'de' ? 'PLZ (ZIP Code)' : 'Postal / ZIP Code'}
+                        {lang === 'de' ? 'PLZ' : 'Postal / ZIP Code'}
                       </label>
                       <input
                         type="text"
@@ -668,7 +662,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 >
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#1855EA] bg-[#EBF3FF] px-2.5 py-0.5 rounded-md mb-2 inline-block">
-                      {lang === 'de' ? 'Hapi 5 – Detajet e klientit & Fotot 📸' : 'Step 5 – Contact Details & Photos 📸'}
+                      {lang === 'de' ? 'Schritt 5 – Kontaktdaten & Fotos 📸' : 'Step 5 – Contact Details & Photos 📸'}
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] font-display">
                       {lang === 'de' ? 'Kontaktdaten & Fotoupload' : 'Your Contact Details & Photo Upload'}
@@ -678,7 +672,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        {lang === 'de' ? 'Vor- & Nachname (Full Name) *' : 'Full Name *'}
+                        {lang === 'de' ? 'Vor- & Nachname *' : 'Full Name *'}
                       </label>
                       <input
                         type="text"
@@ -692,7 +686,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        {lang === 'de' ? 'Telefonnummer (Phone) *' : 'Phone Number *'}
+                        {lang === 'de' ? 'Telefonnummer *' : 'Phone Number *'}
                       </label>
                       <input
                         type="tel"
@@ -707,7 +701,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      {lang === 'de' ? 'E-Mail-Adresse (Email)' : 'Email Address'}
+                      {lang === 'de' ? 'E-Mail-Adresse' : 'Email Address'}
                     </label>
                     <input
                       type="email"
@@ -718,7 +712,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     />
                   </div>
 
-                  {/* Photo Upload Zone (3-5 photos) */}
+                  {/* Photo Upload Zone */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                       {lang === 'de' ? 'Fotos hochladen (3–5 Bilder für genaueste Offerte) 📸' : 'Upload Photos (3–5 images for precise quote) 📸'}
@@ -748,14 +742,14 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                     {formData.photos.length > 0 && (
                       <div className="flex gap-2 mt-3 flex-wrap">
                         {formData.photos.map((p, idx) => (
-                          <div key={idx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-slate-200 group">
-                            <img src={p.url} alt="upload" className="w-full h-full object-cover" />
+                          <div key={idx} className="relative group w-14 h-14 rounded-lg overflow-hidden border border-slate-200">
+                            <img src={p.url} alt={p.name} className="w-full h-full object-cover" />
                             <button
                               type="button"
                               onClick={() => handleRemovePhoto(idx)}
                               className="absolute inset-0 bg-red-600/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              ✕
                             </button>
                           </div>
                         ))}
@@ -765,7 +759,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      {lang === 'de' ? 'Zusätzliche Anmerkungen (Notes)' : 'Additional Notes'}
+                      {lang === 'de' ? 'Zusätzliche Anmerkungen' : 'Additional Notes'}
                     </label>
                     <textarea
                       rows={2}
@@ -871,39 +865,45 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
             {/* Summary Breakdown List */}
             <div className="space-y-2 text-xs text-blue-50 mb-6">
               <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Service:</span>
-                <span className="font-bold text-white">{currentServiceObj.labelEn}</span>
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Service:' : 'Service:'}</span>
+                <span className="font-bold text-white">{lang === 'de' ? currentServiceObj.labelDe : currentServiceObj.labelEn}</span>
               </div>
               <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Property:</span>
-                <span className="font-bold text-white capitalize">{formData.propertyType}</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Size:</span>
-                <span className="font-bold text-white">{formData.squareMeters} m²</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Bedrooms:</span>
-                <span className="font-bold text-white">{formData.roomsCount}</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Bathrooms:</span>
-                <span className="font-bold text-white">{formData.bathroomsCount}</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Frequency:</span>
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Objektart:' : 'Property:'}</span>
                 <span className="font-bold text-white capitalize">
-                  {formData.frequency === 'onetime' ? 'One-time' : formData.frequency === 'biweekly' ? 'Bi-weekly' : formData.frequency}
+                  {formData.propertyType === 'apartment' ? (lang === 'de' ? 'Wohnung' : 'Apartment') :
+                   formData.propertyType === 'house' ? (lang === 'de' ? 'Haus' : 'House') :
+                   formData.propertyType === 'floor' ? (lang === 'de' ? 'Etage' : 'Floor') : (lang === 'de' ? 'Gewerbe' : 'Commercial')}
                 </span>
               </div>
               <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                <span className="text-blue-200 font-medium">Location:</span>
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Fläche:' : 'Size:'}</span>
+                <span className="font-bold text-white">{formData.squareMeters} m²</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Zimmer:' : 'Bedrooms:'}</span>
+                <span className="font-bold text-white">{formData.roomsCount}</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Bäder:' : 'Bathrooms:'}</span>
+                <span className="font-bold text-white">{formData.bathroomsCount}</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Intervall:' : 'Frequency:'}</span>
+                <span className="font-bold text-white capitalize">
+                  {formData.frequency === 'onetime' ? (lang === 'de' ? 'Einmalig' : 'One-time') :
+                   formData.frequency === 'weekly' ? (lang === 'de' ? 'Wöchentlich' : 'Weekly') :
+                   formData.frequency === 'biweekly' ? (lang === 'de' ? '14-Tägig' : 'Bi-weekly') : (lang === 'de' ? 'Monatlich' : 'Monthly')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-blue-200 font-medium">{lang === 'de' ? 'Standort:' : 'Location:'}</span>
                 <span className="font-bold text-white">{formData.city || formData.zipCode || 'Ingolstadt'}</span>
               </div>
               {formData.photos.length > 0 && (
                 <div className="flex items-center justify-between py-1.5 border-b border-white/10">
-                  <span className="text-blue-200 font-medium">Photos:</span>
-                  <span className="font-bold text-emerald-300">{formData.photos.length} uploaded 📸</span>
+                  <span className="text-blue-200 font-medium">{lang === 'de' ? 'Fotos:' : 'Photos:'}</span>
+                  <span className="font-bold text-emerald-300">{formData.photos.length} {lang === 'de' ? 'hochgeladen 📸' : 'uploaded 📸'}</span>
                 </div>
               )}
             </div>
@@ -912,11 +912,11 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
             <div className="space-y-2.5 pt-1">
               <div className="flex items-center gap-2 text-xs text-blue-100">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>100% Festpreisgarantie</span>
+                <span>{lang === 'de' ? '100% Festpreisgarantie' : '100% Fixed Price Guarantee'}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-blue-100">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Reaktionszeit unter 2 bis 4 Stunden</span>
+                <span>{lang === 'de' ? 'Reaktionszeit unter 2 bis 4 Stunden' : 'Response time under 2-4 hours'}</span>
               </div>
             </div>
           </div>
