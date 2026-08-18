@@ -713,8 +713,12 @@ export async function deleteService(id: string): Promise<boolean> {
 // ====================================================================
 // PROJECTS / GALLERY DYNAMIC CRUD
 // ====================================================================
-export async function getProjects(): Promise<ProjectDbItem[]> {
-  if (projectsCache && projectsCache.length > 0) {
+export async function getProjects(forceRefresh = false): Promise<ProjectDbItem[]> {
+  if (forceRefresh) {
+    projectsCache = null;
+  }
+
+  if (!forceRefresh && projectsCache && projectsCache.length > 0) {
     return projectsCache;
   }
 
@@ -726,6 +730,7 @@ export async function getProjects(): Promise<ProjectDbItem[]> {
 
       if (result && !result.error && result.data && result.data.length > 0) {
         projectsCache = result.data as ProjectDbItem[];
+        setLocal('projects', projectsCache);
         return projectsCache;
       }
     } catch (err) {
@@ -758,6 +763,10 @@ export async function addProject(project: Omit<ProjectDbItem, 'created_at'>): Pr
     created_at: new Date().toISOString()
   };
 
+  const currentLocal = getLocal<ProjectDbItem[]>('projects', []);
+  const updatedLocal = [...currentLocal, newItem];
+  setLocal('projects', updatedLocal);
+
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -766,20 +775,26 @@ export async function addProject(project: Omit<ProjectDbItem, 'created_at'>): Pr
         .select()
         .single();
 
-      if (!error && data) return data as ProjectDbItem;
+      if (!error && data) {
+        projectsCache = null;
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_projects_updated'));
+        return data as ProjectDbItem;
+      }
     } catch (e) {
       console.warn('Error adding project:', e);
     }
   }
 
-  const current = await getProjects();
-  const updated = [...current, newItem];
-  setLocal('projects', updated);
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_projects_updated'));
   return newItem;
 }
 
 export async function updateProject(id: string, updates: Partial<ProjectDbItem>): Promise<boolean> {
   projectsCache = null;
+  const currentLocal = getLocal<ProjectDbItem[]>('projects', []);
+  const updatedLocal = currentLocal.map(p => p.id === id ? { ...p, ...updates } : p);
+  setLocal('projects', updatedLocal);
+
   if (isSupabaseConfigured) {
     try {
       await supabase.from('projects').update(updates).eq('id', id);
@@ -788,14 +803,16 @@ export async function updateProject(id: string, updates: Partial<ProjectDbItem>)
     }
   }
 
-  const current = await getProjects();
-  const updated = current.map(p => p.id === id ? { ...p, ...updates } : p);
-  setLocal('projects', updated);
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_projects_updated'));
   return true;
 }
 
 export async function deleteProject(id: string): Promise<boolean> {
   projectsCache = null;
+  const currentLocal = getLocal<ProjectDbItem[]>('projects', []);
+  const updatedLocal = currentLocal.filter(p => p.id !== id);
+  setLocal('projects', updatedLocal);
+
   if (isSupabaseConfigured) {
     try {
       await supabase.from('projects').delete().eq('id', id);
@@ -804,9 +821,7 @@ export async function deleteProject(id: string): Promise<boolean> {
     }
   }
 
-  const current = await getProjects();
-  const updated = current.filter(p => p.id !== id);
-  setLocal('projects', updated);
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_projects_updated'));
   return true;
 }
 

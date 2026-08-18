@@ -16,7 +16,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
   useEffect(() => {
     async function loadDynamicProjects() {
       try {
-        const dbProjects = await getProjects();
+        const dbProjects = await getProjects(true);
         setProjectsList(dbProjects);
       } catch (err) {
         console.warn('Failed loading projects:', err);
@@ -24,6 +24,13 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
     }
 
     loadDynamicProjects();
+
+    const handleUpdate = () => {
+      loadDynamicProjects();
+    };
+
+    window.addEventListener('duaari_projects_updated', handleUpdate);
+    return () => window.removeEventListener('duaari_projects_updated', handleUpdate);
   }, []);
 
   const displayProjects = projectsList.length > 0 ? projectsList : BEFORE_AFTER_CASES.map(p => ({

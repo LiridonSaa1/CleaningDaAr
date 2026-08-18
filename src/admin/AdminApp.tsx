@@ -51,7 +51,7 @@ const AdminContent: React.FC<AdminAppProps> = ({ onGoToWebsite }) => {
         getQuoteRequests(),
         getReviews(false),
         getServices(),
-        getProjects()
+        getProjects(true)
       ]);
 
       setMessages(msgData);
