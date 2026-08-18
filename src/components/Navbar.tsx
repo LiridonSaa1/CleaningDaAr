@@ -35,11 +35,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Mobile Logo (Visible on small screens) */}
           <div className="flex lg:hidden items-center">
-            <a href="#" className="flex items-center">
+            <a href="#" className="flex items-center translate-y-1 sm:translate-y-1.5">
               <img 
                 src={cleaningServicesLogo} 
-                alt="Cleaning Services Logo" 
-                className="h-14 sm:h-16 w-auto object-contain" 
+                alt="DuAri Hausmeister Logo" 
+                className="h-16 sm:h-18 w-auto object-contain" 
               />
             </a>
           </div>
@@ -65,16 +65,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               {lang === 'de' ? 'LEISTUNGEN' : 'SERVICES'}
             </a>
 
-            {/* Logo positioned directly between LEISTUNGEN & ABLAUF (Enlarged logo image) */}
+            {/* Logo positioned directly between LEISTUNGEN & ABLAUF (Positioned down gracefully) */}
             <a
               href="#"
-              className="flex items-center mx-2 sm:mx-3 hover:scale-105 transition-transform shrink-0"
-              title="Cleaning Services"
+              className="flex items-center mx-2 sm:mx-3 hover:scale-105 transition-transform shrink-0 translate-y-2 sm:translate-y-3 lg:translate-y-3.5"
+              title="DuAri Hausmeister"
             >
               <img
                 src={cleaningServicesLogo}
-                alt="Cleaning Services Logo"
-                className="h-16 sm:h-19 lg:h-22 xl:h-24 w-auto object-contain drop-shadow-xs"
+                alt="DuAri Hausmeister Logo"
+                className="h-18 sm:h-22 lg:h-25 xl:h-28 w-auto object-contain drop-shadow-md"
               />
             </a>
 
