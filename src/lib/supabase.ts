@@ -486,23 +486,41 @@ export async function deleteQuoteRequest(id: string): Promise<boolean> {
 // ====================================================================
 // REVIEWS & RATINGS CRUD
 // ====================================================================
-export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
+export async function getReviews(onlyApproved = false, forceRefresh = false): Promise<ReviewItem[]> {
+  if (forceRefresh) {
+    reviewsCache = null;
+  }
+
   if (reviewsCache && reviewsCache.length > 0) {
-    return onlyApproved ? reviewsCache.filter(r => r.status === 'approved') : reviewsCache;
+    const list = onlyApproved ? reviewsCache.filter(r => r.status === 'approved') : reviewsCache;
+    return list.length > 0 ? list : INITIAL_MOCK_REVIEWS;
   }
 
   if (isSupabaseConfigured) {
     try {
-      let query = supabase.from('reviews').select('*').order('created_at', { ascending: false });
-      if (onlyApproved) {
-        query = query.eq('status', 'approved');
-      }
+      const result: any = await withFastTimeout(
+        supabase.from('reviews').select('*').order('created_at', { ascending: false })
+      );
 
-      const result: any = await withFastTimeout(query);
+      if (result && !result.error && result.data) {
+        const supabaseList = result.data as ReviewItem[];
+        const localList = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
+        
+        const map = new Map<string, ReviewItem>();
+        supabaseList.forEach(item => map.set(item.id, item));
+        localList.forEach(item => {
+          if (!map.has(item.id)) map.set(item.id, item);
+        });
 
-      if (result && !result.error && result.data && result.data.length > 0) {
-        reviewsCache = result.data as ReviewItem[];
-        return reviewsCache;
+        const combined = Array.from(map.values()).sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        reviewsCache = combined;
+        setLocal('reviews', combined);
+
+        const listToReturn = onlyApproved ? combined.filter(r => r.status === 'approved') : combined;
+        return listToReturn.length > 0 ? listToReturn : INITIAL_MOCK_REVIEWS;
       }
     } catch (err) {
       console.warn('Supabase reviews fetch error:', err);
@@ -511,7 +529,8 @@ export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
 
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
   reviewsCache = list;
-  return onlyApproved ? list.filter(r => r.status === 'approved') : list;
+  const filtered = onlyApproved ? list.filter(r => r.status === 'approved') : list;
+  return filtered.length > 0 ? filtered : INITIAL_MOCK_REVIEWS;
 }
 
 export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): Promise<ReviewItem> {
@@ -522,6 +541,9 @@ export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): 
   };
 
   reviewsCache = null;
+  const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
+  const updated = [newItem, ...list];
+  setLocal('reviews', updated);
 
   if (isSupabaseConfigured) {
     try {
@@ -538,47 +560,63 @@ export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): 
         .select()
         .single();
 
-      if (!error && data) return data as ReviewItem;
-    } catch (e) {
-      console.warn('Error adding review:', e);
+      if (!error && data) {
+        reviewsCache = null;
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_reviews_updated'));
+        return data as ReviewItem;
+      }
+    } catch (err) {
+      console.warn('Error adding review to Supabase:', err);
     }
   }
 
-  const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
-  const updated = [newItem, ...list];
-  setLocal('reviews', updated);
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_reviews_updated'));
   return newItem;
+}
+
+export async function updateReviewStatus(id: string, status: ReviewItem['status']): Promise<boolean> {
+  return updateReview(id, { status });
 }
 
 export async function updateReview(id: string, updates: Partial<ReviewItem>): Promise<boolean> {
   reviewsCache = null;
-  if (isSupabaseConfigured) {
-    try {
-      await supabase.from('reviews').update(updates).eq('id', id);
-    } catch (e) {
-      console.warn('Error updating review:', e);
-    }
-  }
-
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
   const updated = list.map(item => item.id === id ? { ...item, ...updates } : item);
   setLocal('reviews', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('reviews')
+        .update(updates)
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error updating review status in Supabase:', e);
+    }
+  }
+
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_reviews_updated'));
   return true;
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
   reviewsCache = null;
-  if (isSupabaseConfigured) {
-    try {
-      await supabase.from('reviews').delete().eq('id', id);
-    } catch (e) {
-      console.warn('Error deleting review:', e);
-    }
-  }
-
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
   const updated = list.filter(item => item.id !== id);
   setLocal('reviews', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting review from Supabase:', e);
+    }
+  }
+
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('duaari_reviews_updated'));
   return true;
 }
 

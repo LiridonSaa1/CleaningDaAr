@@ -19,15 +19,17 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
   useEffect(() => {
     async function loadReviews() {
       try {
-        const approved = await getReviews(true);
+        const approved = await getReviews(true, true);
         if (approved && approved.length > 0) {
-          setReviewsList(approved.map(r => ({
+          setReviewsList(approved.map((r, idx) => ({
             id: r.id,
             name: r.name,
             service: r.service || 'Gebäudereinigung',
             rating: r.rating,
             text: r.comment,
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+            avatar: idx % 3 === 0 ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' :
+                    idx % 3 === 1 ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' :
+                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
           })));
         } else {
           setReviewsList(TESTIMONIALS_DATA);
@@ -38,6 +40,13 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
     }
 
     loadReviews();
+
+    const handleUpdate = () => {
+      loadReviews();
+    };
+
+    window.addEventListener('duaari_reviews_updated', handleUpdate);
+    return () => window.removeEventListener('duaari_reviews_updated', handleUpdate);
   }, []);
 
   const activeList = reviewsList.length > 0 ? reviewsList : TESTIMONIALS_DATA;
