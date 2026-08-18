@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
@@ -12,12 +12,41 @@ import { ContactQuoteSection } from './components/ContactQuoteSection';
 import { Footer } from './components/Footer';
 import { FloatingActions } from './components/FloatingActions';
 import { LegalModals, LegalModalType } from './components/LegalModals';
+import { AdminApp } from './admin/AdminApp';
 import { Language } from './types';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('de');
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
-  
+  const [isAdminView, setIsAdminView] = useState<boolean>(() => {
+    return window.location.pathname.startsWith('/admin') || window.location.hash === '#admin';
+  });
+
+  useEffect(() => {
+    const handleLocationCheck = () => {
+      const isAdmin = window.location.pathname.startsWith('/admin') || window.location.hash === '#admin';
+      setIsAdminView(isAdmin);
+    };
+
+    window.addEventListener('popstate', handleLocationCheck);
+    window.addEventListener('hashchange', handleLocationCheck);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationCheck);
+      window.removeEventListener('hashchange', handleLocationCheck);
+    };
+  }, []);
+
+  const handleGoToAdmin = () => {
+    window.history.pushState({}, '', '/admin');
+    setIsAdminView(true);
+  };
+
+  const handleGoToWebsite = () => {
+    window.history.pushState({}, '', '/');
+    setIsAdminView(false);
+  };
+
   // Prefill states for contact form
   const [prefilledService, setPrefilledService] = useState<string>('');
   const [prefilledSummary, setPrefilledSummary] = useState<string>('');
@@ -56,6 +85,10 @@ export default function App() {
     setPrefilledFrequency(frequency);
     handleOpenQuote();
   };
+
+  if (isAdminView) {
+    return <AdminApp onGoToWebsite={handleGoToWebsite} />;
+  }
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-[#1855EA] selection:text-white flex flex-col relative">
@@ -125,6 +158,7 @@ export default function App() {
         onOpenLegal={setLegalModal}
         onSelectService={handleSelectServiceForQuote}
         onOpenQuote={handleOpenQuote}
+        onOpenAdmin={handleGoToAdmin}
       />
 
       {/* Floating Quick Action Bar */}

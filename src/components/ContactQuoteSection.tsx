@@ -12,6 +12,8 @@ import {
 import { COMPANY_INFO, SERVICES_DATA } from '../data/content';
 import { QuoteFormData, Language } from '../types';
 import { Toast } from './Toast';
+import { addContactMessage } from '../lib/supabase';
+import { sendEmailViaBrevo } from '../lib/brevo';
 
 // Image import matching cleaner woman portrait
 import cleanerPortraitImg from '../assets/images/cleaner_woman_hero_1786998129641.jpg';
@@ -71,33 +73,66 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
     }
   }, [prefilledSummary, prefilledSqm, prefilledFrequency]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const currentName = formData.name;
     const currentService = formData.serviceType;
+    const currentEmail = formData.email;
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setSubmittedDetails({
-        name: currentName,
-        service: currentService,
+    try {
+      // 1. Store in Supabase
+      await addContactMessage({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `Anfrage: ${formData.serviceType}`,
+        message: `Service: ${formData.serviceType}\nFläche: ${formData.squareMeters} m²\nIntervall: ${formData.frequency}\nDatum: ${formData.preferredDate}\nNachricht: ${formData.message}`
       });
-      setShowToast(true);
 
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#1855EA', '#2563EB', '#3B82F6', '#60A5FA'],
-        });
-      } catch (err) {
-        // Fallback
-      }
-    }, 800);
+      // 2. Trigger Brevo Email Notification
+      await sendEmailViaBrevo({
+        to: currentEmail,
+        name: currentName,
+        subject: 'Bestätigung Ihrer Kontaktanfrage – Dua & Ari Gebäudereinigung',
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+            <div style="background-color: #0B1838; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h2 style="color: #ffffff; margin: 0;">Dua & Ari Gebäudereinigung</h2>
+            </div>
+            <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+              <p>Sehr geehrte/r ${currentName},</p>
+              <p>vielen Dank für Ihre Anfrage bezüglich <strong>${currentService}</strong>. Wir haben Ihre Nachricht erfolgreich erhalten.</p>
+              <p>Unser Team wird Ihre Angaben prüfen und sich innerhalb von 2 bis 4 Stunden mit Ihnen in Verbindung setzen.</p>
+              <br/>
+              <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: +49 (0) 172 913 7116</p>
+            </div>
+          </div>
+        `
+      });
+    } catch (err) {
+      console.error('Contact submission error:', err);
+    }
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
+    setSubmittedDetails({
+      name: currentName,
+      service: currentService,
+    });
+    setShowToast(true);
+
+    try {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#1855EA', '#2563EB', '#3B82F6', '#60A5FA'],
+      });
+    } catch (err) {
+      // Fallback
+    }
   };
 
   return (

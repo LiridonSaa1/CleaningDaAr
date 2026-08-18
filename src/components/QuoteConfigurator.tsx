@@ -25,6 +25,8 @@ import {
   Trees 
 } from 'lucide-react';
 import { Language } from '../types';
+import { addQuoteRequest } from '../lib/supabase';
+import { sendEmailViaBrevo } from '../lib/brevo';
 
 interface QuoteConfiguratorProps {
   lang: Language;
@@ -166,7 +168,7 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.phone.trim() && !formData.email.trim()) return;
 
@@ -177,6 +179,52 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
     const freqTitle = formData.frequency === 'onetime' ? (lang === 'de' ? 'Einmalig' : 'One-time') :
                         formData.frequency === 'weekly' ? (lang === 'de' ? 'Wöchentlich' : 'Weekly') :
                         formData.frequency === 'biweekly' ? (lang === 'de' ? '14-Tägig' : 'Bi-weekly') : (lang === 'de' ? 'Monatlich' : 'Monthly');
+
+    try {
+      // 1. Store quote request in Supabase
+      await addQuoteRequest({
+        name: formData.fullName || 'Kunde',
+        email: formData.email,
+        phone: formData.phone,
+        service: serviceTitle,
+        property_type: propTypeTitle,
+        square_meters: formData.squareMeters,
+        rooms_count: formData.roomsCount,
+        bathrooms_count: formData.bathroomsCount,
+        frequency: freqTitle,
+        address: formData.address,
+        city: formData.city,
+        zip_code: formData.zipCode,
+        preferred_date: formData.preferredDate,
+        preferred_time: formData.preferredTime,
+        message: formData.additionalNotes
+      });
+
+      // 2. Send Brevo Email Confirmation to Client if Email is provided
+      if (formData.email.trim()) {
+        await sendEmailViaBrevo({
+          to: formData.email,
+          name: formData.fullName,
+          subject: 'Eingangsbestätigung Ihrer Offertenanfrage – Dua & Ari Gebäudereinigung',
+          htmlContent: `
+            <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+              <div style="background-color: #0B1838; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+                <h2 style="color: #ffffff; margin: 0;">Dua & Ari Gebäudereinigung</h2>
+              </div>
+              <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+                <p>Sehr geehrte/r ${formData.fullName || 'Kunde'},</p>
+                <p>vielen Dank für Ihre Offertenanfrage für <strong>${serviceTitle}</strong> (${formData.squareMeters} m² in ${formData.city}).</p>
+                <p>Wir haben Ihre Objektdaten erhalten. Unser Team berechnet Ihr verbindliches Festpreisangebot und wird Ihnen dieses innerhalb von 2 bis 4 Stunden zusenden.</p>
+                <br/>
+                <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: +49 (0) 172 913 7116</p>
+              </div>
+            </div>
+          `
+        });
+      }
+    } catch (err) {
+      console.error('Quote submission error:', err);
+    }
 
     if (onApplyCalculatedQuote) {
       const summary = `Offerte: ${serviceTitle} (${propTypeTitle}), ${formData.squareMeters}m², ${formData.roomsCount} Zimmer, ${formData.bathroomsCount} Bäder, Intervall: ${freqTitle}, Ort: ${formData.city}. Kontakt: ${formData.fullName} (${formData.phone} / ${formData.email})`;

@@ -17,6 +17,7 @@ interface FooterProps {
   onOpenLegal: (type: LegalModalType) => void;
   onSelectService: (serviceTitle: string) => void;
   onOpenQuote: () => void;
+  onOpenAdmin?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -24,6 +25,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenLegal,
   onSelectService,
   onOpenQuote,
+  onOpenAdmin,
 }) => {
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -221,6 +223,14 @@ export const Footer: React.FC<FooterProps> = ({
             >
               Cookies
             </button>
+            {onOpenAdmin && (
+              <button
+                onClick={onOpenAdmin}
+                className="text-[#1855EA] font-bold hover:underline cursor-pointer flex items-center gap-1"
+              >
+                🔒 Admin Portal
+              </button>
+            )}
           </div>
 
           {/* Scroll To Top Button */}
