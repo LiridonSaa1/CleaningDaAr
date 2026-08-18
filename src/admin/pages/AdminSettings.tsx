@@ -38,7 +38,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ onSettingsUpdated 
   useEffect(() => {
     async function loadSettings() {
       setIsLoading(true);
-      const data = await getSiteSettings();
+      const data = await getSiteSettings(true);
       setFormData(data);
       setIsLoading(false);
     }

@@ -33,6 +33,18 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ lang, onOpenQuote }) => {
       }
     }
     loadSettings();
+
+    const handleUpdate = (e: Event) => {
+      const customEvt = e as CustomEvent;
+      if (customEvt.detail) {
+        setSiteSettings(customEvt.detail);
+      } else {
+        loadSettings();
+      }
+    };
+
+    window.addEventListener('duaari_settings_updated', handleUpdate);
+    return () => window.removeEventListener('duaari_settings_updated', handleUpdate);
   }, []);
 
   const cleanPhone = siteSettings.phone_primary.replace(/[^0-9+]/g, '');

@@ -33,6 +33,18 @@ export const LegalModals: React.FC<LegalModalsProps> = ({ activeModal, onClose }
       }
     }
     loadSettings();
+
+    const handleUpdate = (e: Event) => {
+      const customEvt = e as CustomEvent;
+      if (customEvt.detail) {
+        setSiteSettings(customEvt.detail);
+      } else {
+        loadSettings();
+      }
+    };
+
+    window.addEventListener('duaari_settings_updated', handleUpdate);
+    return () => window.removeEventListener('duaari_settings_updated', handleUpdate);
   }, []);
 
   if (!activeModal) return null;

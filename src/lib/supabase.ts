@@ -730,19 +730,21 @@ export async function deleteProject(id: string): Promise<boolean> {
 // ====================================================================
 // SITE SETTINGS CRUD
 // ====================================================================
-export async function getSiteSettings(): Promise<SiteSettingsData> {
-  if (siteSettingsCache) {
+export async function getSiteSettings(forceRefresh = false): Promise<SiteSettingsData> {
+  if (!forceRefresh && siteSettingsCache) {
     return siteSettingsCache;
   }
 
   if (isSupabaseConfigured) {
     try {
       const result: any = await withFastTimeout(
-        supabase.from('site_settings').select('*').eq('id', 1).single()
+        supabase.from('site_settings').select('*').limit(1).maybeSingle(),
+        800
       );
 
       if (result && !result.error && result.data) {
         siteSettingsCache = result.data as SiteSettingsData;
+        setLocal('site_settings', siteSettingsCache);
         return siteSettingsCache;
       }
     } catch (err) {
@@ -756,7 +758,8 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
 }
 
 export async function updateSiteSettings(settings: Partial<SiteSettingsData>): Promise<SiteSettingsData> {
-  siteSettingsCache = null;
+  let updatedData: SiteSettingsData | null = null;
+
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -767,17 +770,26 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
         .single();
 
       if (!error && data) {
-        siteSettingsCache = data as SiteSettingsData;
-        return siteSettingsCache;
+        updatedData = data as SiteSettingsData;
+      } else {
+        console.warn('Supabase update site_settings returned error:', error);
       }
     } catch (e) {
-      console.warn('Error updating site_settings:', e);
+      console.warn('Error updating site_settings in Supabase:', e);
     }
   }
 
-  const current = getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
-  const updated = { ...current, ...settings };
-  setLocal('site_settings', updated);
-  siteSettingsCache = updated;
-  return updated;
+  if (!updatedData) {
+    const current = getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
+    updatedData = { ...current, ...settings };
+  }
+
+  siteSettingsCache = updatedData;
+  setLocal('site_settings', updatedData);
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('duaari_settings_updated', { detail: updatedData }));
+  }
+
+  return updatedData;
 }
