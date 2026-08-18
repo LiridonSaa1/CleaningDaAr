@@ -12,12 +12,14 @@ import { ContactQuoteSection } from './components/ContactQuoteSection';
 import { Footer } from './components/Footer';
 import { FloatingActions } from './components/FloatingActions';
 import { LegalModals, LegalModalType } from './components/LegalModals';
+import { VideoModal } from './components/VideoModal';
 import { AdminApp } from './admin/AdminApp';
 import { Language } from './types';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('de');
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
+  const [isVideoOpen, setIsVideoOpen] = useState<boolean>(false);
   const [isAdminView, setIsAdminView] = useState<boolean>(() => {
     return window.location.pathname.startsWith('/admin') || window.location.hash === '#admin';
   });
@@ -106,6 +108,7 @@ export default function App() {
           lang={lang}
           onOpenCalculator={handleOpenCalculator}
           onOpenQuote={handleOpenQuote}
+          onOpenVideo={() => setIsVideoOpen(true)}
         />
 
         <AboutSection
@@ -168,6 +171,13 @@ export default function App() {
       <LegalModals
         activeModal={legalModal}
         onClose={() => setLegalModal(null)}
+      />
+
+      {/* Video Showcase Modal (Wie wir arbeiten) */}
+      <VideoModal
+        isOpen={isVideoOpen}
+        onClose={() => setIsVideoOpen(false)}
+        lang={lang}
       />
     </div>
   );

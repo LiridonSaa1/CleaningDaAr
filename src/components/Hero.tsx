@@ -10,9 +10,10 @@ interface HeroProps {
   lang: Language;
   onOpenCalculator: () => void;
   onOpenQuote: () => void;
+  onOpenVideo?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote }) => {
+export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote, onOpenVideo }) => {
   return (
     <section
       style={{
@@ -233,7 +234,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote 
 
                 {/* Secondary Play Button (How We Work) */}
                 <button
-                  onClick={onOpenCalculator}
+                  onClick={onOpenVideo || onOpenCalculator}
                   className="flex items-center gap-3 group cursor-pointer py-1"
                 >
                   <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-[#1855EA] group-hover:scale-105 transition-transform duration-200">
