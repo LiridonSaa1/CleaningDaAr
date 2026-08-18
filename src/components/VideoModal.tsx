@@ -103,8 +103,9 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, lang })
                 poster={videoPosterImg}
                 className="w-full h-full object-cover"
               >
-                {/* 1. Project local video file (if added to public/videos/video.mp4) */}
+                {/* 1. Project local video file */}
                 <source src="/videos/video.mp4" type="video/mp4" />
+                <source src="/videos/video.mp4.mp4" type="video/mp4" />
                 <source src="/videos/cleaning-showcase.mp4" type="video/mp4" />
                 {/* 2. Backup Online Stream Video */}
                 <source src="https://cdn.coverr.co/videos/coverr-cleaning-a-glass-window-5441/1080p.mp4" type="video/mp4" />
