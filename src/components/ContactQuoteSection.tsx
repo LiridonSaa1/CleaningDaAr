@@ -60,6 +60,14 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
     working_hours_weekend: 'Notdienst 24/7'
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [submittedDetails, setSubmittedDetails] = useState<{ name: string; service: string }>({
+    name: '',
+    service: '',
+  });
+
   useEffect(() => {
     async function loadSettings() {
       try {
