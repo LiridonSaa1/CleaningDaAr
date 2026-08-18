@@ -228,15 +228,34 @@ export async function getContactMessages(): Promise<ContactMessageItem[]> {
       );
 
       if (result && !result.error && result.data) {
+        const supabaseList = result.data as ContactMessageItem[];
         const localList = getLocal<ContactMessageItem[]>('contact_messages', []);
+        
         const map = new Map<string, ContactMessageItem>();
-        (result.data as ContactMessageItem[]).forEach(item => map.set(item.id, item));
-        localList.forEach(item => {
-          if (!map.has(item.id)) map.set(item.id, item);
+        const contentKeys = new Set<string>();
+
+        // 1. First add official Supabase items
+        supabaseList.forEach(item => {
+          map.set(item.id, item);
+          const cKey = `${(item.email || '').toLowerCase().trim()}_${(item.name || '').toLowerCase().trim()}_${(item.message || '').substring(0, 25).toLowerCase().trim()}`;
+          contentKeys.add(cKey);
         });
+
+        // 2. Only add local temporary items if they don't match any Supabase item by ID or Content
+        localList.forEach(item => {
+          const cKey = `${(item.email || '').toLowerCase().trim()}_${(item.name || '').toLowerCase().trim()}_${(item.message || '').substring(0, 25).toLowerCase().trim()}`;
+          if (!map.has(item.id) && !contentKeys.has(cKey)) {
+            map.set(item.id, item);
+          }
+        });
+
         const combined = Array.from(map.values()).sort((a, b) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
+
+        // Clean local storage to eliminate legacy duplicates
+        setLocal('contact_messages', combined);
+
         return combined.length > 0 ? combined : INITIAL_MOCK_MESSAGES;
       }
     } catch (err) {
@@ -274,7 +293,12 @@ export async function addContactMessage(msg: Omit<ContactMessageItem, 'id' | 'cr
         .select()
         .single();
 
-      if (!error && data) return data as ContactMessageItem;
+      if (!error && data) {
+        const currentLocal = getLocal<ContactMessageItem[]>('contact_messages', []);
+        const cleaned = [data as ContactMessageItem, ...currentLocal.filter(i => i.id !== newItem.id)];
+        setLocal('contact_messages', cleaned);
+        return data as ContactMessageItem;
+      }
     } catch (err) {
       console.warn('Error inserting contact message to Supabase:', err);
     }
@@ -332,15 +356,34 @@ export async function getQuoteRequests(): Promise<QuoteRequestItem[]> {
       );
 
       if (result && !result.error && result.data) {
+        const supabaseList = result.data as QuoteRequestItem[];
         const localList = getLocal<QuoteRequestItem[]>('quote_requests', []);
+        
         const map = new Map<string, QuoteRequestItem>();
-        (result.data as QuoteRequestItem[]).forEach(item => map.set(item.id, item));
-        localList.forEach(item => {
-          if (!map.has(item.id)) map.set(item.id, item);
+        const contentKeys = new Set<string>();
+
+        // 1. First add official Supabase items
+        supabaseList.forEach(item => {
+          map.set(item.id, item);
+          const cKey = `${(item.email || '').toLowerCase().trim()}_${(item.name || '').toLowerCase().trim()}_${(item.service || '').toLowerCase().trim()}_${item.square_meters || 0}`;
+          contentKeys.add(cKey);
         });
+
+        // 2. Only add local temporary items if they don't match any Supabase item by ID or Content
+        localList.forEach(item => {
+          const cKey = `${(item.email || '').toLowerCase().trim()}_${(item.name || '').toLowerCase().trim()}_${(item.service || '').toLowerCase().trim()}_${item.square_meters || 0}`;
+          if (!map.has(item.id) && !contentKeys.has(cKey)) {
+            map.set(item.id, item);
+          }
+        });
+
         const combined = Array.from(map.values()).sort((a, b) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
+
+        // Clean local storage to eliminate legacy duplicates
+        setLocal('quote_requests', combined);
+
         return combined.length > 0 ? combined : INITIAL_MOCK_QUOTES;
       }
     } catch (err) {
@@ -388,7 +431,12 @@ export async function addQuoteRequest(quote: Omit<QuoteRequestItem, 'id' | 'crea
         .select()
         .single();
 
-      if (!error && data) return data as QuoteRequestItem;
+      if (!error && data) {
+        const currentLocal = getLocal<QuoteRequestItem[]>('quote_requests', []);
+        const cleaned = [data as QuoteRequestItem, ...currentLocal.filter(i => i.id !== newItem.id)];
+        setLocal('quote_requests', cleaned);
+        return data as QuoteRequestItem;
+      }
     } catch (e) {
       console.warn('Error adding quote request:', e);
     }
