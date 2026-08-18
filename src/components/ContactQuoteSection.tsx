@@ -12,7 +12,7 @@ import {
 import { COMPANY_INFO, SERVICES_DATA } from '../data/content';
 import { QuoteFormData, Language } from '../types';
 import { Toast } from './Toast';
-import { addContactMessage } from '../lib/supabase';
+import { addContactMessage, getSiteSettings } from '../lib/supabase';
 import { sendEmailViaBrevo } from '../lib/brevo';
 
 // Image import matching cleaner woman portrait
@@ -82,7 +82,11 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
     const currentEmail = formData.email;
 
     try {
-      // 1. Store in Supabase
+      // 0. Fetch website contact email from Site Settings
+      const siteSettings = await getSiteSettings();
+      const adminContactEmail = siteSettings.email_primary || 'DuaAricleanservice@gmail.com';
+
+      // 1. Store in Supabase & Local DB
       await addContactMessage({
         name: formData.name,
         email: formData.email,
@@ -91,7 +95,7 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
         message: `Service: ${formData.serviceType}\nFläche: ${formData.squareMeters} m²\nIntervall: ${formData.frequency}\nDatum: ${formData.preferredDate}\nNachricht: ${formData.message}`
       });
 
-      // 2. Trigger Brevo Email Notification
+      // 2. Send Customer Confirmation Email
       await sendEmailViaBrevo({
         to: currentEmail,
         name: currentName,
@@ -106,7 +110,40 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
               <p>vielen Dank für Ihre Anfrage bezüglich <strong>${currentService}</strong>. Wir haben Ihre Nachricht erfolgreich erhalten.</p>
               <p>Unser Team wird Ihre Angaben prüfen und sich innerhalb von 2 bis 4 Stunden mit Ihnen in Verbindung setzen.</p>
               <br/>
-              <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: +49 (0) 172 913 7116</p>
+              <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: ${siteSettings.phone_primary}</p>
+            </div>
+          </div>
+        `
+      });
+
+      // 3. Send Instant Admin Notification Email to Website Kontakt E-Mail *
+      await sendEmailViaBrevo({
+        to: adminContactEmail,
+        name: siteSettings.business_name || 'Admin Dua & Ari',
+        replyTo: currentEmail,
+        subject: `🚨 NEUE KONTAKT-NACHRICHT: ${currentName} (${currentService})`,
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-w-600px;">
+            <div style="background-color: #1855EA; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h2 style="color: #ffffff; margin: 0;">Neue Kontakt-Nachricht vom Website-Formular</h2>
+            </div>
+            <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; background-color: #ffffff;">
+              <p style="font-size: 16px; font-weight: bold; color: #1855EA; margin-top: 0;">Details der Kundenanfrage:</p>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9; width: 140px;">Name:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${currentName}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">E-Mail:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${currentEmail}">${currentEmail}</a></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Telefon:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><a href="tel:${formData.phone.replace(/[^0-9+]/g, '')}">${formData.phone}</a></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Dienstleistung:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><strong>${currentService}</strong></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Fläche (m²):</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.squareMeters} m²</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Reinigungsintervall:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.frequency}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Wunschdatum:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.preferredDate || 'Nicht angegeben'} (${formData.preferredTime})</td></tr>
+              </table>
+              <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #1855EA;">
+                <strong>Nachricht / Anmerkung des Kunden:</strong>
+                <p style="margin-top: 8px; whitespace: pre-wrap;">${formData.message || 'Keine Nachricht eingegeben.'}</p>
+              </div>
+              <br/>
+              <p style="font-size: 12px; color: #64748b;">Diese Benachrichtigung wurde automatisch generiert und an Ihre Website-Kontaktadresse sent: ${adminContactEmail}</p>
             </div>
           </div>
         `

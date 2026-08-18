@@ -25,7 +25,7 @@ import {
   Trees 
 } from 'lucide-react';
 import { Language } from '../types';
-import { addQuoteRequest } from '../lib/supabase';
+import { addQuoteRequest, getSiteSettings } from '../lib/supabase';
 import { sendEmailViaBrevo } from '../lib/brevo';
 
 interface QuoteConfiguratorProps {
@@ -181,7 +181,11 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                         formData.frequency === 'biweekly' ? (lang === 'de' ? '14-Tägig' : 'Bi-weekly') : (lang === 'de' ? 'Monatlich' : 'Monthly');
 
     try {
-      // 1. Store quote request in Supabase
+      // 0. Fetch website contact email from Site Settings
+      const siteSettings = await getSiteSettings();
+      const adminContactEmail = siteSettings.email_primary || 'DuaAricleanservice@gmail.com';
+
+      // 1. Store quote request in Supabase & Local DB
       await addQuoteRequest({
         name: formData.fullName || 'Kunde',
         email: formData.email,
@@ -216,12 +220,48 @@ export const QuoteConfigurator: React.FC<QuoteConfiguratorProps> = ({
                 <p>vielen Dank für Ihre Offertenanfrage für <strong>${serviceTitle}</strong> (${formData.squareMeters} m² in ${formData.city}).</p>
                 <p>Wir haben Ihre Objektdaten erhalten. Unser Team berechnet Ihr verbindliches Festpreisangebot und wird Ihnen dieses innerhalb von 2 bis 4 Stunden zusenden.</p>
                 <br/>
-                <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: +49 (0) 172 913 7116</p>
+                <p>Mit freundlichen Grüßen,<br/><strong>Dua & Ari Gebäudereinigung</strong><br/>Tel: ${siteSettings.phone_primary}</p>
               </div>
             </div>
           `
         });
       }
+
+      // 3. Send Instant Admin Notification Email to Website Kontakt E-Mail *
+      await sendEmailViaBrevo({
+        to: adminContactEmail,
+        name: siteSettings.business_name || 'Admin Dua & Ari',
+        replyTo: formData.email.trim() || undefined,
+        subject: `📋 NEUE OFFERTENANFRAGE: ${formData.fullName || 'Kunde'} – ${serviceTitle} (${formData.squareMeters} m²)`,
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-w-600px;">
+            <div style="background-color: #1855EA; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h2 style="color: #ffffff; margin: 0;">Neue Offertenanfrage vom Kalkulator</h2>
+            </div>
+            <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; background-color: #ffffff;">
+              <p style="font-size: 16px; font-weight: bold; color: #1855EA; margin-top: 0;">Details des Objekts:</p>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9; width: 140px;">Kunde:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.fullName || 'Kunde'}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Telefon:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><a href="tel:${formData.phone.replace(/[^0-9+]/g, '')}">${formData.phone}</a></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">E-Mail:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${formData.email}">${formData.email || 'Nicht angegeben'}</a></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Leistung:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;"><strong>${serviceTitle}</strong></td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Objekttyp &amp; Fläche:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${propTypeTitle} (${formData.squareMeters} m²)</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Zimmer / Bäder:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.roomsCount} Zimmer / ${formData.bathroomsCount} Bäder</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Intervall:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${freqTitle}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Ort &amp; Adresse:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.address || ''} ${formData.zipCode} ${formData.city}</td></tr>
+                <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Wunschtermin:</td><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${formData.preferredDate || 'Flexibel'} (${formData.preferredTime})</td></tr>
+              </table>
+              ${formData.additionalNotes ? `
+                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #1855EA; margin-bottom: 15px;">
+                  <strong>Anmerkungen:</strong>
+                  <p style="margin-top: 6px;">${formData.additionalNotes}</p>
+                </div>
+              ` : ''}
+              <p style="font-size: 12px; color: #64748b;">Automatische Benachrichtigung an Ihre Website-Kontaktadresse: ${adminContactEmail}</p>
+            </div>
+          </div>
+        `
+      });
     } catch (err) {
       console.error('Quote submission error:', err);
     }
