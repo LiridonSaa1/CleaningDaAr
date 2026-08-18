@@ -110,50 +110,61 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- POLICIES FOR profiles
+DROP POLICY IF EXISTS "Public profiles are viewable by owner and admin" ON public.profiles;
 CREATE POLICY "Public profiles are viewable by owner and admin" 
   ON public.profiles FOR SELECT 
   USING (auth.uid() = id OR public.is_admin());
 
+DROP POLICY IF EXISTS "Admin can update profiles" ON public.profiles;
 CREATE POLICY "Admin can update profiles" 
   ON public.profiles FOR UPDATE 
   USING (public.is_admin());
 
 -- POLICIES FOR contact_messages
+DROP POLICY IF EXISTS "Anyone can submit contact messages" ON public.contact_messages;
 CREATE POLICY "Anyone can submit contact messages" 
   ON public.contact_messages FOR INSERT 
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admin can view, update, and delete contact messages" ON public.contact_messages;
 CREATE POLICY "Admin can view, update, and delete contact messages" 
   ON public.contact_messages FOR ALL 
   USING (public.is_admin());
 
 -- POLICIES FOR quote_requests
+DROP POLICY IF EXISTS "Anyone can submit quote requests" ON public.quote_requests;
 CREATE POLICY "Anyone can submit quote requests" 
   ON public.quote_requests FOR INSERT 
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admin can view, update, and delete quote requests" ON public.quote_requests;
 CREATE POLICY "Admin can view, update, and delete quote requests" 
   ON public.quote_requests FOR ALL 
   USING (public.is_admin());
 
 -- POLICIES FOR reviews
+DROP POLICY IF EXISTS "Anyone can read approved reviews" ON public.reviews;
 CREATE POLICY "Anyone can read approved reviews" 
   ON public.reviews FOR SELECT 
   USING (status = 'approved' OR public.is_admin());
 
+DROP POLICY IF EXISTS "Anyone can submit a new review" ON public.reviews;
 CREATE POLICY "Anyone can submit a new review" 
   ON public.reviews FOR INSERT 
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admin can manage all reviews" ON public.reviews;
 CREATE POLICY "Admin can manage all reviews" 
   ON public.reviews FOR ALL 
   USING (public.is_admin());
 
 -- POLICIES FOR site_settings
+DROP POLICY IF EXISTS "Anyone can view site settings" ON public.site_settings;
 CREATE POLICY "Anyone can view site settings" 
   ON public.site_settings FOR SELECT 
   USING (true);
 
+DROP POLICY IF EXISTS "Admin can update site settings" ON public.site_settings;
 CREATE POLICY "Admin can update site settings" 
   ON public.site_settings FOR ALL 
   USING (public.is_admin());
