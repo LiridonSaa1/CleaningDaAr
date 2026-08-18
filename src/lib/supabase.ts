@@ -491,9 +491,9 @@ export async function getReviews(onlyApproved = false, forceRefresh = false): Pr
     reviewsCache = null;
   }
 
-  if (reviewsCache && reviewsCache.length > 0) {
+  if (!forceRefresh && reviewsCache) {
     const list = onlyApproved ? reviewsCache.filter(r => r.status === 'approved') : reviewsCache;
-    return list.length > 0 ? list : INITIAL_MOCK_REVIEWS;
+    return list;
   }
 
   if (isSupabaseConfigured) {
@@ -502,13 +502,11 @@ export async function getReviews(onlyApproved = false, forceRefresh = false): Pr
         supabase.from('reviews').select('*').order('created_at', { ascending: false })
       );
 
-      if (result && !result.error && result.data) {
+      if (result && !result.error && result.data !== null && result.data !== undefined) {
         const supabaseList = result.data as ReviewItem[];
-        if (supabaseList.length > 0) {
-          reviewsCache = supabaseList;
-          setLocal('reviews', supabaseList);
-          return onlyApproved ? supabaseList.filter(r => r.status === 'approved') : supabaseList;
-        }
+        reviewsCache = supabaseList;
+        setLocal('reviews', supabaseList);
+        return onlyApproved ? supabaseList.filter(r => r.status === 'approved') : supabaseList;
       }
     } catch (err) {
       console.warn('Supabase reviews fetch error:', err);
@@ -518,7 +516,7 @@ export async function getReviews(onlyApproved = false, forceRefresh = false): Pr
   const list = getLocal<ReviewItem[]>('reviews', INITIAL_MOCK_REVIEWS);
   reviewsCache = list;
   const filtered = onlyApproved ? list.filter(r => r.status === 'approved') : list;
-  return filtered.length > 0 ? filtered : INITIAL_MOCK_REVIEWS;
+  return filtered;
 }
 
 export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): Promise<ReviewItem> {
