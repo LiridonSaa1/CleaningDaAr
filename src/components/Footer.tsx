@@ -87,7 +87,7 @@ export const Footer: React.FC<FooterProps> = ({
               <img 
                 src={cleaningServicesLogo} 
                 alt="Cleaning Services Logo" 
-                className="h-20 sm:h-24 lg:h-28 w-auto object-contain drop-shadow-md" 
+                className="h-28 sm:h-36 lg:h-44 w-auto object-contain drop-shadow-lg" 
               />
             </a>
 
