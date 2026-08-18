@@ -7,7 +7,6 @@ import {
   Youtube, 
   ArrowUp 
 } from 'lucide-react';
-import { COMPANY_INFO } from '../data/content';
 import { LegalModalType } from './LegalModals';
 import { Language } from '../types';
 import { getSiteSettings, SiteSettingsData } from '../lib/supabase';

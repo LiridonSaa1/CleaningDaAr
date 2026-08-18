@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Minus, MessageCircle } from 'lucide-react';
-import { FAQ_DATA, COMPANY_INFO } from '../data/content';
+import { FAQ_DATA } from '../data/content';
 import { Language } from '../types';
 
 interface FAQSectionProps {

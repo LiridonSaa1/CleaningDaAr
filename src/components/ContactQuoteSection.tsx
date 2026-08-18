@@ -9,7 +9,7 @@ import {
   Send, 
   CheckCircle 
 } from 'lucide-react';
-import { COMPANY_INFO, SERVICES_DATA } from '../data/content';
+import { SERVICES_DATA } from '../data/content';
 import { QuoteFormData, Language } from '../types';
 import { Toast } from './Toast';
 import { addContactMessage, getSiteSettings } from '../lib/supabase';
