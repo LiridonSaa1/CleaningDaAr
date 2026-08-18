@@ -9,7 +9,7 @@ export interface SendEmailOptions {
 }
 
 const BREVO_SENDER_EMAIL = 'duariservice@gmail.com';
-const BREVO_SENDER_NAME = 'Dua & Ari Gebäudereinigung';
+const BREVO_SENDER_NAME = (import.meta.env.VITE_BREVO_SENDER_NAME || 'DuAri Hausmeister').trim();
 
 /**
  * Sends email via backend endpoint /api/send-email or direct Brevo REST API

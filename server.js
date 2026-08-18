@@ -20,7 +20,7 @@ app.post('/api/send-email', async (req, res) => {
 
     const apiKey = process.env.BREVO_API_KEY || process.env.VITE_BREVO_API_KEY;
     const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.VITE_BREVO_SENDER_EMAIL || 'info@duaari-gebaeudereinigung.de';
-    const senderName = process.env.BREVO_SENDER_NAME || process.env.VITE_BREVO_SENDER_NAME || 'Dua & Ari Gebäudereinigung';
+    const senderName = process.env.BREVO_SENDER_NAME || process.env.VITE_BREVO_SENDER_NAME || 'DuAri Hausmeister';
 
     if (!apiKey) {
       console.warn('[Brevo Server] BREVO_API_KEY missing in environment variables. Email logged to console.');
