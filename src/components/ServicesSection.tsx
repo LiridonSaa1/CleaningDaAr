@@ -10,7 +10,7 @@ import {
 import { SERVICES_DATA } from '../data/content';
 import { ServiceItem, Language } from '../types';
 import { getServiceIllustration } from './ServiceIllustrations';
-import { getServices, ServiceDbItem } from '../lib/supabase';
+import { getServices } from '../lib/supabase';
 
 interface ServicesSectionProps {
   lang: Language;
@@ -73,7 +73,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
     setCurrentIndex((prev) => (prev - 1 + totalServices) % totalServices);
   }, [totalServices]);
 
-  // Autoplay functionality (pauses when modal is active or user hovers)
+  // Autoplay functionality
   useEffect(() => {
     if (!isAutoplay || activeModalService || totalServices === 0) return;
     const interval = setInterval(() => {
@@ -82,7 +82,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
     return () => clearInterval(interval);
   }, [isAutoplay, activeModalService, handleNext, totalServices]);
 
-  // 4 visible items for the 2x2 slider grid view in infinite loop
+  // 4 visible items for the 2x2 slider grid view
   const visibleServices = [
     servicesList[currentIndex % totalServices],
     servicesList[(currentIndex + 1) % totalServices],
@@ -92,17 +92,12 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 
   return (
     <section id="leistungen" className="py-20 md:py-28 bg-[#FAFCFF] relative scroll-mt-20 overflow-hidden font-sans">
-      
-      {/* Background Decorative Blur Orbs */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-[#1855EA]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header with Navigation Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6 }}
@@ -147,7 +142,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
             >
               <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
             </button>
-            
+
             <button
               onClick={handleNext}
               onMouseEnter={() => setIsAutoplay(false)}
@@ -160,140 +155,180 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           </motion.div>
         </div>
 
-        {/* 2x2 Services Grid Container */}
+        {/* 2x2 Services Grid Container in Original Light Blue Card Design */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
+          className="relative min-h-[420px]"
           onMouseEnter={() => setIsAutoplay(false)}
           onMouseLeave={() => setIsAutoplay(true)}
         >
-          <AnimatePresence mode="popLayout" custom={direction}>
-            {visibleServices.map((service, index) => (
-              <motion.div
-                key={`${service.id}-${index}`}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
-              >
-                <div>
-                  {/* Top Badge & Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-[#EBF3FF] text-[#1855EA] flex items-center justify-center shadow-xs group-hover:bg-[#1855EA] group-hover:text-white transition-colors duration-300">
-                      {getServiceIllustration(service.id, "w-8 h-8")}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              initial={{ opacity: 0, x: direction === 'right' ? 35 : -35 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction === 'right' ? -35 : 35 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8"
+            >
+              {visibleServices.map((service, idx) => {
+                const title = lang === 'de' ? (service.titleDe || service.title) : (service.titleEn || service.title);
+                const desc = lang === 'de' ? (service.shortDescriptionDe || service.shortDescription) : (service.shortDescriptionEn || service.shortDescription);
+
+                return (
+                  <div
+                    key={`${service.id}-${idx}`}
+                    onClick={() => setActiveModalService(service)}
+                    className="bg-[#F0F5FF] hover:bg-[#E9F1FF] rounded-2xl p-6 sm:p-8 transition-all duration-300 flex items-start gap-5 sm:gap-7 cursor-pointer group hover:shadow-md border border-transparent hover:border-blue-200/60 h-full"
+                  >
+                    {/* Left: 2D Building & Cleaning Illustration Icon */}
+                    <div className="shrink-0 group-hover:scale-105 transition-transform duration-300 mt-1">
+                      {getServiceIllustration(service.id, 'w-16 h-16 sm:w-20 sm:h-20')}
                     </div>
 
-                    {service.badge && (
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#F0F5FF] text-[#1855EA] border border-[#1855EA]/20 uppercase tracking-wider">
-                        {service.badge}
-                      </span>
-                    )}
+                    {/* Right: Text Content */}
+                    <div className="flex-1 flex flex-col justify-between min-h-[130px]">
+                      <div>
+                        <h3 className="text-xl sm:text-[22px] font-bold text-[#111827] group-hover:text-[#1855EA] transition-colors leading-snug mb-2 font-display">
+                          {title}
+                        </h3>
+                        <p className="text-[#4B5563] text-sm sm:text-[15px] leading-relaxed font-normal mb-4">
+                          {desc}
+                        </p>
+                      </div>
+
+                      {/* Learn More Link with Blue Circular Arrow Icon */}
+                      <div className="text-[#1855EA] font-semibold text-sm sm:text-[15px] inline-flex items-center gap-2 group/btn hover:underline">
+                        <span>{lang === 'de' ? 'Mehr erfahren' : 'Learn More'}</span>
+                        <div className="w-5 h-5 rounded-full bg-[#1855EA] text-white flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">
+                          <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Title & Price */}
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#111827] mb-2 font-display">
-                    {lang === 'de' ? service.titleDe : service.titleEn}
-                  </h3>
-
-                  <p className="text-xs font-bold text-[#1855EA] mb-4">
-                    {service.priceFrom}
-                  </p>
-
-                  <p className="text-[#4B5563] text-sm leading-relaxed mb-6 font-normal line-clamp-3">
-                    {lang === 'de' ? service.shortDescriptionDe : service.shortDescriptionEn}
-                  </p>
-                </div>
-
-                {/* Card Bottom CTA Actions */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-                  <button
-                    onClick={() => setActiveModalService(service)}
-                    className="text-xs sm:text-sm font-bold text-[#1855EA] hover:underline cursor-pointer flex items-center gap-1.5"
-                  >
-                    <span>{lang === 'de' ? 'Details & Checkliste' : 'Details & Checklist'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={() => onSelectServiceForQuote(service.titleDe || service.title)}
-                    className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer"
-                  >
-                    {lang === 'de' ? 'Angebot anfordern' : 'Request Quote'}
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+                );
+              })}
+            </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* Mobile Slide Dots */}
+        <div className="flex sm:hidden justify-center items-center gap-1.5 mt-8">
+          {servicesList.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setDirection(idx > currentIndex ? 'right' : 'left');
+                setCurrentIndex(idx);
+              }}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                currentIndex === idx ? 'w-6 bg-[#1855EA]' : 'w-2 bg-slate-200'
+              }`}
+            />
+          ))}
         </div>
 
       </div>
 
-      {/* SERVICE DETAIL MODAL */}
-      {activeModalService && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto font-sans">
-            <button
-              onClick={() => setActiveModalService(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 cursor-pointer"
+      {/* Service Details Interactive Modal */}
+      <AnimatePresence>
+        {activeModalService && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white max-w-2xl w-full rounded-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative shadow-2xl border border-slate-100 font-sans"
             >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#EBF3FF] text-[#1855EA] flex items-center justify-center">
-                {getServiceIllustration(activeModalService.id, "w-7 h-7")}
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 font-display">
-                  {lang === 'de' ? activeModalService.titleDe : activeModalService.titleEn}
-                </h3>
-                <span className="text-xs text-[#1855EA] font-bold">{activeModalService.priceFrom}</span>
-              </div>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
-              {activeModalService.fullDescription}
-            </p>
-
-            {activeModalService.checklist && activeModalService.checklist.length > 0 && (
-              <div className="bg-slate-50 p-5 rounded-2xl space-y-2.5">
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block mb-2">
-                  {lang === 'de' ? 'Inbegriffene Checklisten-Punkte:' : 'Included Checklist Items:'}
-                </span>
-                {activeModalService.checklist.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+              {/* Close Button */}
               <button
                 onClick={() => setActiveModalService(null)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                aria-label="Close modal"
               >
-                {lang === 'de' ? 'Schließen' : 'Close'}
+                <X className="w-5 h-5" />
               </button>
 
-              <button
-                onClick={() => {
-                  const targetTitle = activeModalService.titleDe || activeModalService.title;
-                  setActiveModalService(null);
-                  onSelectServiceForQuote(targetTitle);
-                }}
-                className="bg-[#1855EA] hover:bg-[#1344C4] text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md transition-all cursor-pointer"
-              >
-                {lang === 'de' ? 'Angebot für diese Leistung anfordern' : 'Request Quote for this Service'}
-              </button>
-            </div>
+              {/* Modal Header */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-2 bg-[#F0F5FF] rounded-xl shrink-0">
+                  {getServiceIllustration(activeModalService.id, 'w-14 h-14')}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 font-display">
+                    {lang === 'de' ? (activeModalService.titleDe || activeModalService.title) : (activeModalService.titleEn || activeModalService.title)}
+                  </h3>
+                  <span className="text-xs font-semibold text-[#1855EA] inline-flex items-center gap-1 mt-0.5">
+                    {lang === 'de' ? 'Kostenlose & unverbindliche Offerte' : 'Free & Non-binding Quote'}
+                  </span>
+                </div>
+              </div>
 
+              {/* Full Description */}
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+                {activeModalService.fullDescription}
+              </p>
+
+              {/* Checklist */}
+              {activeModalService.checklist && activeModalService.checklist.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">
+                    {lang === 'de' ? 'Enthaltene Reinigungsleistungen:' : 'Included Cleaning Tasks:'}
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {activeModalService.checklist.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-slate-700">
+                        <div className="w-4 h-4 rounded-full bg-[#EBF3FF] text-[#1855EA] flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-2.5 h-2.5 stroke-[3]" />
+                        </div>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Benefits */}
+              {activeModalService.benefits && activeModalService.benefits.length > 0 && (
+                <div className="p-4 rounded-xl bg-[#F0F5FF] border border-blue-100/60 mb-6">
+                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                    {lang === 'de' ? 'Ihre DuaAri Clean Vorteile:' : 'Your Benefits with DuaAri Clean:'}
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-slate-600">
+                    {activeModalService.benefits.map((b, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1855EA]" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => setActiveModalService(null)}
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  {lang === 'de' ? 'Schließen' : 'Close'}
+                </button>
+                <button
+                  onClick={() => {
+                    const title = activeModalService.titleDe || activeModalService.title;
+                    setActiveModalService(null);
+                    onSelectServiceForQuote(title);
+                  }}
+                  className="bg-[#1855EA] hover:bg-[#1344C4] text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 cursor-pointer shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  <span>{lang === 'de' ? 'Jetzt für diesen Service anfragen' : 'Inquire for this Service'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
-
+        )}
+      </AnimatePresence>
     </section>
   );
 };
