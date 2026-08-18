@@ -20,7 +20,7 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
     async function loadReviews() {
       try {
         const approved = await getReviews(true, true);
-        if (approved && approved.length > 0) {
+        if (approved) {
           setReviewsList(approved.map((r, idx) => ({
             id: r.id,
             name: r.name,
@@ -32,10 +32,10 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
                     'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
           })));
         } else {
-          setReviewsList(TESTIMONIALS_DATA);
+          setReviewsList([]);
         }
       } catch {
-        setReviewsList(TESTIMONIALS_DATA);
+        setReviewsList([]);
       }
     }
 
@@ -49,25 +49,25 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
     return () => window.removeEventListener('duaari_reviews_updated', handleUpdate);
   }, []);
 
-  const activeList = reviewsList.length > 0 ? reviewsList : TESTIMONIALS_DATA;
-
   useEffect(() => {
-    if (!isAutoPlaying || activeList.length === 0) return;
+    if (!isAutoPlaying || reviewsList.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % activeList.length);
+      setCurrentIndex((prev) => (prev + 1) % reviewsList.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, activeList.length]);
+  }, [isAutoPlaying, reviewsList.length]);
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % activeList.length);
+    if (reviewsList.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % reviewsList.length);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + activeList.length) % activeList.length);
+    if (reviewsList.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + reviewsList.length) % reviewsList.length);
   };
 
-  const current = activeList[currentIndex] || activeList[0];
+  const current = reviewsList[currentIndex] || reviewsList[0];
 
   return (
     <section id="erfahrungen" className="py-20 md:py-28 relative scroll-mt-20 bg-slate-100/40 overflow-hidden font-sans">
@@ -116,81 +116,101 @@ export const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({ lang
           </button>
         </motion.div>
 
-        {/* Carousel Showcase */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="max-w-4xl mx-auto relative"
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
-        >
-          <div className="relative min-h-[360px] sm:min-h-[300px] flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={current?.id || currentIndex}
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.4 }}
-                className="w-full bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl relative"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  {/* Star Rating */}
-                  <div className="flex items-center gap-1">
-                    {[...Array(current?.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
-                    ))}
-                    <span className="ml-2 text-xs font-bold text-[#111827]">{current?.rating || 5}.0 / 5.0</span>
-                  </div>
-
-                  {/* Service Used Badge */}
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#EBF3FF] border border-[#1855EA]/20 text-[#1855EA] font-semibold">
-                    {current?.service || 'Gebäudereinigung'}
-                  </span>
-                </div>
-
-                {/* Review Text */}
-                <p className="text-[#374151] text-base sm:text-xl font-normal leading-relaxed italic mb-8 font-serif">
-                  "{current?.text}"
-                </p>
-
-                {/* Reviewer Profile */}
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1855EA] to-[#0084FF] text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                      {current?.name ? current.name.charAt(0) : 'K'}
+        {/* Carousel Showcase or Empty State */}
+        {reviewsList.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="max-w-4xl mx-auto relative"
+            onMouseEnter={() => setIsAutoPlaying(false)}
+            onMouseLeave={() => setIsAutoPlaying(true)}
+          >
+            <div className="relative min-h-[360px] sm:min-h-[300px] flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current?.id || currentIndex}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-full bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl relative"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    {/* Star Rating */}
+                    <div className="flex items-center gap-1">
+                      {[...Array(current?.rating || 5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                      ))}
+                      <span className="ml-2 text-xs font-bold text-[#111827]">{current?.rating || 5}.0 / 5.0</span>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-[#111827] text-base font-display">{current?.name}</h4>
-                      <span className="text-xs text-[#6B7280]">Verifizierter Kunde • Ingolstadt &amp; Region</span>
+
+                    {/* Service Used Badge */}
+                    <span className="text-xs px-3 py-1 rounded-full bg-[#EBF3FF] border border-[#1855EA]/20 text-[#1855EA] font-semibold">
+                      {current?.service || 'Gebäudereinigung'}
+                    </span>
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="text-[#374151] text-base sm:text-xl font-normal leading-relaxed italic mb-8 font-serif">
+                    "{current?.text}"
+                  </p>
+
+                  {/* Reviewer Profile */}
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1855EA] to-[#0084FF] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                        {current?.name ? current.name.charAt(0) : 'K'}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#111827] text-base font-display">{current?.name}</h4>
+                        <span className="text-xs text-[#6B7280]">Verifizierter Kunde • Ingolstadt &amp; Region</span>
+                      </div>
+                    </div>
+
+                    {/* Carousel Controls */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handlePrev}
+                        className="w-10 h-10 rounded-full bg-slate-100 hover:bg-[#1855EA] text-[#111827] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                        aria-label="Previous review"
+                      >
+                        <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        className="w-10 h-10 rounded-full bg-slate-100 hover:bg-[#1855EA] text-[#111827] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                        aria-label="Next review"
+                      >
+                        <ChevronRight className="w-5 h-5 stroke-[2.2]" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Carousel Controls */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handlePrev}
-                      className="w-10 h-10 rounded-full bg-slate-100 hover:bg-[#1855EA] text-[#111827] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      aria-label="Previous review"
-                    >
-                      <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
-                    </button>
-                    <button
-                      onClick={handleNext}
-                      className="w-10 h-10 rounded-full bg-slate-100 hover:bg-[#1855EA] text-[#111827] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                      aria-label="Next review"
-                    >
-                      <ChevronRight className="w-5 h-5 stroke-[2.2]" />
-                    </button>
-                  </div>
-                </div>
-
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-xl mx-auto bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-lg text-center space-y-4 font-sans"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#1855EA] flex items-center justify-center mx-auto shadow-xs">
+              <Star className="w-7 h-7 fill-[#1855EA]" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 font-display">
+              {lang === 'de' ? 'Noch keine freigegebenen Bewertungen' : 'No Approved Reviews Yet'}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+              {lang === 'de'
+                ? 'Sobald Kundenbewertungen im Admin-Bereich freigegeben werden, erscheinen sie hier öffentlich.'
+                : 'As soon as customer reviews are approved in the admin section, they will appear here publicly.'}
+            </p>
+          </motion.div>
+        )}
 
       </div>
 
