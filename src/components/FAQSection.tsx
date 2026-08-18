@@ -10,20 +10,27 @@ interface FAQSectionProps {
 }
 
 export const FAQSection: React.FC<FAQSectionProps> = ({ lang, onOpenQuote }) => {
-  // Default first left and right FAQ open matching reference design
-  const [openIds, setOpenIds] = useState<string[]>(['faq-1', 'faq-2']);
+  // Independent open accordion state for left and right columns
+  const [openLeftId, setOpenLeftId] = useState<string | null>('faq-1');
+  const [openRightId, setOpenRightId] = useState<string | null>('faq-2');
 
-  const toggleFaq = (id: string) => {
-    setOpenIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleLeftFaq = (id: string) => {
+    setOpenLeftId((prev) => (prev === id ? null : id));
+  };
+
+  const toggleRightFaq = (id: string) => {
+    setOpenRightId((prev) => (prev === id ? null : id));
   };
 
   const leftFaqs = FAQ_DATA.filter((_, idx) => idx % 2 === 0);
   const rightFaqs = FAQ_DATA.filter((_, idx) => idx % 2 !== 0);
 
-  const renderFaqCard = (faq: typeof FAQ_DATA[0], index: number) => {
-    const isOpen = openIds.includes(faq.id);
+  const renderFaqCard = (
+    faq: typeof FAQ_DATA[0], 
+    index: number, 
+    isOpen: boolean, 
+    onToggle: () => void
+  ) => {
     const qText = lang === 'de' ? (faq.questionDe || faq.question) : (faq.questionEn || faq.question);
     const aText = lang === 'de' ? (faq.answerDe || faq.answer) : (faq.answerEn || faq.answer);
 
@@ -34,7 +41,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ lang, onOpenQuote }) => 
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.45, delay: index * 0.08 }}
-        onClick={() => toggleFaq(faq.id)}
+        onClick={onToggle}
         className={`rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden group ${
           isOpen
             ? 'bg-[#1855EA] text-white p-6 sm:p-7 shadow-lg border border-transparent'
@@ -106,16 +113,30 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ lang, onOpenQuote }) => 
           </h2>
         </motion.div>
 
-        {/* 2-Column Accordion Layout matching reference image */}
+        {/* 2-Column Accordion Layout with Independent Column Toggling */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 max-w-6xl mx-auto">
           {/* Left Column */}
           <div className="space-y-4 sm:space-y-5">
-            {leftFaqs.map((faq, idx) => renderFaqCard(faq, idx))}
+            {leftFaqs.map((faq, idx) =>
+              renderFaqCard(
+                faq,
+                idx,
+                openLeftId === faq.id,
+                () => toggleLeftFaq(faq.id)
+              )
+            )}
           </div>
 
           {/* Right Column */}
           <div className="space-y-4 sm:space-y-5">
-            {rightFaqs.map((faq, idx) => renderFaqCard(faq, idx))}
+            {rightFaqs.map((faq, idx) =>
+              renderFaqCard(
+                faq,
+                idx,
+                openRightId === faq.id,
+                () => toggleRightFaq(faq.id)
+              )
+            )}
           </div>
         </div>
 

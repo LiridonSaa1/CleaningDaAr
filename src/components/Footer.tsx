@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { 
   Facebook, 
   Instagram, 
@@ -45,8 +46,14 @@ export const Footer: React.FC<FooterProps> = ({
     <footer className="relative bg-[#DDEBFF] text-[#111827] pt-16 pb-10 overflow-hidden font-sans border-t border-blue-200/50">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top 4-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10">
+        {/* Top 4-Column Grid with Scroll Reveal */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.55 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10"
+        >
           
           {/* Column 1: Logo, Tagline & Social Icons (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
@@ -54,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({
               <img 
                 src={cleaningServicesLogo} 
                 alt="Cleaning Services Logo" 
-                className="h-12 sm:h-14 w-auto object-contain drop-shadow-xs" 
+                className="h-15 sm:h-18 w-auto object-contain drop-shadow-xs" 
               />
             </a>
 
@@ -194,10 +201,16 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* Middle Section: OUR GALLERY & Newsletter Subscribe */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center py-8 my-6 border-t border-b border-blue-200/60">
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.55, delay: 0.1 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center py-8 my-6 border-t border-b border-blue-200/60"
+        >
           
           {/* Gallery Thumbnails (4 cols) */}
           <div className="lg:col-span-4">
@@ -255,7 +268,7 @@ export const Footer: React.FC<FooterProps> = ({
             </form>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* Bottom Bar: Copyright, Legal links & Scroll-to-Top Button */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#4B5563]">

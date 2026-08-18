@@ -85,7 +85,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
                 <ClipboardList className="w-9 h-9 stroke-[2.2]" />
               </div>
               <h3 className="text-xl sm:text-[21px] font-bold text-[#111827] mb-2 font-display">
-                {lang === 'de' ? 'Appointment' : 'Appointment'}
+                {lang === 'de' ? 'Anfrage' : 'Appointment'}
               </h3>
               <p className="text-[#64748B] text-sm leading-relaxed max-w-[200px]">
                 {lang === 'de'
@@ -114,7 +114,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
                 <CalendarCheck className="w-9 h-9 stroke-[2.2]" />
               </div>
               <h3 className="text-xl sm:text-[21px] font-bold text-[#111827] mb-2 font-display">
-                {lang === 'de' ? 'Choose Date' : 'Choose Date'}
+                {lang === 'de' ? 'Terminwahl' : 'Choose Date'}
               </h3>
               <p className="text-[#64748B] text-sm leading-relaxed max-w-[200px]">
                 {lang === 'de'
@@ -143,7 +143,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
                 <FileText className="w-9 h-9 stroke-[2.2]" />
               </div>
               <h3 className="text-xl sm:text-[21px] font-bold text-[#111827] mb-2 font-display">
-                {lang === 'de' ? 'Get Offer' : 'Get Offer'}
+                {lang === 'de' ? 'Angebot' : 'Get Offer'}
               </h3>
               <p className="text-[#64748B] text-sm leading-relaxed max-w-[200px]">
                 {lang === 'de'
@@ -172,7 +172,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
                 <Handshake className="w-9 h-9 stroke-[2.2]" />
               </div>
               <h3 className="text-xl sm:text-[21px] font-bold text-[#111827] mb-2 font-display">
-                {lang === 'de' ? 'Process' : 'Process'}
+                {lang === 'de' ? 'Durchführung' : 'Process'}
               </h3>
               <p className="text-[#64748B] text-sm leading-relaxed max-w-[200px]">
                 {lang === 'de'
@@ -201,7 +201,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
                 <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />
               </div>
               <h3 className="text-xl sm:text-[21px] font-bold text-[#111827] mb-2 font-display">
-                {lang === 'de' ? 'Final Result' : 'Final Result'}
+                {lang === 'de' ? 'Endergebnis' : 'Final Result'}
               </h3>
               <p className="text-[#64748B] text-sm leading-relaxed max-w-[200px]">
                 {lang === 'de'

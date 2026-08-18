@@ -29,9 +29,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 transition-all duration-300 pointer-events-none">
-      {/* Sleek Floating Header Container */}
-      <div className="max-w-7xl w-full mx-auto relative pointer-events-auto bg-white/90 backdrop-blur-md rounded-xl px-4 sm:px-6 py-2 shadow-lg border border-white/90 transition-all duration-300">
-        <nav className="flex items-center justify-between h-12 sm:h-14">
+      {/* Sleek Floating Header Container matching Ratings 4.9/5 glass background */}
+      <div className="max-w-7xl w-full mx-auto relative pointer-events-auto bg-white/70 backdrop-blur-md rounded-xl px-4 sm:px-6 py-1.5 sm:py-2 shadow-lg border border-white/80 transition-all duration-300">
+        <nav className="flex items-center justify-between h-14 sm:h-16 lg:h-18">
           
           {/* Mobile Logo (Visible on small screens) */}
           <div className="flex lg:hidden items-center">
@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <img 
                 src={cleaningServicesLogo} 
                 alt="Cleaning Services Logo" 
-                className="h-12 sm:h-14 w-auto object-contain" 
+                className="h-14 sm:h-16 w-auto object-contain" 
               />
             </a>
           </div>
@@ -65,16 +65,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               {lang === 'de' ? 'LEISTUNGEN' : 'SERVICES'}
             </a>
 
-            {/* Logo positioned directly between LEISTUNGEN & ABLAUF with tight spacing */}
+            {/* Logo positioned directly between LEISTUNGEN & ABLAUF (Enlarged logo image) */}
             <a
               href="#"
-              className="flex items-center mx-1.5 hover:scale-105 transition-transform shrink-0"
+              className="flex items-center mx-2 sm:mx-3 hover:scale-105 transition-transform shrink-0"
               title="Cleaning Services"
             >
               <img
                 src={cleaningServicesLogo}
                 alt="Cleaning Services Logo"
-                className="h-13 sm:h-15 lg:h-16 xl:h-17 w-auto object-contain drop-shadow-xs"
+                className="h-16 sm:h-19 lg:h-22 xl:h-24 w-auto object-contain drop-shadow-xs"
               />
             </a>
 
@@ -98,11 +98,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
           </div>
 
-          {/* Desktop Right CTA Button */}
+          {/* Desktop Right CTA Button (Matching uploaded photo 100%) */}
           <div className="hidden lg:flex items-center shrink-0">
             <button
               onClick={onOpenQuote}
-              className="inline-flex items-center justify-center bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white text-xs sm:text-[13px] font-semibold px-4.5 py-2 rounded-lg transition-all duration-200 shadow-sm cursor-pointer whitespace-nowrap"
+              className="inline-flex items-center justify-center bg-[#F0F5FF] hover:bg-[#E0ECFF] text-[#1855EA] active:scale-95 text-xs sm:text-[13px] font-semibold px-4.5 py-2.5 rounded-xl transition-all duration-200 shadow-xs border border-blue-100/60 cursor-pointer whitespace-nowrap"
             >
               <span>{lang === 'de' ? 'Angebot anfordern' : 'Get Free Quote'}</span>
             </button>
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={onOpenQuote}
-              className="bg-[#1855EA] hover:bg-[#1344C4] text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition-transform active:scale-95 whitespace-nowrap shadow-sm"
+              className="bg-[#F0F5FF] hover:bg-[#E0ECFF] text-[#1855EA] font-semibold text-xs px-3.5 py-2 rounded-xl transition-all active:scale-95 whitespace-nowrap shadow-xs border border-blue-100/60"
             >
               {lang === 'de' ? 'Angebot' : 'Get Quote'}
             </button>

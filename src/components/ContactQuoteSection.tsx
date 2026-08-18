@@ -294,17 +294,15 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
         </div>
 
         {/* Bottom Row: 3 Quick Contact Info Cards (CALL US, MAIL US, FIND US) */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mt-10 sm:mt-12"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mt-10 sm:mt-12">
           {/* Card 1: Call Us */}
-          <a
+          <motion.a
             href={`tel:${COMPANY_INFO.phonePrimary.replace(/\s+/g, '')}`}
-            className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-colors border border-blue-100/60 group"
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, delay: 0.1 }}
+            className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 border border-blue-100/60 group"
           >
             <div>
               <span className="text-[11px] font-bold text-[#6B7280] tracking-wider uppercase block">
@@ -317,12 +315,16 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
               <PhoneCall className="w-5 h-5" />
             </div>
-          </a>
+          </motion.a>
 
           {/* Card 2: Mail Us */}
-          <a
+          <motion.a
             href={`mailto:${COMPANY_INFO.email}`}
-            className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-colors border border-blue-100/60 group"
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, delay: 0.2 }}
+            className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 border border-blue-100/60 group"
           >
             <div className="overflow-hidden mr-2">
               <span className="text-[11px] font-bold text-[#6B7280] tracking-wider uppercase block">
@@ -335,10 +337,16 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
               <Mail className="w-5 h-5" />
             </div>
-          </a>
+          </motion.a>
 
           {/* Card 3: Find Us */}
-          <div className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-colors border border-blue-100/60 group">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.45, delay: 0.3 }}
+            className="bg-[#F0F5FF] hover:bg-[#E6F0FF] rounded-2xl p-5 sm:p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 border border-blue-100/60 group"
+          >
             <div>
               <span className="text-[11px] font-bold text-[#6B7280] tracking-wider uppercase block">
                 {lang === 'de' ? 'STANDORT' : 'FIND US'}
@@ -350,8 +358,8 @@ export const ContactQuoteSection: React.FC<ContactQuoteSectionProps> = ({
             <div className="w-11 h-11 rounded-xl bg-white text-[#1855EA] flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
               <MapPin className="w-5 h-5" />
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
       </div>
 
