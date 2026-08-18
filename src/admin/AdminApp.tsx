@@ -7,14 +7,20 @@ import { AdminContactMessages } from './pages/AdminContactMessages';
 import { AdminQuoteRequests } from './pages/AdminQuoteRequests';
 import { AdminReviews } from './pages/AdminReviews';
 import { AdminSettings } from './pages/AdminSettings';
+import { AdminServices } from './pages/AdminServices';
+import { AdminProjects } from './pages/AdminProjects';
 import { AdminTab } from './types';
 import { 
   ContactMessageItem, 
   QuoteRequestItem, 
   ReviewItem, 
+  ServiceDbItem,
+  ProjectDbItem,
   getContactMessages, 
   getQuoteRequests, 
-  getReviews 
+  getReviews,
+  getServices,
+  getProjects
 } from '../lib/supabase';
 
 interface AdminAppProps {
@@ -29,6 +35,8 @@ const AdminContent: React.FC<AdminAppProps> = ({ onGoToWebsite }) => {
   const [messages, setMessages] = useState<ContactMessageItem[]>([]);
   const [quotes, setQuotes] = useState<QuoteRequestItem[]>([]);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [services, setServices] = useState<ServiceDbItem[]>([]);
+  const [projects, setProjects] = useState<ProjectDbItem[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   // Selected item for modal navigation from dashboard
@@ -38,15 +46,19 @@ const AdminContent: React.FC<AdminAppProps> = ({ onGoToWebsite }) => {
   const fetchAllData = useCallback(async () => {
     setDataLoading(true);
     try {
-      const [msgData, quoteData, revData] = await Promise.all([
+      const [msgData, quoteData, revData, srvData, projData] = await Promise.all([
         getContactMessages(),
         getQuoteRequests(),
-        getReviews(false)
+        getReviews(false),
+        getServices(),
+        getProjects()
       ]);
 
       setMessages(msgData);
       setQuotes(quoteData);
       setReviews(revData);
+      setServices(srvData);
+      setProjects(projData);
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -122,6 +134,20 @@ const AdminContent: React.FC<AdminAppProps> = ({ onGoToWebsite }) => {
           quotes={quotes}
           refreshData={fetchAllData}
           selectedQuoteForModal={selectedQuoteForModal}
+        />
+      )}
+
+      {activeTab === 'services' && (
+        <AdminServices
+          services={services}
+          refreshData={fetchAllData}
+        />
+      )}
+
+      {activeTab === 'projects' && (
+        <AdminProjects
+          projects={projects}
+          refreshData={fetchAllData}
         />
       )}
 

@@ -60,6 +60,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       badge: newQuotesCount
     },
     {
+      id: 'services' as AdminTab,
+      label: 'Dienstleistungen / Services',
+      icon: Sparkles,
+      badge: 0
+    },
+    {
+      id: 'projects' as AdminTab,
+      label: 'Galerie & Referenzen',
+      icon: Send,
+      badge: 0
+    },
+    {
       id: 'reviews' as AdminTab,
       label: 'Bewertungen & Sterne',
       icon: Star,
@@ -220,6 +232,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               {activeTab === 'dashboard' && 'Dashboard Overview'}
               {activeTab === 'messages' && 'Kontakt-Nachrichten'}
               {activeTab === 'quotes' && 'Angebote & Offerten-Anfragen'}
+              {activeTab === 'services' && 'Dienstleistungen & Reinigungs-Services'}
+              {activeTab === 'projects' && 'Galerie & Referenz-Projekte'}
               {activeTab === 'reviews' && 'Bewertungen & Kundenerfahrungen'}
               {activeTab === 'settings' && 'Website Kontakteinstellungen'}
             </h1>

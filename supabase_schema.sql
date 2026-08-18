@@ -1,6 +1,6 @@
 -- ====================================================================
 -- SUPABASE DATABASE SCHEMA FOR CLEANZA / DUA & ARI GEBÄUDEREINIGUNG
--- (KOPJONI DHE NGJITENI TË GJITHË KËTË TEKST TE SUPABASE SQL EDITOR)
+-- FULL SEED FOR SERVICES, PROJECTS, REVIEWS & SITE SETTINGS
 -- ====================================================================
 
 -- 1. EXTENSIONS
@@ -64,11 +64,47 @@ CREATE TABLE IF NOT EXISTS public.reviews (
 );
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 
--- 6. SITE SETTINGS
+-- 6. SERVICES TABLE (LANDINGPAGE DYNAMIC SERVICES)
+CREATE TABLE IF NOT EXISTS public.services (
+  id TEXT PRIMARY KEY,
+  title_de TEXT NOT NULL,
+  title_en TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'residential',
+  badge TEXT DEFAULT '',
+  price_from TEXT DEFAULT '',
+  short_desc_de TEXT NOT NULL,
+  short_desc_en TEXT NOT NULL,
+  full_desc TEXT DEFAULT '',
+  icon_name TEXT DEFAULT 'Sparkles',
+  image TEXT NOT NULL,
+  checklist JSONB DEFAULT '[]'::jsonb,
+  benefits JSONB DEFAULT '[]'::jsonb,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
+
+-- 7. PROJECTS / GALLERY TABLE (BEFORE & AFTER / SHOWCASE)
+CREATE TABLE IF NOT EXISTS public.projects (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  subtitle TEXT DEFAULT '',
+  category TEXT NOT NULL DEFAULT 'Allgemein',
+  before_img TEXT NOT NULL,
+  after_img TEXT NOT NULL,
+  metrics_label TEXT DEFAULT 'Kundenzufriedenheit',
+  metrics_value TEXT DEFAULT '100%',
+  description TEXT DEFAULT '',
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+
+-- 8. SITE SETTINGS (WEBSITE CONTACT INFO & WORKING HOURS)
 CREATE TABLE IF NOT EXISTS public.site_settings (
   id INT PRIMARY KEY DEFAULT 1,
   phone_primary TEXT NOT NULL DEFAULT '+49 (0) 172 913 7116',
-  email_primary TEXT NOT NULL DEFAULT 'info@duaari-gebaeudereinigung.de',
+  email_primary TEXT NOT NULL DEFAULT 'DuaAricleanservice@gmail.com',
   street TEXT NOT NULL DEFAULT 'Holznerstraße 11',
   city TEXT NOT NULL DEFAULT '85053 Ingolstadt',
   business_name TEXT NOT NULL DEFAULT 'Dua & Ari Gebäudereinigung',
@@ -80,20 +116,139 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 );
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
--- DEFAULT SITE SETTINGS
+-- ====================================================================
+-- SEED DEFAULT SITE SETTINGS
+-- ====================================================================
 INSERT INTO public.site_settings (id, phone_primary, email_primary, street, city, business_name, whatsapp_number)
-VALUES (1, '+49 (0) 172 913 7116', 'info@duaari-gebaeudereinigung.de', 'Holznerstraße 11', '85053 Ingolstadt', 'Dua & Ari Gebäudereinigung', '+491729137116')
-ON CONFLICT (id) DO NOTHING;
+VALUES (1, '+49 (0) 172 913 7116', 'DuaAricleanservice@gmail.com', 'Holznerstraße 11', '85053 Ingolstadt', 'Dua & Ari Gebäudereinigung', '+491729137116')
+ON CONFLICT (id) DO UPDATE SET
+  email_primary = EXCLUDED.email_primary,
+  business_name = EXCLUDED.business_name;
 
--- DEFAULT APPROVED REVIEWS
+-- ====================================================================
+-- SEED SERVICES DATA
+-- ====================================================================
+INSERT INTO public.services (id, title_de, title_en, category, badge, price_from, short_desc_de, short_desc_en, full_desc, icon_name, image, checklist, benefits, sort_order)
+VALUES 
+  (
+    'unterhaltsreinigung', 'Unterhaltsreinigung', 'Routine cleaning', 'residential', 'Empfohlen', 'ab 28,00 € / Std.',
+    'Ein sauberes Zuhause oder ein gepflegtes Büro ist das Fundament für Wohlbefinden. Wir kümmern uns um die regelmäßige Reinigung.',
+    'A clean home or a well-maintained office is the foundation for well-being. We take care of regular cleaning.',
+    'Unsere Routinereinigung & Unterhaltsreinigung sichert dauerhafte Frische, absolute Hygiene und ein rundum angenehmes Ambiente.',
+    'Sparkles', 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1000&q=80',
+    '["Staub- und Feuchtreinigung aller freien Oberflächen & Tische", "Saugen und Wischen aller Bodenbeläge", "Hygienische Desinfektion und Reinigung der Sanitäranlagen", "Müllentleerung und Mülltrennung"]'::jsonb,
+    '["Feste Reinigungsteams für höchste Diskretion", "Flexible Einsatzzeiten nach Ihren Wünschen", "Ökologisch unbedenkliche Pflegemittel"]'::jsonb,
+    1
+  ),
+  (
+    'buero-gewerbereinigung', 'Büro- & Gewerbereinigung', 'Office and commercial cleaning', 'commercial', 'Für Unternehmen', 'Festpreisangebot',
+    'Ein sauberer Arbeitsplatz ist die Visitenkarte Ihres Unternehmens. Wir sorgen für hygienische Sauberkeit in Büros und Praxen.',
+    'A clean workplace is the calling card of your company. We ensure hygienic cleanliness in offices and practices.',
+    'Ein sauberes Büro fördert Konzentration, senkt Krankheitsausfälle und vermittelt Professionalität.',
+    'Building2', 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80',
+    '["Ergonomische Tastatur- & Monitor-Oberflächenpflege", "Meetingräume einsatzbereit herrichten", "Kaffeeküchen und Geschirrspülerservice", "Glaswände & Raumteiler streifenfrei polieren"]'::jsonb,
+    '["Erprobtes Hygienekonzept gegen Keimverschleppung", "Volle Haftpflichtversicherung für jedes Objekt", "Transparente monatliche Sammelrechnung"]'::jsonb,
+    2
+  ),
+  (
+    'glas-fensterreinigung', 'Glas- & Fensterreinigung', 'Glass and window cleaning', 'special', 'Streifenfrei', 'ab 4,50 € / m²',
+    'Wir sorgen für perfekten Durchblick. Ob Schaufenster, Wintergärten oder klassische Fensterflächen – streifenfrei.',
+    'We ensure a perfect view. Whether shop windows, conservatories or classic window surfaces - streak-free.',
+    'Streifenfreie Fenster ohne Schlieren, auch an schwer erreichbaren Stellen. Wir reinigen Scheiben inklusive Fensterrahmen.',
+    'Maximize2', 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1000&q=80',
+    '["Innen- und Außenreinigung von Fenstern aller Art", "Rahmenreinigung & Falzreinigung", "Schaufensterreinigung für den Einzelhandel", "Reinwasser/Osmose-Technik ohne Chemie"]'::jsonb,
+    '["Rückstandsfreies Trocknen ohne Kalkflecken", "Sicherheitsgeschultes Personal", "Schnelle Ausführung auch bei kurzfristigem Bedarf"]'::jsonb,
+    3
+  ),
+  (
+    'baureinigung', 'Baureinigung', 'Construction cleaning', 'construction', 'Bezugsfertig', 'ab 3,80 € / m²',
+    'Wir übernehmen die Grob- und Feinreinigung Ihrer Baustelle nach Neubau oder Renovierung. Bezugsfertig übergeben.',
+    'We handle the rough and fine cleaning of your construction site after new construction or renovation.',
+    'Nach Bauarbeiten oder Renovierungen befreien wir Ihre Immobilie von Bauschutt, Zementschleiern und Feinstaub.',
+    'Hammer', 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80',
+    '["Bau-Grobreinigung: Entfernung von Bauschutt", "Bau-Feinreinigung bezugsfertig", "Beseitigung von Zementschleiern & Farbspritzern", "Schutzfolienentfernung von Fenstern"]'::jsonb,
+    '["Pünktliche Einhaltung straffer Bauzeitenpläne", "Schonende Beseitigung hartnäckiger Baustoffreste", "Abnahmegarantie mit Bauleiter-Protokoll"]'::jsonb,
+    4
+  ),
+  (
+    'treppenhausreinigung', 'Treppenhausreinigung', 'Stairwell cleaning', 'residential', 'Hausverwaltungen', 'ab 18,00 € / Etage',
+    'Der erste Eindruck eines Gebäudes zählt. Wir reinigen Stufen, Geländer, Briefkästen und Eingangstüren gründlich.',
+    'First impressions count. We clean steps, railings, mailboxes and entrance doors regularly and thoroughly.',
+    'Ein gepflegtes Treppenhaus ist die Visitenkarte jedes Wohngebäudes. Wir übernehmen die turnusmäßige Reinigung.',
+    'Layers', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80',
+    '["Kehren und feuchtes Wischen aller Treppen & Podeste", "Abwischen von Geländern & Handläufen", "Reinigung von Eingangs- & Briefkastenanlagen", "Spinnwebenbeseitigung im gesamten Flur"]'::jsonb,
+    '["Fester Tourenplan & digitaler Nachweis", "Attraktive Staffelpreise für Liegenschaften", "Kein Ärger mehr mit der Kehrwoche"]'::jsonb,
+    5
+  ),
+  (
+    'grundreinigung', 'Grundreinigung', 'Basic cleaning', 'special', 'Tiefenreinigung', 'Festpreis nach Besichtigung',
+    'Intensive Pflege bei hartnäckigem Schmutz. Ideal für den Frühjahrsputz oder beim Mieterwechsel.',
+    'Intensive care for stubborn dirt. Ideal for spring cleaning or when tenants change.',
+    'Wenn die normale Unterhaltsreinigung nicht mehr ausreicht: Wir lösen alte Pflegemittelfilme und versiegeln Böden neu.',
+    'ShieldCheck', 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1000&q=80',
+    '["Maschinelle Einscheiben-Grundreinigung von PVC & Fliesen", "Neue Einpflege und Versiegelung von Hartböden", "Fugen-Tiefenreinigung und Entkalkung in Nassräumen"]'::jsonb,
+    '["Wertsteigerung und Lebensdauer-Verlängerung der Böden", "Einsatz moderner Industriemaschinen", "Maßgeschneiderte Schutzversiegelungen"]'::jsonb,
+    6
+  )
+ON CONFLICT (id) DO UPDATE SET
+  title_de = EXCLUDED.title_de,
+  short_desc_de = EXCLUDED.short_desc_de,
+  image = EXCLUDED.image;
+
+-- ====================================================================
+-- SEED PROJECTS / GALLERY DATA
+-- ====================================================================
+INSERT INTO public.projects (id, title, subtitle, category, before_img, after_img, metrics_label, metrics_value, description, sort_order)
+VALUES
+  (
+    'case-office', 'Büroboden & Konferenzraum Tiefenreinigung', 'Kanzlei Ingolstadt – 320 m²', 'Büroreinigung',
+    'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+    'Glanzgrad & Hygiene', '100% Wiederhergestellt',
+    'Vollständige Entfernung alter Laufstraßen und Polymerbeschichtung mit neuem Seidenglanz-Schutzfinish.',
+    1
+  ),
+  (
+    'case-glass', 'Fassaden- & Panoramafenster Osmosereinigung', 'Gewerbepark Ingolstadt – 180 m² Glas', 'Glasreinigung',
+    'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80',
+    'Lichtdurchlässigkeit', '+45% Streifenfrei',
+    'Rückstandsfreie Beseitigung hartnäckiger Umweltschadstoffe, Kalkablagerungen und Pollenfilm ohne Chemie.',
+    2
+  ),
+  (
+    'case-construction', 'Bauendreinigung nach Kernsanierung', 'Wohnanlage Neuburg – 540 m²', 'Baureinigung',
+    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+    'Baufeinstaub', '0% Rückstände',
+    'Schlüsselfertige Übergabe: Beseitigung von Zementschleiern, Farbklecksen und vollständige Feinstaub-Entfernung.',
+    3
+  )
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  before_img = EXCLUDED.before_img,
+  after_img = EXCLUDED.after_img;
+
+-- ====================================================================
+-- SEED REVIEWS & REPUTATION DATA
+-- ====================================================================
 INSERT INTO public.reviews (id, name, service, rating, comment, status)
 VALUES 
-  ('11111111-1111-1111-1111-111111111111', 'Markus Weber', 'Büroreinigung', 5, 'Dua & Ari kümmert sich seit über einem Jahr um unsere Büroflächen in Ingolstadt. Absolut pünktlich, gründlich und zuverlässig!', 'approved'),
-  ('22222222-2222-2222-2222-222222222222', 'Elena Schmidt', 'Fensterreinigung', 5, 'Die Fensterreinigung in unserem Einfamilienhaus war erstklassig. Streifenfreier Glanz und sehr freundliches Team. Sehr zu empfehlen!', 'approved'),
-  ('33333333-3333-3333-3333-333333333333', 'Dr. Thomas Huber', 'Grundreinigung', 5, 'Hervorragende Grundreinigung nach unserem Umbau. Das Team arbeitet schnell, professionell und mit modernsten Geräten.', 'approved')
-ON CONFLICT (id) DO NOTHING;
+  ('11111111-1111-1111-1111-111111111111', 'Dr. Markus Weber', 'Büro- & Praxisreinigung', 5, 'Dua & Ari kümmert sich seit über zwei Jahren um unsere Praxisräume in Ingolstadt. Die Einhaltung der Hygienevorschriften und die Zuverlässigkeit sind beispielhaft!', 'approved'),
+  ('22222222-2222-2222-2222-222222222222', 'Sabine Lindner', 'Treppenhaus- & Glasreinigung', 5, 'Wir lassen über 15 Liegenschaften im Bereich Treppenhaus- und Glasreinigung von Dua & Ari reinigen. Keine Beschwerden mehr von Eigentümern und faire Preise!', 'approved'),
+  ('33333333-3333-3333-3333-333333333333', 'Florian Huber', 'Büroreinigung', 5, 'Unser Großraumbüro und die Besprechungsräume glänzen jeden Morgen perfekt. Besonders schätze ich die Diskretion und die umweltfreundlichen Reinigungsmittel.', 'approved'),
+  ('44444444-4444-4444-4444-444444444444', 'Elena Petrovic', 'Baureinigung', 5, 'Die Bauendreinigung unseres 8-Parteien-Neubaus wurde in Rekordzeit und mit herausragender Gründlichkeit durchgeführt. Zementschleier und Baustaub restlos beseitigt.', 'approved'),
+  ('55555555-5555-5555-5555-555555555555', 'Michael & Claudia Schuster', 'Glas- & Fensterreinigung', 5, 'Wir haben die Fenster- und Wintergartenreinigung gebucht. So sauber waren unsere Scheiben seit dem Einzug nicht mehr! Pünktlich und freundlich.', 'approved')
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  comment = EXCLUDED.comment,
+  status = EXCLUDED.status;
 
--- SEED ADMIN 1: admin@duaari-gebaeudereinigung.de
+-- ====================================================================
+-- SEED ADMIN USERS IN AUTH.USERS & PROFILES
+-- ====================================================================
+
+-- Admin 1: admin@duaari-gebaeudereinigung.de
 INSERT INTO auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
   recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data,
@@ -111,7 +266,7 @@ INSERT INTO public.profiles (id, email, role)
 VALUES ('a0000000-0000-0000-0000-000000000001', 'admin@duaari-gebaeudereinigung.de', 'admin')
 ON CONFLICT (id) DO UPDATE SET role = 'admin';
 
--- SEED ADMIN 2: duariservice@gmail.com
+-- Admin 2: duariservice@gmail.com
 INSERT INTO auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
   recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data,
@@ -129,32 +284,38 @@ INSERT INTO public.profiles (id, email, role)
 VALUES ('a0000000-0000-0000-0000-000000000002', 'duariservice@gmail.com', 'admin')
 ON CONFLICT (id) DO UPDATE SET role = 'admin';
 
--- RLS HELPER FUNCTION
+-- ====================================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- ====================================================================
+
 CREATE OR REPLACE FUNCTION public.is_admin() RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- RLS POLICIES
+-- POLICIES FOR profiles
 DROP POLICY IF EXISTS "Public profiles view" ON public.profiles;
 CREATE POLICY "Public profiles view" ON public.profiles FOR SELECT USING (auth.uid() = id OR public.is_admin());
 
 DROP POLICY IF EXISTS "Admin update profiles" ON public.profiles;
 CREATE POLICY "Admin update profiles" ON public.profiles FOR UPDATE USING (public.is_admin());
 
+-- POLICIES FOR contact_messages
 DROP POLICY IF EXISTS "Anyone submit contact messages" ON public.contact_messages;
 CREATE POLICY "Anyone submit contact messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Admin manage contact messages" ON public.contact_messages;
 CREATE POLICY "Admin manage contact messages" ON public.contact_messages FOR ALL USING (public.is_admin());
 
+-- POLICIES FOR quote_requests
 DROP POLICY IF EXISTS "Anyone submit quote requests" ON public.quote_requests;
 CREATE POLICY "Anyone submit quote requests" ON public.quote_requests FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Admin manage quote requests" ON public.quote_requests;
 CREATE POLICY "Admin manage quote requests" ON public.quote_requests FOR ALL USING (public.is_admin());
 
+-- POLICIES FOR reviews
 DROP POLICY IF EXISTS "Anyone read approved reviews" ON public.reviews;
 CREATE POLICY "Anyone read approved reviews" ON public.reviews FOR SELECT USING (status = 'approved' OR public.is_admin());
 
@@ -164,6 +325,21 @@ CREATE POLICY "Anyone submit review" ON public.reviews FOR INSERT WITH CHECK (tr
 DROP POLICY IF EXISTS "Admin manage reviews" ON public.reviews;
 CREATE POLICY "Admin manage reviews" ON public.reviews FOR ALL USING (public.is_admin());
 
+-- POLICIES FOR services
+DROP POLICY IF EXISTS "Anyone read services" ON public.services;
+CREATE POLICY "Anyone read services" ON public.services FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Admin manage services" ON public.services;
+CREATE POLICY "Admin manage services" ON public.services FOR ALL USING (public.is_admin());
+
+-- POLICIES FOR projects
+DROP POLICY IF EXISTS "Anyone read projects" ON public.projects;
+CREATE POLICY "Anyone read projects" ON public.projects FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Admin manage projects" ON public.projects;
+CREATE POLICY "Admin manage projects" ON public.projects FOR ALL USING (public.is_admin());
+
+-- POLICIES FOR site_settings
 DROP POLICY IF EXISTS "Anyone view site settings" ON public.site_settings;
 CREATE POLICY "Anyone view site settings" ON public.site_settings FOR SELECT USING (true);
 

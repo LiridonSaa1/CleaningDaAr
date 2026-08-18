@@ -1,226 +1,229 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight, Image as ImageIcon } from 'lucide-react';
 import { Language } from '../types';
+import { getProjects, ProjectDbItem } from '../lib/supabase';
+import { BEFORE_AFTER_CASES } from '../data/content';
 
 interface GallerySectionProps {
   lang: Language;
 }
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
-  const [activeModalProject, setActiveModalProject] = useState<{
-    id: string;
-    title: string;
-    titleDe: string;
-    titleEn: string;
-    badgeDe: string;
-    badgeEn: string;
-    descDe: string;
-    descEn: string;
-    image: string;
-  } | null>(null);
+  const [projectsList, setProjectsList] = useState<ProjectDbItem[]>([]);
+  const [activeModalProject, setActiveModalProject] = useState<ProjectDbItem | null>(null);
 
-  const featuredProject = {
-    id: 'project-home',
-    title: lang === 'de' ? 'Glänzendes Einfamilienhaus' : 'Sparkling Family Residence',
-    titleDe: 'Glänzendes Einfamilienhaus',
-    titleEn: 'Sparkling Family Residence',
-    badgeDe: 'Unterhaltsreinigung',
-    badgeEn: 'Home Cleaning',
-    descDe: 'Vollständige Unterhaltsreinigung für Wohnräume, Bäder, Schlafbereiche und Küchen für dauerhafte Frische und hygienischen Komfort.',
-    descEn: 'Complete home cleaning focused on living areas, bedrooms, bathrooms, and kitchen spaces for a fresher environment.',
-    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1000&q=80',
-  };
+  useEffect(() => {
+    async function loadDynamicProjects() {
+      try {
+        const dbProjects = await getProjects();
+        setProjectsList(dbProjects);
+      } catch (err) {
+        console.warn('Failed loading projects:', err);
+      }
+    }
 
-  const projectCards = [
-    {
-      id: 'project-office',
-      title: lang === 'de' ? 'Professionelle Büroflächen' : 'Corporate Workspace Care',
-      titleDe: 'Professionelle Büroflächen',
-      titleEn: 'Corporate Workspace Care',
-      badgeDe: 'Büroreinigung',
-      badgeEn: 'Office Cleaning',
-      descDe: 'Repräsentative Büroreinigung für saubere Arbeitsplätze, hygienische Oberflächen und ein produktives Geschäftsumfeld.',
-      descEn: 'Professional office cleaning maintaining organized workspaces, sanitized surfaces, and a productive business environment.',
-      image: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 'project-apartment',
-      title: lang === 'de' ? 'Moderne Wohnungsreinigung' : 'Modern Apartment Refresh',
-      titleDe: 'Moderne Wohnungsreinigung',
-      titleEn: 'Modern Apartment Refresh',
-      badgeDe: 'Wohnungsreinigung',
-      badgeEn: 'Apartment Cleaning',
-      descDe: 'Umfassende Wohnungsreinigung für perfekten Wohnkomfort, Hygiene und ein makelloses Wohlfühlklima für die Bewohner.',
-      descEn: 'Comprehensive apartment cleaning to improve cleanliness, comfort, and everyday living experiences for residents.',
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
-    },
-  ];
+    loadDynamicProjects();
+  }, []);
+
+  const displayProjects = projectsList.length > 0 ? projectsList : BEFORE_AFTER_CASES.map(p => ({
+    id: p.id,
+    title: p.title,
+    subtitle: p.subtitle,
+    category: p.category,
+    before_img: p.beforeImg,
+    after_img: p.afterImg,
+    metrics_label: p.metrics?.label || 'Glanzgrad',
+    metrics_value: p.metrics?.value || '100%',
+    description: p.description
+  }));
+
+  const featured = displayProjects[0];
+  const sideCards = displayProjects.slice(1, 4);
 
   return (
-    <section id="projekte" className="py-20 md:py-28 relative scroll-mt-20 bg-[#F4F8FF]">
+    <section id="galerie" className="py-20 md:py-28 bg-white relative scroll-mt-20 overflow-hidden font-sans">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-14"
         >
-          <span className="text-xs sm:text-[13px] font-semibold tracking-[0.2em] text-[#6B7280] uppercase mb-2 block font-sans">
-            {lang === 'de' ? 'UNSERE ARBEITEN IN BILDERN' : 'OUR PROJECTS'}
+          <span className="text-xs sm:text-[13px] font-semibold tracking-[0.18em] text-[#6B7280] uppercase mb-3 block">
+            {lang === 'de' ? 'UNSERE GALERIE & PROJEKTE' : 'OUR GALLERY & PROJECTS'}
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#111827] tracking-tight leading-tight font-display">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#111827] tracking-tight mb-4 font-display">
             {lang === 'de' ? (
               <>
-                Reinigungsergebnisse, die <span className="text-[#1855EA]">überzeugen.</span>
+                Ergebnisse, die für{' '}
+                <span className="text-[#1855EA]">
+                  sich sprechen
+                </span>
               </>
             ) : (
               <>
-                Cleaning Results That <span className="text-[#1855EA]">Speak Volumes.</span>
+                Results That Speak for{' '}
+                <span className="text-[#1855EA]">
+                  Themselves
+                </span>
               </>
             )}
           </h2>
+          <p className="text-[#4B5563] text-sm sm:text-base max-w-2xl mx-auto font-normal">
+            {lang === 'de'
+              ? 'Ein Einblick in unsere professionell gereinigten Vorher-Nachher Referenzobjekte in Ingolstadt & Region.'
+              : 'A glimpse into our professionally cleaned before-and-after projects across the region.'}
+          </p>
         </motion.div>
 
-        {/* Featured Wide Project Card (Row 1) */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.55 }}
-          className="bg-white rounded-[24px] p-6 sm:p-8 lg:p-9 shadow-xs hover:shadow-md transition-shadow border border-slate-100/90 mb-6 sm:mb-8"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* Left Photo */}
-            <div 
-              onClick={() => setActiveModalProject(featuredProject)}
-              className="relative w-full h-[280px] sm:h-[340px] lg:h-[360px] overflow-hidden rounded-2xl group cursor-pointer"
-            >
-              <img
-                src={featuredProject.image}
-                alt={featuredProject.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-            </div>
-
-            {/* Right Details */}
-            <div className="flex flex-col items-start justify-center">
-              <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-3">
-                {lang === 'de' ? featuredProject.badgeDe : featuredProject.badgeEn}
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[#111827] mb-3 font-display leading-snug">
-                {featuredProject.title}
-              </h3>
-              <p className="text-[#4B5563] text-sm sm:text-base leading-relaxed font-normal mb-6">
-                {lang === 'de' ? featuredProject.descDe : featuredProject.descEn}
-              </p>
-              <button
-                onClick={() => setActiveModalProject(featuredProject)}
-                className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-2"
-              >
-                <span>{lang === 'de' ? 'Mehr erfahren' : 'Read More'}</span>
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Bottom 2 Equal Column Project Cards (Row 2) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {projectCards.map((card, idx) => (
+        {/* Dynamic Gallery Grid (Featured Left + 3 Cards Right) */}
+        {featured && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+            
+            {/* Left Featured Big Card */}
             <motion.div
-              key={card.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, delay: 0.1 * (idx + 1) }}
-              className="bg-white rounded-[24px] p-6 sm:p-8 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-slate-100/90 flex flex-col justify-between h-full"
+              transition={{ duration: 0.5 }}
+              onClick={() => setActiveModalProject(featured)}
+              className="lg:col-span-7 bg-slate-900 rounded-3xl overflow-hidden shadow-xl relative min-h-[380px] sm:min-h-[440px] flex flex-col justify-end group cursor-pointer border border-slate-200/80"
             >
-              <div>
-                {/* Photo */}
-                <div 
-                  onClick={() => setActiveModalProject(card)}
-                  className="relative w-full h-[240px] sm:h-[270px] overflow-hidden rounded-2xl mb-6 group cursor-pointer"
-                >
-                  <img
-                    src={card.image}
-                    alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
+              {/* Dual Before / After Image Split */}
+              <div className="absolute inset-0 grid grid-cols-2 gap-0.5 opacity-90 group-hover:scale-105 transition-transform duration-500">
+                <div className="relative h-full overflow-hidden">
+                  <img src={featured.before_img} alt="Before" className="w-full h-full object-cover" />
+                  <span className="absolute top-4 left-4 bg-slate-900/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Vorher</span>
                 </div>
-
-                {/* Badge & Title */}
-                <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-3">
-                  {lang === 'de' ? card.badgeDe : card.badgeEn}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#111827] mb-2 font-display leading-snug">
-                  {card.title}
-                </h3>
-                <p className="text-[#4B5563] text-sm sm:text-[15px] leading-relaxed font-normal mb-6">
-                  {lang === 'de' ? card.descDe : card.descEn}
-                </p>
+                <div className="relative h-full overflow-hidden">
+                  <img src={featured.after_img} alt="After" className="w-full h-full object-cover" />
+                  <span className="absolute top-4 right-4 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Nachher</span>
+                </div>
               </div>
 
-              {/* Button */}
-              <div>
-                <button
-                  onClick={() => setActiveModalProject(card)}
-                  className="bg-[#1855EA] hover:bg-[#1344C4] active:scale-95 text-white text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-2"
-                >
-                  <span>{lang === 'de' ? 'Mehr erfahren' : 'Read More'}</span>
-                </button>
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none" />
+
+              {/* Text Badge Info */}
+              <div className="relative z-10 p-6 sm:p-8 space-y-2">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#1855EA] text-white text-xs font-bold uppercase tracking-wider">
+                  {featured.category}
+                </span>
+
+                <h3 className="text-xl sm:text-2xl font-bold text-white font-display">
+                  {featured.title}
+                </h3>
+
+                {featured.subtitle && (
+                  <p className="text-xs text-blue-200 font-medium">
+                    {featured.subtitle}
+                  </p>
+                )}
               </div>
             </motion.div>
-          ))}
-        </div>
+
+            {/* Right Stack of 3 Side Cards */}
+            <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+              {sideCards.map((proj, idx) => (
+                <motion.div
+                  key={proj.id || idx}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: idx * 0.1 }}
+                  onClick={() => setActiveModalProject(proj)}
+                  className="bg-slate-50 hover:bg-blue-50/50 rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center gap-4 group"
+                >
+                  <div className="w-24 h-20 rounded-xl overflow-hidden relative shrink-0 bg-slate-200">
+                    <img src={proj.after_img} alt={proj.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                    <span className="absolute bottom-1 right-1 bg-emerald-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">Nachher</span>
+                  </div>
+
+                  <div className="overflow-hidden flex-1">
+                    <span className="text-[10px] font-bold text-[#1855EA] uppercase tracking-wider block">
+                      {proj.category}
+                    </span>
+                    <h4 className="text-sm font-bold text-slate-900 truncate font-display group-hover:text-[#1855EA] transition-colors">
+                      {proj.title}
+                    </h4>
+                    <p className="text-xs text-slate-500 truncate mt-0.5 font-normal">
+                      {proj.subtitle || proj.description}
+                    </p>
+                  </div>
+
+                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#1855EA] group-hover:translate-x-1 transition-all shrink-0" />
+                </motion.div>
+              ))}
+            </div>
+
+          </div>
+        )}
 
       </div>
 
-      {/* Project Lightbox Modal */}
-      <AnimatePresence>
-        {activeModalProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white max-w-3xl w-full rounded-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative shadow-2xl border border-slate-100"
+      {/* PROJECT DETAIL MODAL */}
+      {activeModalProject && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto font-sans">
+            <button
+              onClick={() => setActiveModalProject(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 cursor-pointer"
             >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 text-[#1855EA] flex items-center justify-center font-bold">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 font-display">{activeModalProject.title}</h3>
+                <span className="text-xs text-[#1855EA] font-bold">{activeModalProject.category} • {activeModalProject.subtitle}</span>
+              </div>
+            </div>
+
+            {/* Before vs After Dual Comparison */}
+            <div className="grid grid-cols-2 gap-3 h-56 rounded-2xl overflow-hidden bg-slate-100">
+              <div className="relative h-full">
+                <img src={activeModalProject.before_img} alt="Before" className="w-full h-full object-cover" />
+                <span className="absolute top-3 left-3 bg-slate-900/80 text-white text-xs font-bold px-3 py-1 rounded-md uppercase">Vorher</span>
+              </div>
+              <div className="relative h-full">
+                <img src={activeModalProject.after_img} alt="After" className="w-full h-full object-cover" />
+                <span className="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-md uppercase">Nachher</span>
+              </div>
+            </div>
+
+            {activeModalProject.metrics_value && (
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200/60 flex items-center justify-between text-xs">
+                <span className="font-bold text-emerald-900">{activeModalProject.metrics_label || 'Kundenzufriedenheit'}</span>
+                <span className="font-extrabold text-emerald-700">{activeModalProject.metrics_value}</span>
+              </div>
+            )}
+
+            {activeModalProject.description && (
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                {activeModalProject.description}
+              </p>
+            )}
+
+            <div className="flex items-center justify-end pt-3 border-t border-slate-100">
               <button
                 onClick={() => setActiveModalProject(null)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-                aria-label="Close"
+                className="bg-[#1855EA] text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer hover:bg-[#1344C4] transition-colors"
               >
-                <X className="w-5 h-5" />
+                {lang === 'de' ? 'Schließen' : 'Close'}
               </button>
+            </div>
 
-              <div className="rounded-xl overflow-hidden h-[300px] sm:h-[380px] mb-6">
-                <img
-                  src={activeModalProject.image}
-                  alt={activeModalProject.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <span className="bg-[#F0F5FF] text-[#1855EA] text-xs font-semibold px-3 py-1 rounded-md inline-block mb-2">
-                {lang === 'de' ? activeModalProject.badgeDe : activeModalProject.badgeEn}
-              </span>
-
-              <h3 className="text-2xl font-bold text-[#111827] mb-3 font-display">
-                {activeModalProject.title}
-              </h3>
-
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                {lang === 'de' ? activeModalProject.descDe : activeModalProject.descEn}
-              </p>
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
+
     </section>
   );
 };

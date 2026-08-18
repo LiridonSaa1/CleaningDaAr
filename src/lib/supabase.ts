@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { SERVICES_DATA, BEFORE_AFTER_CASES } from '../data/content';
 
 // Environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -55,6 +56,38 @@ export interface ReviewItem {
   created_at: string;
 }
 
+export interface ServiceDbItem {
+  id: string;
+  title_de: string;
+  title_en: string;
+  category: string;
+  badge?: string;
+  price_from?: string;
+  short_desc_de: string;
+  short_desc_en: string;
+  full_desc?: string;
+  icon_name?: string;
+  image: string;
+  checklist?: string[];
+  benefits?: string[];
+  sort_order?: number;
+  created_at?: string;
+}
+
+export interface ProjectDbItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  category: string;
+  before_img: string;
+  after_img: string;
+  metrics_label?: string;
+  metrics_value?: string;
+  description?: string;
+  sort_order?: number;
+  created_at?: string;
+}
+
 export interface SiteSettingsData {
   id?: number;
   phone_primary: string;
@@ -66,12 +99,83 @@ export interface SiteSettingsData {
   working_hours_mon_wed: string;
   working_hours_thu_fri: string;
   working_hours_weekend: string;
+  updated_at?: string;
 }
 
-// Default Fallback Data for Site Settings
+// Initial Mock Data Fallbacks
+export const INITIAL_MOCK_MESSAGES: ContactMessageItem[] = [
+  {
+    id: 'msg-1',
+    name: 'Dr. Markus Weber',
+    email: 'm.weber@praxis-ingolstadt.de',
+    phone: '+49 171 2345678',
+    subject: 'Anfrage Büroreinigung',
+    message: 'Guten Tag, wir suchen eine zuverlässige Reinigungsfirma für unsere Praxisräume in Ingolstadt (ca. 220 m²). Bitte um Rückruf.',
+    status: 'new',
+    created_at: new Date(Date.now() - 3600000 * 4).toISOString()
+  },
+  {
+    id: 'msg-2',
+    name: 'Sabine Lindner',
+    email: 's.lindner@bayern-immo.de',
+    phone: '+49 172 9876543',
+    subject: 'Treppenhausreinigung Liegenschaften',
+    message: 'Hallo Team Dua & Ari, wir betreuen 12 Wohnanlagen in Pfaffenhofen und möchten die Treppenhausreinigung auslagern.',
+    status: 'read',
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString()
+  }
+];
+
+export const INITIAL_MOCK_QUOTES: QuoteRequestItem[] = [
+  {
+    id: 'quote-1',
+    name: 'Michael Schuster',
+    email: 'm.schuster@gmx.de',
+    phone: '+49 176 11223344',
+    service: 'Unterhaltsreinigung',
+    property_type: 'Haus',
+    square_meters: 140,
+    rooms_count: 5,
+    bathrooms_count: 2,
+    frequency: '14-Tägig',
+    address: 'Feldkirchener Str. 42',
+    city: 'Ingolstadt',
+    zip_code: '85055',
+    preferred_date: '2026-09-01',
+    preferred_time: 'Vormittags',
+    message: 'Wir haben Haustiere (Hund). Bitte ökologische Reiniger verwenden.',
+    status: 'new',
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
+  }
+];
+
+export const INITIAL_MOCK_REVIEWS: ReviewItem[] = [
+  {
+    id: '11111111-1111-1111-1111-111111111111',
+    name: 'Dr. Markus Weber',
+    email: 'm.weber@praxis.de',
+    service: 'Büroreinigung',
+    rating: 5,
+    comment: 'Dua & Ari kümmert sich seit über einem Jahr um unsere Büroflächen in Ingolstadt. Absolut pünktlich, gründlich und zuverlässig!',
+    status: 'approved',
+    created_at: new Date(Date.now() - 86400000 * 10).toISOString()
+  },
+  {
+    id: '22222222-2222-2222-2222-222222222222',
+    name: 'Elena Schmidt',
+    email: 'elena@schmidt.de',
+    service: 'Fensterreinigung',
+    rating: 5,
+    comment: 'Die Fensterreinigung in unserem Einfamilienhaus war erstklassig. Streifenfreier Glanz und sehr freundliches Team.',
+    status: 'approved',
+    created_at: new Date(Date.now() - 86400000 * 5).toISOString()
+  }
+];
+
 export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
+  id: 1,
   phone_primary: '+49 (0) 172 913 7116',
-  email_primary: 'info@duaari-gebaeudereinigung.de',
+  email_primary: 'DuaAricleanservice@gmail.com',
   street: 'Holznerstraße 11',
   city: '85053 Ingolstadt',
   business_name: 'Dua & Ari Gebäudereinigung',
@@ -81,131 +185,21 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   working_hours_weekend: 'Notdienst 24/7'
 };
 
-// Default Mock Data for Local Testing
-const INITIAL_MOCK_MESSAGES: ContactMessageItem[] = [
-  {
-    id: 'msg-1',
-    name: 'Robert Meyer',
-    email: 'r.meyer@gmx.de',
-    phone: '+49 160 882194',
-    subject: 'Büroreinigung Anfrage',
-    message: 'Guten Tag, wir suchen für unsere Büroräume in Ingolstadt (ca. 250 m²) eine regelmäßige Unterhaltsreinigung 2x pro Woche. Bitte senden Sie uns ein Angebot.',
-    status: 'new',
-    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
-  },
-  {
-    id: 'msg-2',
-    name: 'Sabine Fischer',
-    email: 'sabine.fischer@web.de',
-    phone: '+49 171 445210',
-    subject: 'Fensterreinigung Privathaushalt',
-    message: 'Hallo, ich würde gerne wissen, was die Fensterreinigung für ein 2-stöckiges Einfamilienhaus kostet.',
-    status: 'read',
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString()
-  },
-  {
-    id: 'msg-3',
-    name: 'Michael Kurz',
-    email: 'm.kurz@autohaus-kurz.de',
-    phone: '+49 841 99120',
-    subject: 'Grundreinigung Ausstellungsraum',
-    message: 'Wir benötigen eine intensivere Grundreinigung für unseren Verkaufsraum vor der Neueröffnung.',
-    status: 'replied',
-    created_at: new Date(Date.now() - 3600000 * 48).toISOString()
-  }
-];
-
-const INITIAL_MOCK_QUOTES: QuoteRequestItem[] = [
-  {
-    id: 'quote-1',
-    name: 'Alexander Weber',
-    email: 'a.weber@tech-solutions.de',
-    phone: '+49 172 881234',
-    service: 'Büroreinigung',
-    property_type: 'commercial',
-    square_meters: 350,
-    rooms_count: 8,
-    bathrooms_count: 3,
-    frequency: 'weekly',
-    address: 'Münchner Straße 45',
-    city: 'Ingolstadt',
-    zip_code: '85051',
-    preferred_date: '2026-08-25',
-    preferred_time: 'morning',
-    message: 'Reinigung bevorzugt außerhalb der Bürozeiten morgens vor 08:00 Uhr.',
-    status: 'new',
-    created_at: new Date(Date.now() - 3600000 * 5).toISOString()
-  },
-  {
-    id: 'quote-2',
-    name: 'Monika Wagner',
-    email: 'monika.wagner@outlook.com',
-    phone: '+49 151 772391',
-    service: 'Grundreinigung',
-    property_type: 'house',
-    square_meters: 180,
-    rooms_count: 5,
-    bathrooms_count: 2,
-    frequency: 'onetime',
-    address: 'Goethestraße 12',
-    city: 'Manching',
-    zip_code: '85077',
-    preferred_date: '2026-08-28',
-    preferred_time: 'afternoon',
-    message: 'Nach Renovierungsarbeiten gründliche Staubentfernung gewünscht.',
-    status: 'quoted',
-    created_at: new Date(Date.now() - 3600000 * 30).toISOString()
-  }
-];
-
-const INITIAL_MOCK_REVIEWS: ReviewItem[] = [
-  {
-    id: 'rev-1',
-    name: 'Markus Weber',
-    email: 'm.weber@gmx.de',
-    service: 'Büroreinigung',
-    rating: 5,
-    comment: 'Dua & Ari kümmert sich seit über einem Jahr um unsere Büroflächen in Ingolstadt. Absolut pünktlich, gründlich und zuverlässig!',
-    status: 'approved',
-    created_at: new Date(Date.now() - 3600000 * 100).toISOString()
-  },
-  {
-    id: 'rev-2',
-    name: 'Elena Schmidt',
-    email: 'elena.s@web.de',
-    service: 'Fensterreinigung',
-    rating: 5,
-    comment: 'Die Fensterreinigung in unserem Einfamilienhaus war erstklassig. Streifenfreier Glanz und sehr freundliches Team. Sehr zu empfehlen!',
-    status: 'approved',
-    created_at: new Date(Date.now() - 3600000 * 150).toISOString()
-  },
-  {
-    id: 'rev-3',
-    name: 'Dr. Thomas Huber',
-    email: 't.huber@praxis.de',
-    service: 'Grundreinigung',
-    rating: 5,
-    comment: 'Hervorragende Grundreinigung nach unserem Umbau. Das Team arbeitet schnell, professionell und mit modernsten Geräten.',
-    status: 'approved',
-    created_at: new Date(Date.now() - 3600000 * 200).toISOString()
-  }
-];
-
-// LocalStorage Persistence Helpers for offline testing
+// Helper for localStorage fallback
 function getLocal<T>(key: string, fallback: T): T {
   try {
-    const data = localStorage.getItem(`cleanza_${key}`);
-    return data ? JSON.parse(data) : fallback;
+    const item = localStorage.getItem(`duaari_${key}`);
+    return item ? JSON.parse(item) : fallback;
   } catch {
     return fallback;
   }
 }
 
-function setLocal<T>(key: string, data: T): void {
+function setLocal<T>(key: string, val: T): void {
   try {
-    localStorage.setItem(`cleanza_${key}`, JSON.stringify(data));
-  } catch (err) {
-    console.error('LocalStorage write error:', err);
+    localStorage.setItem(`duaari_${key}`, JSON.stringify(val));
+  } catch (e) {
+    console.error('Error setting localStorage', e);
   }
 }
 
@@ -414,7 +408,7 @@ export async function getReviews(onlyApproved = false): Promise<ReviewItem[]> {
 
       const { data, error } = await Promise.race([query, timeoutPromise]);
 
-      if (!error && data) return data as ReviewItem[];
+      if (!error && data && data.length > 0) return data as ReviewItem[];
     } catch (err) {
       console.warn('Supabase reviews fetch error:', err);
     }
@@ -454,7 +448,7 @@ export async function addReview(review: Omit<ReviewItem, 'id' | 'created_at'>): 
   return newItem;
 }
 
-export async function updateReview(id: string, updates: Partial<Omit<ReviewItem, 'id' | 'created_at'>>): Promise<boolean> {
+export async function updateReview(id: string, updates: Partial<ReviewItem>): Promise<boolean> {
   if (isSupabaseConfigured) {
     const { error } = await supabase
       .from('reviews')
@@ -487,17 +481,219 @@ export async function deleteReview(id: string): Promise<boolean> {
 }
 
 // ====================================================================
+// SERVICES DYNAMIC CRUD
+// ====================================================================
+export async function getServices(): Promise<ServiceDbItem[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const queryPromise = supabase
+        .from('services')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      if (!error && data && data.length > 0) return data as ServiceDbItem[];
+    } catch (err) {
+      console.warn('Supabase services fetch error:', err);
+    }
+  }
+
+  // Fallback to static SERVICES_DATA mapped to DB format
+  const fallbackServices: ServiceDbItem[] = SERVICES_DATA.map((s, idx) => ({
+    id: s.id,
+    title_de: s.titleDe || s.title,
+    title_en: s.titleEn || s.title,
+    category: s.category,
+    badge: s.badge || '',
+    price_from: s.priceFrom || '',
+    short_desc_de: s.shortDescriptionDe || s.shortDescription,
+    short_desc_en: s.shortDescriptionEn || s.shortDescription,
+    full_desc: s.fullDescription || '',
+    icon_name: s.iconName || 'Sparkles',
+    image: s.image,
+    checklist: s.checklist || [],
+    benefits: s.benefits || [],
+    sort_order: idx + 1
+  }));
+
+  return getLocal<ServiceDbItem[]>('services', fallbackServices);
+}
+
+export async function addService(service: Omit<ServiceDbItem, 'created_at'>): Promise<ServiceDbItem> {
+  const newItem: ServiceDbItem = {
+    ...service,
+    created_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured) {
+    const { data, error } = await supabase
+      .from('services')
+      .insert([service])
+      .select()
+      .single();
+
+    if (!error && data) return data as ServiceDbItem;
+  }
+
+  const current = await getServices();
+  const updated = [...current, newItem];
+  setLocal('services', updated);
+  return newItem;
+}
+
+export async function updateService(id: string, updates: Partial<ServiceDbItem>): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    const { error } = await supabase
+      .from('services')
+      .update(updates)
+      .eq('id', id);
+
+    if (!error) return true;
+  }
+
+  const current = await getServices();
+  const updated = current.map(s => s.id === id ? { ...s, ...updates } : s);
+  setLocal('services', updated);
+  return true;
+}
+
+export async function deleteService(id: string): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    const { error } = await supabase
+      .from('services')
+      .delete()
+      .eq('id', id);
+
+    if (!error) return true;
+  }
+
+  const current = await getServices();
+  const updated = current.filter(s => s.id !== id);
+  setLocal('services', updated);
+  return true;
+}
+
+// ====================================================================
+// PROJECTS / GALLERY DYNAMIC CRUD
+// ====================================================================
+export async function getProjects(): Promise<ProjectDbItem[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const queryPromise = supabase
+        .from('projects')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      if (!error && data && data.length > 0) return data as ProjectDbItem[];
+    } catch (err) {
+      console.warn('Supabase projects fetch error:', err);
+    }
+  }
+
+  // Fallback to static BEFORE_AFTER_CASES mapped to DB format
+  const fallbackProjects: ProjectDbItem[] = BEFORE_AFTER_CASES.map((p, idx) => ({
+    id: p.id,
+    title: p.title,
+    subtitle: p.subtitle,
+    category: p.category,
+    before_img: p.beforeImg,
+    after_img: p.afterImg,
+    metrics_label: p.metrics?.label || 'Kundenzufriedenheit',
+    metrics_value: p.metrics?.value || '100%',
+    description: p.description,
+    sort_order: idx + 1
+  }));
+
+  return getLocal<ProjectDbItem[]>('projects', fallbackProjects);
+}
+
+export async function addProject(project: Omit<ProjectDbItem, 'created_at'>): Promise<ProjectDbItem> {
+  const newItem: ProjectDbItem = {
+    ...project,
+    created_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured) {
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([project])
+      .select()
+      .single();
+
+    if (!error && data) return data as ProjectDbItem;
+  }
+
+  const current = await getProjects();
+  const updated = [...current, newItem];
+  setLocal('projects', updated);
+  return newItem;
+}
+
+export async function updateProject(id: string, updates: Partial<ProjectDbItem>): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    const { error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', id);
+
+    if (!error) return true;
+  }
+
+  const current = await getProjects();
+  const updated = current.map(p => p.id === id ? { ...p, ...updates } : p);
+  setLocal('projects', updated);
+  return true;
+}
+
+export async function deleteProject(id: string): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id);
+
+    if (!error) return true;
+  }
+
+  const current = await getProjects();
+  const updated = current.filter(p => p.id !== id);
+  setLocal('projects', updated);
+  return true;
+}
+
+// ====================================================================
 // SITE SETTINGS CRUD
 // ====================================================================
 export async function getSiteSettings(): Promise<SiteSettingsData> {
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
-      .from('site_settings')
-      .select('*')
-      .eq('id', 1)
-      .single();
+    try {
+      const queryPromise = supabase
+        .from('site_settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
 
-    if (!error && data) return data as SiteSettingsData;
+      const timeoutPromise = new Promise<{ data: null; error: true }>((resolve) => 
+        setTimeout(() => resolve({ data: null, error: true }), 1500)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
+      if (!error && data) return data as SiteSettingsData;
+    } catch (err) {
+      console.warn('Supabase site_settings fetch error:', err);
+    }
   }
 
   return getLocal<SiteSettingsData>('site_settings', DEFAULT_SITE_SETTINGS);
