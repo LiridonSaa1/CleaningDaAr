@@ -303,17 +303,13 @@ CREATE POLICY "Admin update profiles" ON public.profiles FOR UPDATE USING (publi
 
 -- POLICIES FOR contact_messages
 DROP POLICY IF EXISTS "Anyone submit contact messages" ON public.contact_messages;
-CREATE POLICY "Anyone submit contact messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
-
 DROP POLICY IF EXISTS "Admin manage contact messages" ON public.contact_messages;
-CREATE POLICY "Admin manage contact messages" ON public.contact_messages FOR ALL USING (true);
+CREATE POLICY "Anyone manage contact messages" ON public.contact_messages FOR ALL USING (true) WITH CHECK (true);
 
 -- POLICIES FOR quote_requests
 DROP POLICY IF EXISTS "Anyone submit quote requests" ON public.quote_requests;
-CREATE POLICY "Anyone submit quote requests" ON public.quote_requests FOR INSERT WITH CHECK (true);
-
 DROP POLICY IF EXISTS "Admin manage quote requests" ON public.quote_requests;
-CREATE POLICY "Admin manage quote requests" ON public.quote_requests FOR ALL USING (true);
+CREATE POLICY "Anyone manage quote requests" ON public.quote_requests FOR ALL USING (true) WITH CHECK (true);
 
 -- POLICIES FOR reviews
 DROP POLICY IF EXISTS "Anyone read approved reviews" ON public.reviews;

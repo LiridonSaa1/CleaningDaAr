@@ -331,7 +331,18 @@ export async function getQuoteRequests(): Promise<QuoteRequestItem[]> {
         supabase.from('quote_requests').select('*').order('created_at', { ascending: false })
       );
 
-      if (result && !result.error && result.data) return result.data as QuoteRequestItem[];
+      if (result && !result.error && result.data) {
+        const localList = getLocal<QuoteRequestItem[]>('quote_requests', []);
+        const map = new Map<string, QuoteRequestItem>();
+        (result.data as QuoteRequestItem[]).forEach(item => map.set(item.id, item));
+        localList.forEach(item => {
+          if (!map.has(item.id)) map.set(item.id, item);
+        });
+        const combined = Array.from(map.values()).sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        return combined.length > 0 ? combined : INITIAL_MOCK_QUOTES;
+      }
     } catch (err) {
       console.warn('Supabase quote requests fetch error:', err);
     }
