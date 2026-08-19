@@ -46,7 +46,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
   }));
 
   const featured = displayProjects[0];
-  const sideCards = displayProjects.slice(1, 4);
+  const sideCards = displayProjects.slice(1);
 
   return (
     <section id="galerie" className="py-20 md:py-28 bg-white relative scroll-mt-20 overflow-hidden font-sans">
@@ -87,7 +87,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
           </p>
         </motion.div>
 
-        {/* Dynamic Gallery Grid (Featured Left + 3 Cards Right) */}
+        {/* Dynamic Gallery Grid (Featured Left + Side Cards Right) */}
         {featured && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
             
@@ -133,8 +133,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
               </div>
             </motion.div>
 
-            {/* Right Stack of 3 Side Cards */}
-            <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+            {/* Right Stack of Side Cards with Scrollbar when >3 items */}
+            <div className="lg:col-span-5 flex flex-col gap-4 max-h-[450px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
               {sideCards.map((proj, idx) => (
                 <motion.div
                   key={proj.id || idx}
