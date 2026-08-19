@@ -56,17 +56,19 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
   }, []);
 
   const getPromptForId = (id: string) => {
+    // Highly realistic, professional photography parameters (DSLR, 50mm lens, raytraced lighting, photorealism)
+    const suffix = 'award winning architectural digest photography, shot on Hasselblad 100mp, 35mm lens, natural light, raytracing, highly detailed, photorealistic, cinematic lighting, 8k resolution, crisp details';
     switch (id) {
       case 'best-result':
-        return 'professional photo of a spotless modern clean kitchen, marble countertop, bright sunlight, photorealistic, extremely clean, highly detailed, realistic interior design photography';
+        return `hyper-realistic interior photo of a spotless modern white luxury kitchen, marble kitchen island, stainless steel kitchenware, bright natural sunbeams, clean lines, ${suffix}`;
       case 'expert-team':
-        return 'professional friendly cleaning staff wearing blue uniform in a bright modern office, smiling, realistic corporate photography, photorealistic, highly detailed';
+        return `realistic candid photo of a professional friendly cleaner wearing tidy blue uniform dusting a modern office shelf, soft window light, natural depth of field, real life photo, ${suffix}`;
       case 'fast-service':
-        return 'clean modern home workspace, organized minimalist desk, warm sunlight, tidy, realistic interior photography, photorealistic, highly detailed';
+        return `spotless modern cozy home office workspace, minimalist clean desk setup, green plants, warm golden hour sunbeams, extremely tidy, photorealistic architectural photo, ${suffix}`;
       case 'guarantee':
-        return 'cozy modern living room, white sofa, sunbeam, high-end cleaning results, realistic home photography, photorealistic, highly detailed';
+        return `hyper-realistic photo of a high-end clean minimalist living room interior, luxury beige sofa, sunlight rays, dust-free sparkling clean air, interior design magazine photo, ${suffix}`;
       default:
-        return 'professional cleaning service, bright modern interior, high quality photo, realistic, photorealistic';
+        return `professional real life cleaning scene, bright modern luxury home interior, highly realistic photo, ${suffix}`;
     }
   };
 
