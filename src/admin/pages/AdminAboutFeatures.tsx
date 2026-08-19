@@ -102,15 +102,10 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
     setAiGenerating(true);
 
     try {
-      // Clean and sanitize prompt for URL
-      const cleanPrompt = aiPrompt
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\s,.-]/g, '') // remove special characters
-        .replace(/\s+/g, '_'); // replace spaces with underscores
-
+      // Encode prompt correctly for URL parameters
+      const encodedPrompt = encodeURIComponent(aiPrompt.trim());
       const randomSeed = Math.floor(Math.random() * 1000000);
-      const url = `https://image.pollinations.ai/p/${cleanPrompt}?width=800&height=1000&seed=${randomSeed}`;
+      const url = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=1000&seed=${randomSeed}&nologo=true`;
       
       // Update form state with the Pollinations AI URL
       setFormData(prev => ({ ...prev, image: url }));
