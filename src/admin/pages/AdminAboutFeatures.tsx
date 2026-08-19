@@ -55,6 +55,21 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
     fetchFeatures();
   }, []);
 
+  const getPromptForId = (id: string) => {
+    switch (id) {
+      case 'best-result':
+        return 'professional photo of a spotless modern clean kitchen, marble countertop, bright sunlight, photorealistic, extremely clean, highly detailed, realistic interior design photography';
+      case 'expert-team':
+        return 'professional friendly cleaning staff wearing blue uniform in a bright modern office, smiling, realistic corporate photography, photorealistic, highly detailed';
+      case 'fast-service':
+        return 'clean modern home workspace, organized minimalist desk, warm sunlight, tidy, realistic interior photography, photorealistic, highly detailed';
+      case 'guarantee':
+        return 'cozy modern living room, white sofa, sunbeam, high-end cleaning results, realistic home photography, photorealistic, highly detailed';
+      default:
+        return 'professional cleaning service, bright modern interior, high quality photo, realistic, photorealistic';
+    }
+  };
+
   const selectFeature = (feature: AboutFeatureItem) => {
     setActiveCardId(feature.id);
     setFormData({
@@ -67,7 +82,7 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
       image: feature.image,
     });
     // Set a good default AI prompt for image generation
-    setAiPrompt(`professional cleaning service, ${feature.title_de}, bright modern interior, high quality photo, 8k resolution`);
+    setAiPrompt(getPromptForId(feature.id));
   };
 
   const handleCardSwitch = (id: string) => {
@@ -105,7 +120,8 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
       // Encode prompt correctly for URL parameters
       const encodedPrompt = encodeURIComponent(aiPrompt.trim());
       const randomSeed = Math.floor(Math.random() * 1000000);
-      const url = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=1000&seed=${randomSeed}&nologo=true`;
+      // Use Flux model for realistic high-quality photography and no logo watermark
+      const url = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=1000&seed=${randomSeed}&nologo=true&model=flux`;
       
       // Update form state with the Pollinations AI URL
       setFormData(prev => ({ ...prev, image: url }));
