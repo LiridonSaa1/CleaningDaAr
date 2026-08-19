@@ -54,7 +54,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ lang, onOpenQuote }) => {
       
       {/* Main Centered Container */}
       <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 relative z-20">
-        <div className="relative min-h-[220px] sm:min-h-[250px] lg:min-h-[280px] pt-36 lg:pt-10 pb-10 lg:pb-10 flex items-center justify-center">
+        <div className="relative min-h-[220px] sm:min-h-[250px] lg:min-h-[280px] pt-10 sm:pt-12 lg:pt-10 pb-10 lg:pb-10 flex items-center justify-center">
           
           {/* Cleaner Woman Photo 100% FLUSH at bottom-0 with exact requested offset & width */}
           <div 

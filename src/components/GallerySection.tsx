@@ -49,7 +49,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
   const sideCards = displayProjects.slice(1);
 
   return (
-    <section id="galerie" className="py-20 md:py-28 bg-white relative scroll-mt-20 overflow-hidden font-sans">
+    <section id="projekte" className="py-20 md:py-28 bg-white relative scroll-mt-20 overflow-hidden font-sans">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

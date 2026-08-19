@@ -197,10 +197,10 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote,
                 transition={{ duration: 0.6 }}
                 className="text-4xl sm:text-5xl lg:text-[46px] xl:text-[54px] 2xl:text-[60px] font-bold tracking-[-0.02em] leading-[1.12] mb-3 sm:mb-6 font-display"
               >
-                <span className="text-[#1855EA] block whitespace-nowrap">
+                <span className="text-[#1855EA] block sm:whitespace-nowrap">
                   {lang === 'de' ? 'Professionelle Reinigung' : 'Professional Cleaning'}
                 </span>
-                <span className="text-[#111827] block whitespace-nowrap">
+                <span className="text-[#111827] block sm:whitespace-nowrap">
                   {lang === 'de' ? 'Für jedes Objekt.' : 'For Every Space.'}
                 </span>
               </motion.h1>
