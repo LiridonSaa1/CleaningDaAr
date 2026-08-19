@@ -9,6 +9,7 @@ import { AdminReviews } from './pages/AdminReviews';
 import { AdminSettings } from './pages/AdminSettings';
 import { AdminServices } from './pages/AdminServices';
 import { AdminProjects } from './pages/AdminProjects';
+import { AdminAboutFeatures } from './pages/AdminAboutFeatures';
 import { AdminTab } from './types';
 import { 
   ContactMessageItem, 
@@ -161,6 +162,12 @@ const AdminContent: React.FC<AdminAppProps> = ({ onGoToWebsite }) => {
       {activeTab === 'settings' && (
         <AdminSettings
           onSettingsUpdated={fetchAllData}
+        />
+      )}
+
+      {activeTab === 'about' && (
+        <AdminAboutFeatures
+          refreshData={fetchAllData}
         />
       )}
     </AdminLayout>

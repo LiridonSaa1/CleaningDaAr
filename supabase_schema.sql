@@ -116,6 +116,23 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 );
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
+-- 9. ABOUT FEATURES TABLE (WHY CHOOSE US / ADVANTAGES)
+CREATE TABLE IF NOT EXISTS public.about_features (
+  id TEXT PRIMARY KEY,
+  title_de TEXT NOT NULL,
+  title_en TEXT NOT NULL,
+  description_de TEXT NOT NULL,
+  description_en TEXT NOT NULL,
+  image TEXT NOT NULL,
+  badge_de TEXT DEFAULT '',
+  badge_en TEXT DEFAULT '',
+  alt_de TEXT DEFAULT '',
+  alt_en TEXT DEFAULT '',
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE public.about_features ENABLE ROW LEVEL SECURITY;
+
 -- ====================================================================
 -- SEED DEFAULT SITE SETTINGS
 -- ====================================================================
@@ -341,6 +358,13 @@ CREATE POLICY "Anyone view site settings" ON public.site_settings FOR SELECT USI
 
 DROP POLICY IF EXISTS "Admin update site settings" ON public.site_settings;
 CREATE POLICY "Admin update site settings" ON public.site_settings FOR ALL USING (public.is_admin());
+
+-- POLICIES FOR about_features
+DROP POLICY IF EXISTS "Anyone view about features" ON public.about_features;
+CREATE POLICY "Anyone view about features" ON public.about_features FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Admin manage about features" ON public.about_features;
+CREATE POLICY "Admin manage about features" ON public.about_features FOR ALL USING (true); -- Permit read/write for seed & simplicity
 
 -- USER SIGNUP TRIGGER
 CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS TRIGGER AS $$

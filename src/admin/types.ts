@@ -1,4 +1,4 @@
-export type AdminTab = 'dashboard' | 'messages' | 'quotes' | 'services' | 'projects' | 'reviews' | 'settings';
+export type AdminTab = 'dashboard' | 'messages' | 'quotes' | 'services' | 'projects' | 'reviews' | 'settings' | 'about';
 
 export interface AdminUser {
   id: string;

@@ -12,7 +12,8 @@ import {
   Shield, 
   Sparkles,
   Database,
-  Send
+  Send,
+  Info
 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { AdminTab } from '../types';
@@ -69,6 +70,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       id: 'projects' as AdminTab,
       label: 'Galerie & Referenzen',
       icon: Send,
+      badge: 0
+    },
+    {
+      id: 'about' as AdminTab,
+      label: 'Vorteile & About',
+      icon: Info,
       badge: 0
     },
     {

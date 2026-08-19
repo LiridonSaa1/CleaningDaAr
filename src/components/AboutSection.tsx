@@ -1,101 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language } from '../types';
 import { Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
-
-import bestResultImage from '../assets/images/give_best_result_cleaning_1786976252414.jpg';
-import expertTeamImage from '../assets/images/cleaning_team_center_1786973615973.jpg';
-import fastServiceImage from '../assets/images/clean_fast_service_1786976267260.jpg';
-import guaranteeImage from '../assets/images/guarantee_quality_cleaning_1786996380820.jpg';
+import { getAboutFeatures, AboutFeatureItem, INITIAL_MOCK_ABOUT_FEATURES } from '../lib/supabase';
 
 interface AboutSectionProps {
   lang: Language;
   onOpenQuote?: () => void;
 }
 
-type FeatureCardId = 'best-result' | 'expert-team' | 'fast-service' | 'guarantee';
-
-interface FeatureCardData {
-  id: FeatureCardId;
-  titleDe: string;
-  titleEn: string;
-  descriptionDe: string;
-  descriptionEn: string;
-  image: string;
-  badgeDe: string;
-  badgeEn: string;
-  altDe: string;
-  altEn: string;
-}
-
-const FEATURE_CARDS: FeatureCardData[] = [
-  {
-    id: 'best-result',
-    titleDe: 'Erstklassige Reinigungsergebnisse',
-    titleEn: 'Give the Best Result',
-    descriptionDe:
-      'Mit modernen Reinigungsverfahren, schonenden Profi-Mitteln und akribischer Detailgenauigkeit sorgen wir für strahlenden Glanz und nachhaltige Frische in jedem Raum.',
-    descriptionEn:
-      'Using modern cleaning methods, eco-friendly professional products, and meticulous attention to detail, we ensure streak-free shine and lasting freshness in every room.',
-    image: bestResultImage,
-    badgeDe: 'Beste Ergebnisse & Glanz',
-    badgeEn: 'Best Results & Shine',
-    altDe: 'Erstklassige Reinigungsergebnisse und Glanz in Büro und Gewerbe',
-    altEn: 'Top quality cleaning results and shine in commercial space',
-  },
-  {
-    id: 'expert-team',
-    titleDe: 'Erfahrenes & geschultes Team',
-    titleEn: 'Trusted Expert Team',
-    descriptionDe:
-      'Unser fest angestelltes, diskretes und haftpflichtversichertes Fachpersonal garantiert höchste Sorgfalt, Pünktlichkeit und absolute Vertrauenswürdigkeit.',
-    descriptionEn:
-      'Our permanent, discreet, and fully insured professional cleaning staff guarantees utmost care, punctuality, and complete reliability on every job.',
-    image: expertTeamImage,
-    badgeDe: 'Zertifiziertes Fachpersonal',
-    badgeEn: 'Certified Expert Cleaners',
-    altDe: 'Unser erfahrenes und freundliches Reinigungsteam vor Ort',
-    altEn: 'Our experienced and friendly on-site cleaning team',
-  },
-  {
-    id: 'fast-service',
-    titleDe: 'Schneller & flexibler Service',
-    titleEn: 'Clean & Fast Services',
-    descriptionDe:
-      'Flexible Einsatzzeiten am frühen Morgen oder am Abend, maßgeschneiderte Reinigungsintervalle und rasche Reaktionszeiten sichern einen reibungslosen Ablauf.',
-    descriptionEn:
-      'Flexible cleaning schedules early morning or after hours, customized intervals, and rapid response times ensure seamless operations without disruption.',
-    image: fastServiceImage,
-    badgeDe: 'Pünktlich & Schnell',
-    badgeEn: 'Punctual & Fast Service',
-    altDe: 'Schnelle und gründliche Reinigung von Büroräumen und Sanitär',
-    altEn: 'Fast and thorough cleaning of office and sanitary rooms',
-  },
-  {
-    id: 'guarantee',
-    titleDe: '100% Zufriedenheitsgarantie',
-    titleEn: '100% Guaranteed Quality',
-    descriptionDe:
-      'Ihre Zufriedenheit ist unser oberstes Qualitätsversprechen: Sollte ein Detail nicht Ihren Wünschen entsprechen, bessern wir innerhalb von 24h kostenfrei nach.',
-    descriptionEn:
-      'Your total satisfaction is our core commitment: If any detail does not meet your expectations, we will rectify it promptly within 24 hours at no extra cost.',
-    image: guaranteeImage,
-    badgeDe: '100% Zufriedenheitsgarantie',
-    badgeEn: '100% Satisfaction Guarantee',
-    altDe: '100% Zufriedenheitsgarantie und geprüfte Qualitätsabnahme',
-    altEn: '100% satisfaction guarantee and verified quality inspection',
-  },
-];
-
 export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote }) => {
-  const [activeCardId, setActiveCardId] = useState<FeatureCardId>('best-result');
+  const [activeCardId, setActiveCardId] = useState<string>('best-result');
+  const [featuresList, setFeaturesList] = useState<AboutFeatureItem[]>([]);
 
-  const activeCard = FEATURE_CARDS.find((c) => c.id === activeCardId) || FEATURE_CARDS[0];
+  useEffect(() => {
+    async function loadDynamicFeatures() {
+      try {
+        const data = await getAboutFeatures();
+        if (data && data.length > 0) {
+          setFeaturesList(data);
+        }
+      } catch (err) {
+        console.warn('Failed loading about features:', err);
+      }
+    }
+
+    loadDynamicFeatures();
+
+    const handleUpdate = () => {
+      loadDynamicFeatures();
+    };
+
+    window.addEventListener('duaari_about_features_updated', handleUpdate);
+    return () => window.removeEventListener('duaari_about_features_updated', handleUpdate);
+  }, []);
+
+  const activeFeatures = featuresList.length > 0 ? featuresList : INITIAL_MOCK_ABOUT_FEATURES;
+  const activeCard = activeFeatures.find((c) => c.id === activeCardId) || activeFeatures[0];
 
   return (
     <section id="vorteile" className="py-20 md:py-28 bg-white relative scroll-mt-20">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header: WHO WE ARE / Dedicated To Cleaner Better Spaces. */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -103,12 +49,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
           transition={{ duration: 0.5 }}
           className="text-center max-w-3xl mx-auto mb-8 sm:mb-10"
         >
-          {/* Eyebrow */}
           <span className="text-[12px] sm:text-[13px] font-semibold tracking-[0.18em] text-[#6B7280] uppercase mb-3 block">
             {lang === 'de' ? 'WER WIR SIND' : 'WHO WE ARE'}
           </span>
 
-          {/* Headline */}
           <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-normal text-[#111827] tracking-tight leading-[1.18] mb-4">
             {lang === 'de' ? (
               <>
@@ -121,14 +65,12 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
             )}
           </h2>
 
-          {/* Paragraph (Top Red Marked Area: Professional Cleaning Services Copy in German) */}
           <p className="text-[#4B5563] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-8 font-normal">
             {lang === 'de'
               ? 'Wir bieten zuverlässige und zertifizierte Reinigungslösungen für Gewerbe, Büros und Privathaushalte in Ingolstadt und Umgebung – für makellose Sauberkeit, gesunde Hygiene und höchste Wohlfühlatmosphäre.'
               : 'We provide reliable, certified cleaning solutions for commercial, office, and residential clients in Ingolstadt and surrounding areas—ensuring spotless cleanliness, healthy hygiene, and comfortable spaces.'}
           </p>
 
-          {/* Button: More About Us */}
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={onOpenQuote}
@@ -140,13 +82,13 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
           </div>
         </motion.div>
 
-        {/* 5-Element Grid: 2 Left Cards, Center Cleaner Photo (Switches on click), 2 Right Cards */}
+        {/* 5-Element Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 items-stretch pt-6 sm:pt-8">
           {/* LEFT COLUMN: 2 Feature Cards */}
           <div className="lg:col-span-4 flex flex-col justify-between gap-6">
-            {/* Card 1: Give the Best Result */}
+            {/* Card 1 */}
             {(() => {
-              const card = FEATURE_CARDS[0];
+              const card = activeFeatures[0] || INITIAL_MOCK_ABOUT_FEATURES[0];
               const isActive = activeCardId === card.id;
               return (
                 <motion.div
@@ -169,7 +111,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                     </div>
                   )}
 
-                  {/* Custom Vector Icon Illustration */}
                   <div className="w-16 h-16 sm:w-18 sm:h-18 mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
                       <path d="M32 16a16 16 0 1 0 16 16 16 16 0 0 0-16-16zm0 24a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" fill="#DBEAFE" />
@@ -181,10 +122,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-bold text-[#111827] mb-2 font-display">
-                    {lang === 'de' ? card.titleDe : card.titleEn}
+                    {lang === 'de' ? card.title_de : card.title_en}
                   </h3>
                   <p className="text-xs sm:text-[13.5px] text-[#4B5563] leading-relaxed max-w-xs font-normal">
-                    {lang === 'de' ? card.descriptionDe : card.descriptionEn}
+                    {lang === 'de' ? card.description_de : card.description_en}
                   </p>
 
                   <div className="mt-4 text-[11.5px] font-semibold text-[#1855EA] flex items-center gap-1 opacity-90 group-hover:opacity-100">
@@ -195,9 +136,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
               );
             })()}
 
-            {/* Card 2: Trusted Expert Team */}
+            {/* Card 2 */}
             {(() => {
-              const card = FEATURE_CARDS[1];
+              const card = activeFeatures[1] || INITIAL_MOCK_ABOUT_FEATURES[1];
               const isActive = activeCardId === card.id;
               return (
                 <motion.div
@@ -220,7 +161,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                     </div>
                   )}
 
-                  {/* Custom Vector Icon Illustration */}
                   <div className="w-16 h-16 sm:w-18 sm:h-18 mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
                       <circle cx="32" cy="22" r="9" fill="#FDE68A" stroke="#111827" strokeWidth="2" />
@@ -232,10 +172,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-bold text-[#111827] mb-2 font-display">
-                    {lang === 'de' ? card.titleDe : card.titleEn}
+                    {lang === 'de' ? card.title_de : card.title_en}
                   </h3>
                   <p className="text-xs sm:text-[13.5px] text-[#4B5563] leading-relaxed max-w-xs font-normal">
-                    {lang === 'de' ? card.descriptionDe : card.descriptionEn}
+                    {lang === 'de' ? card.description_de : card.description_en}
                   </p>
 
                   <div className="mt-4 text-[11.5px] font-semibold text-[#1855EA] flex items-center gap-1 opacity-90 group-hover:opacity-100">
@@ -247,7 +187,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
             })()}
           </div>
 
-          {/* CENTER COLUMN: Interactive Dynamic Center Photo with smooth animation */}
+          {/* CENTER COLUMN: Interactive Center Photo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -267,39 +207,38 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                 >
                   <img
                     src={activeCard.image}
-                    alt={lang === 'de' ? activeCard.altDe : activeCard.altEn}
+                    alt={lang === 'de' ? activeCard.alt_de || activeCard.title_de : activeCard.alt_en || activeCard.title_en}
                     className="w-full h-full object-cover object-center max-h-[560px] min-h-[420px] select-none"
                     referrerPolicy="no-referrer"
                   />
-                  {/* Subtle Gradient Shadow for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
 
-                  {/* Glass Info Pill on bottom of Center Photo */}
+                  {/* Info Pill on bottom of Center Photo */}
                   <div className="absolute bottom-4 inset-x-4 sm:bottom-5 sm:inset-x-5 bg-white/90 backdrop-blur-md p-4 rounded-xl sm:rounded-2xl border border-white/80 shadow-md">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1855EA] tracking-wide">
                         <Sparkles className="w-3.5 h-3.5 text-[#1855EA]" />
-                        {lang === 'de' ? activeCard.badgeDe : activeCard.badgeEn}
+                        {lang === 'de' ? activeCard.badge_de || 'Top' : activeCard.badge_en || 'Top'}
                       </span>
                       <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
                         {lang === 'de' ? 'DuaAri Qualitätsstandard' : 'DuaAri Standard'}
                       </span>
                     </div>
                     <p className="text-xs sm:text-[13px] text-slate-800 font-medium line-clamp-2">
-                      {lang === 'de' ? activeCard.titleDe : activeCard.titleEn}
+                      {lang === 'de' ? activeCard.title_de : activeCard.title_en}
                     </p>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Quick selector dots under center photo for mobile/tablet */}
+            {/* Quick selector dots */}
             <div className="flex items-center justify-center gap-2 mt-4">
-              {FEATURE_CARDS.map((c) => (
+              {activeFeatures.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => setActiveCardId(c.id)}
-                  aria-label={c.titleDe}
+                  aria-label={c.title_de}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                     activeCardId === c.id ? 'w-8 bg-[#1855EA]' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
                   }`}
@@ -310,9 +249,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
 
           {/* RIGHT COLUMN: 2 Feature Cards */}
           <div className="lg:col-span-4 flex flex-col justify-between gap-6">
-            {/* Card 3: Clean & Fast Services */}
+            {/* Card 3 */}
             {(() => {
-              const card = FEATURE_CARDS[2];
+              const card = activeFeatures[2] || INITIAL_MOCK_ABOUT_FEATURES[2];
               const isActive = activeCardId === card.id;
               return (
                 <motion.div
@@ -335,7 +274,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                     </div>
                   )}
 
-                  {/* Custom Vector Icon Illustration */}
                   <div className="w-16 h-16 sm:w-18 sm:h-18 mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
                       <rect x="14" y="16" width="30" height="24" rx="4" fill="#1855EA" stroke="#111827" strokeWidth="2" />
@@ -347,10 +285,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-bold text-[#111827] mb-2 font-display">
-                    {lang === 'de' ? card.titleDe : card.titleEn}
+                    {lang === 'de' ? card.title_de : card.title_en}
                   </h3>
                   <p className="text-xs sm:text-[13.5px] text-[#4B5563] leading-relaxed max-w-xs font-normal">
-                    {lang === 'de' ? card.descriptionDe : card.descriptionEn}
+                    {lang === 'de' ? card.description_de : card.description_en}
                   </p>
 
                   <div className="mt-4 text-[11.5px] font-semibold text-[#1855EA] flex items-center gap-1 opacity-90 group-hover:opacity-100">
@@ -361,9 +299,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
               );
             })()}
 
-            {/* Card 4: 100% Guaranteed */}
+            {/* Card 4 */}
             {(() => {
-              const card = FEATURE_CARDS[3];
+              const card = activeFeatures[3] || INITIAL_MOCK_ABOUT_FEATURES[3];
               const isActive = activeCardId === card.id;
               return (
                 <motion.div
@@ -386,7 +324,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                     </div>
                   )}
 
-                  {/* Custom Vector Icon Illustration */}
                   <div className="w-16 h-16 sm:w-18 sm:h-18 mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
                       <rect x="14" y="16" width="36" height="26" rx="4" fill="#FFFFFF" stroke="#111827" strokeWidth="2" strokeDasharray="3 3" />
@@ -400,10 +337,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-bold text-[#111827] mb-2 font-display">
-                    {lang === 'de' ? card.titleDe : card.titleEn}
+                    {lang === 'de' ? card.title_de : card.title_en}
                   </h3>
                   <p className="text-xs sm:text-[13.5px] text-[#4B5563] leading-relaxed max-w-xs font-normal">
-                    {lang === 'de' ? card.descriptionDe : card.descriptionEn}
+                    {lang === 'de' ? card.description_de : card.description_en}
                   </p>
 
                   <div className="mt-4 text-[11.5px] font-semibold text-[#1855EA] flex items-center gap-1 opacity-90 group-hover:opacity-100">
@@ -419,4 +356,3 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang, onOpenQuote })
     </section>
   );
 };
-

@@ -17,8 +17,23 @@ let siteSettingsCache: SiteSettingsData | null = null;
 let servicesCache: ServiceDbItem[] | null = null;
 let projectsCache: ProjectDbItem[] | null = null;
 let reviewsCache: ReviewItem[] | null = null;
+let aboutFeaturesCache: AboutFeatureItem[] | null = null;
 
 // Types
+export interface AboutFeatureItem {
+  id: string;
+  title_de: string;
+  title_en: string;
+  description_de: string;
+  description_en: string;
+  image: string;
+  badge_de?: string;
+  badge_en?: string;
+  alt_de?: string;
+  alt_en?: string;
+  sort_order?: number;
+  created_at?: string;
+}
 export interface ContactMessageItem {
   id: string;
   name: string;
@@ -890,4 +905,115 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
   }
 
   return updatedData;
+}
+
+// ====================================================================
+// ABOUT FEATURES / ADVANTAGES CRUD
+// ====================================================================
+export const INITIAL_MOCK_ABOUT_FEATURES: AboutFeatureItem[] = [
+  {
+    id: 'best-result',
+    title_de: 'Erstklassige Reinigungsergebnisse',
+    title_en: 'Give the Best Result',
+    description_de: 'Mit modernen Reinigungsverfahren, schonenden Profi-Mitteln und akribischer Detailgenauigkeit sorgen wir für strahlenden Glanz und nachhaltige Frische in jedem Raum.',
+    description_en: 'Using modern cleaning methods, eco-friendly professional products, and meticulous attention to detail, we ensure streak-free shine and lasting freshness in every room.',
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+    badge_de: 'Beste Ergebnisse & Glanz',
+    badge_en: 'Best Results & Shine',
+    alt_de: 'Erstklassige Reinigungsergebnisse und Glanz in Büro und Gewerbe',
+    alt_en: 'Top quality cleaning results and shine in commercial space',
+    sort_order: 1
+  },
+  {
+    id: 'expert-team',
+    title_de: 'Erfahrenes & geschultes Team',
+    title_en: 'Trusted Expert Team',
+    description_de: 'Unser fest angestelltes, diskretes und haftpflichtversichertes Fachpersonal garantiert höchste Sorgfalt, Pünktlichkeit und absolute Vertrauenswürdigkeit.',
+    description_en: 'Our permanent, discreet, and fully insured professional cleaning staff guarantees utmost care, punctuality, and complete reliability on every job.',
+    image: 'https://images.unsplash.com/photo-1581578736218-c603b29c97b8?auto=format&fit=crop&w=800&q=80',
+    badge_de: 'Zertifiziertes Fachpersonal',
+    badge_en: 'Certified Expert Cleaners',
+    alt_de: 'Unser erfahrenes und freundliches Reinigungsteam vor Ort',
+    alt_en: 'Our experienced and friendly on-site cleaning team',
+    sort_order: 2
+  },
+  {
+    id: 'fast-service',
+    title_de: 'Schneller & flexibler Service',
+    title_en: 'Clean & Fast Services',
+    description_de: 'Flexible Einsatzzeiten am frühen Morgen oder am Abend, maßgeschneiderte Reinigungsintervalle und rasche Reaktionszeiten sichern einen reibungslosen Ablauf.',
+    description_en: 'Flexible cleaning schedules early morning or after hours, customized intervals, and rapid response times ensure seamless operations without disruption.',
+    image: 'https://images.unsplash.com/photo-1581578736211-122dd1a3994c?auto=format&fit=crop&w=800&q=80',
+    badge_de: 'Pünktlich & Schnell',
+    badge_en: 'Punctual & Fast Service',
+    alt_de: 'Schnelle und gründliche Reinigung von Büroräumen und Sanitär',
+    alt_en: 'Fast and thorough cleaning of office and sanitary rooms',
+    sort_order: 3
+  },
+  {
+    id: 'guarantee',
+    title_de: '100% Zufriedenheitsgarantie',
+    title_en: '100% Guaranteed Quality',
+    description_de: 'Ihre Zufriedenheit ist unser oberstes Qualitätsversprechen: Sollte ein Detail nicht Ihren Wünschen entsprechen, bessern wir innerhalb von 24h kostenfrei nach.',
+    description_en: 'Your total satisfaction is our core commitment: If any detail does not meet your expectations, we will rectify it promptly within 24 hours at no extra cost.',
+    image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80',
+    badge_de: '100% Zufriedenheitsgarantie',
+    badge_en: '100% Satisfaction Guarantee',
+    alt_de: '100% Zufriedenheitsgarantie und geprüfte Qualitätsabnahme',
+    alt_en: '100% satisfaction guarantee and verified quality inspection',
+    sort_order: 4
+  }
+];
+
+export async function getAboutFeatures(forceRefresh = false): Promise<AboutFeatureItem[]> {
+  if (forceRefresh) {
+    aboutFeaturesCache = null;
+  }
+
+  if (!forceRefresh && aboutFeaturesCache && aboutFeaturesCache.length > 0) {
+    return aboutFeaturesCache;
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const result: any = await withFastTimeout(
+        supabase.from('about_features').select('*').order('sort_order', { ascending: true })
+      );
+
+      if (result && !result.error && result.data && result.data.length > 0) {
+        aboutFeaturesCache = result.data as AboutFeatureItem[];
+        setLocal('about_features', aboutFeaturesCache);
+        return aboutFeaturesCache;
+      }
+    } catch (err) {
+      console.warn('Supabase about_features fetch error:', err);
+    }
+  }
+
+  const localRes = getLocal<AboutFeatureItem[]>('about_features', INITIAL_MOCK_ABOUT_FEATURES);
+  aboutFeaturesCache = localRes;
+  return localRes;
+}
+
+export async function updateAboutFeature(id: string, updates: Partial<AboutFeatureItem>): Promise<boolean> {
+  aboutFeaturesCache = null;
+  const current = getLocal<AboutFeatureItem[]>('about_features', INITIAL_MOCK_ABOUT_FEATURES);
+  const updated = current.map(item => item.id === id ? { ...item, ...updates } : item);
+  setLocal('about_features', updated);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase
+        .from('about_features')
+        .update(updates)
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error updating about feature in Supabase:', e);
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('duaari_about_features_updated'));
+  }
+  return true;
 }
