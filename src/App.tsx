@@ -93,7 +93,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-[#1855EA] selection:text-white flex flex-col relative">
+    <div className="min-h-screen bg-white text-slate-900 selection:bg-[#1855EA] selection:text-white flex flex-col relative overflow-x-hidden">
       {/* Top Floating Glass Navigation */}
       <Navbar
         lang={lang}
@@ -103,7 +103,7 @@ export default function App() {
       />
 
       {/* Main Content Sections */}
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         <Hero
           lang={lang}
           onOpenCalculator={handleOpenCalculator}

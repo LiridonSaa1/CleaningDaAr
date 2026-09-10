@@ -34,6 +34,11 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  // Gemini Text Prompt State
+  const [aiTextPrompt, setAiTextPrompt] = useState('');
+  const [aiTextGenerating, setAiTextGenerating] = useState(false);
+  const [aiTextError, setAiTextError] = useState<string | null>(null);
+
   const fetchFeatures = async () => {
     setLoading(true);
     try {
@@ -137,6 +142,50 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
     }
   };
 
+  const generateAiText = async () => {
+    if (!aiTextPrompt.trim()) return;
+    setAiTextGenerating(true);
+    setAiTextError(null);
+
+    try {
+      const response = await fetch('/api/generate-about-text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: aiTextPrompt.trim(),
+          featureId: activeCardId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Fehler beim Generieren der Texte.');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        title_de: data.title_de || prev.title_de,
+        title_en: data.title_en || prev.title_en,
+        badge_de: data.badge_de || prev.badge_de,
+        badge_en: data.badge_en || prev.badge_en,
+        description_de: data.description_de || prev.description_de,
+        description_en: data.description_en || prev.description_en,
+      }));
+
+      setAiTextPrompt('');
+      setSaveSuccess('Texte erfolgreich mit Gemini generiert! Klicken Sie unten auf "Speichern" um sie dauerhaft zu sichern.');
+      setTimeout(() => setSaveSuccess(null), 5000);
+    } catch (err: any) {
+      console.error('Error generating AI text:', err);
+      setAiTextError(err?.message || 'Netzwerkfehler beim Generieren der Texte.');
+    } finally {
+      setAiTextGenerating(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[300px]">
@@ -221,6 +270,47 @@ export const AdminAboutFeatures: React.FC<AdminAboutFeaturesProps> = ({ refreshD
 
             {/* Form Content */}
             <div className="p-6 space-y-6">
+              {/* Gemini Text Generator Helper */}
+              <div className="border border-indigo-100 rounded-xl p-4 bg-indigo-50/50 space-y-3">
+                <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
+                  Mit Gemini Texte generieren / verbessern
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Geben Sie kurze Stichworte oder Wünsche ein (z.B. "Betone Umweltfreundlichkeit und biologische Reinigungsmittel"). Gemini generiert automatisch Titel, Abzeichen und Beschreibungen auf Deutsch und Englisch.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={aiTextPrompt}
+                    onChange={(e) => setAiTextPrompt(e.target.value)}
+                    placeholder="z.B. Schnelle Reinigung am selben Tag..."
+                    className="flex-1 px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={generateAiText}
+                    disabled={aiTextGenerating || !aiTextPrompt.trim()}
+                    className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 disabled:opacity-50 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+                  >
+                    {aiTextGenerating ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Generiere...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Generieren</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {aiTextError && (
+                  <p className="text-xs text-rose-600 font-semibold">{aiTextError}</p>
+                )}
+              </div>
+
               {/* Titles DE & EN */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">

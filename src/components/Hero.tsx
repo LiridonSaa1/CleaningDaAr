@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Play, Star } from 'lucide-react';
 import { Language } from '../types';
 import heroCleanerImg from '../assets/images/Hero-New-UBZ2K5JP3S-1.png';
-import heroBubbleImg from '../assets/images/hero-main-bubble.png';
+import heroBubbleImg from '../assets/images/hero-main-bubble.svg';
 import realisticSoapBubblesImg from '../assets/images/realistic-soap-bubbles.png';
 
 interface HeroProps {
@@ -137,7 +137,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote,
           <img
             src={heroBubbleImg}
             onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/hero-main-bubble.png';
+              (e.target as HTMLImageElement).src = '/images/hero-main-bubble.svg';
             }}
             alt=""
             aria-hidden="true"
@@ -162,7 +162,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onOpenCalculator, onOpenQuote,
           <img
             src={heroBubbleImg}
             onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/hero-main-bubble.png';
+              (e.target as HTMLImageElement).src = '/images/hero-main-bubble.svg';
             }}
             alt=""
             aria-hidden="true"

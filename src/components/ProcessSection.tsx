@@ -71,7 +71,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
 
         {/* 5-Step Diagram Matching the User Design */}
         <div className="relative mb-20 lg:mb-24">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-3 items-start relative">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10 lg:gap-3 items-start relative">
             
             {/* Step 1: Appointment (Light Cyan Badge) */}
             <motion.div
@@ -195,7 +195,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex flex-col items-center text-center relative px-2"
+              className="flex flex-col items-center text-center relative px-2 col-span-2 md:col-span-1 justify-self-center"
             >
               <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full bg-[#0084FF] text-white flex items-center justify-center shadow-md mb-6 transition-transform duration-300 hover:scale-105">
                 <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />

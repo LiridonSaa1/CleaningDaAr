@@ -134,7 +134,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ lang }) => {
             </motion.div>
 
             {/* Right Stack of Side Cards with Scrollbar when >3 items */}
-            <div className="lg:col-span-5 flex flex-col gap-4 max-h-[450px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
+            <div className="lg:col-span-5 flex flex-col gap-4 lg:max-h-[450px] lg:overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
               {sideCards.map((proj, idx) => (
                 <motion.div
                   key={proj.id || idx}
